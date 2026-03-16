@@ -13,10 +13,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-serial \
     && rm -rf /var/lib/apt/lists/*
 
-# Install arduino-cli
-RUN curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh \
+# Install arduino-cli (install to /tmp to avoid rm -rf bin deleting /bin)
+RUN cd /tmp \
+    && curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh \
     && mv bin/arduino-cli /usr/local/bin/ \
-    && rm -rf bin
+    && rm -rf /tmp/bin
 
 # Initialize arduino-cli config
 RUN arduino-cli config init
