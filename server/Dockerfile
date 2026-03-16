@@ -50,13 +50,13 @@ FROM base AS app
 
 WORKDIR /app
 
-# Copy package files
-COPY package.json ./
+# Copy package files (context may be repo root or server/)
+COPY server/package.json server/package-lock.json* ./
 RUN npm install --production
 
-# Copy compiled source (or use tsx for dev)
-COPY tsconfig.json ./
-COPY src/ ./src/
+# Copy compiled source
+COPY server/tsconfig.json ./
+COPY server/src/ ./src/
 
 # Build TypeScript
 RUN npx tsc
