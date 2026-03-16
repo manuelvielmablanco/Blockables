@@ -8,9 +8,6 @@ FROM node:20-slim AS base
 # Install dependencies for arduino-cli
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
-    python3 \
-    python3-pip \
-    python3-serial \
     && rm -rf /var/lib/apt/lists/*
 
 # Install arduino-cli (install to /tmp to avoid rm -rf bin deleting /bin)
@@ -19,22 +16,12 @@ RUN cd /tmp \
     && mv bin/arduino-cli /usr/local/bin/ \
     && rm -rf /tmp/bin
 
-# Initialize arduino-cli config
-RUN arduino-cli config init
-
-# Add ESP32 board manager URL
-RUN arduino-cli config add board_manager.additional_urls \
-    https://espressif.github.io/arduino-esp32/package_esp32_index.json
-
-# Update board index
-RUN arduino-cli core update-index
-
-# Install cores (this takes a while, especially ESP32)
-RUN arduino-cli core install arduino:avr
-RUN arduino-cli core install esp32:esp32
-
-# Install libraries used by the block editor
-RUN arduino-cli lib install "DHT sensor library" \
+# Initialize arduino-cli and install AVR core + libraries in one layer
+# NOTE: ESP32 core excluded for now (adds ~5GB). Add when plan supports larger images.
+RUN arduino-cli config init \
+    && arduino-cli core update-index \
+    && arduino-cli core install arduino:avr \
+    && arduino-cli lib install "DHT sensor library" \
     && arduino-cli lib install "Adafruit Unified Sensor" \
     && arduino-cli lib install "Adafruit NeoPixel" \
     && arduino-cli lib install "Adafruit SSD1306" \
@@ -42,7 +29,8 @@ RUN arduino-cli lib install "DHT sensor library" \
     && arduino-cli lib install "Servo" \
     && arduino-cli lib install "IRremote" \
     && arduino-cli lib install "LiquidCrystal I2C" \
-    && arduino-cli lib install "SD"
+    && arduino-cli lib install "SD" \
+    && arduino-cli cache clean
 
 # ============================================================
 # Application stage
