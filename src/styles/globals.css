@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Paytone+One&display=swap');
+
+@theme {
+  --color-brand-yellow: #FFD002;
+  --color-brand-yellow-light: #FFEF67;
+  --color-brand-yellow-bg: #FFFDEF;
+  --color-brand-teal: #4E9995;
+  --color-brand-black: #1E1E1C;
+  --color-brand-gray: #666666;
+  --color-brand-orange: #F7A872;
+  --color-brand-blue: #0056A7;
+  --font-heading: 'Paytone One', sans-serif;
+  --font-body: 'Noto Sans', sans-serif;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-brand-black);
+  margin: 0;
+  overflow: hidden;
+  height: 100vh;
+}
+
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
