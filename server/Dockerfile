@@ -51,16 +51,19 @@ FROM base AS app
 
 WORKDIR /app
 
-# Copy package files (context may be repo root or server/)
+# Copy package files (context is repo root)
 COPY server/package.json server/package-lock.json* ./
-RUN npm install --production
 
-# Copy compiled source
+# Install ALL deps (including devDependencies for tsc)
+RUN npm install
+
+# Copy source and compile TypeScript
 COPY server/tsconfig.json ./
 COPY server/src/ ./src/
-
-# Build TypeScript
 RUN npx tsc
+
+# Remove devDependencies after build
+RUN npm prune --production
 
 # Create temp directories
 RUN mkdir -p /tmp/sketches /tmp/compile-cache
