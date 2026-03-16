@@ -11,20 +11,6 @@ export interface CompileResponse {
   size?: number;
 }
 
-export interface PortInfo {
-  address: string;
-  protocol: string;
-  board_name?: string;
-  fqbn?: string;
-}
-
-export interface UploadResponse {
-  success: boolean;
-  stdout?: string;
-  stderr?: string;
-  error?: string;
-}
-
 /**
  * Send code to the compilation server and receive the compiled binary.
  */
@@ -33,45 +19,7 @@ export async function compileCode(code: string, boardId: string): Promise<Compil
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ code, boardId }),
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    return {
-      success: false,
-      error: data.error || data.stderr || `Server error: ${response.status}`,
-      stdout: data.stdout,
-      stderr: data.stderr,
-    };
-  }
-
-  return data;
-}
-
-/**
- * List available serial ports from the server.
- */
-export async function listPorts(): Promise<PortInfo[]> {
-  try {
-    const response = await fetch(`${COMPILER_URL}/ports`, { signal: AbortSignal.timeout(5000) });
-    if (!response.ok) return [];
-    const data = await response.json();
-    return data.ports || [];
-  } catch {
-    return [];
-  }
-}
-
-/**
- * Upload code to a board via the server (compile + upload using arduino-cli).
- */
-export async function uploadCode(code: string, boardId: string, port: string): Promise<UploadResponse> {
-  const response = await fetch(`${COMPILER_URL}/upload`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ code, boardId, port }),
-    signal: AbortSignal.timeout(180000), // 3 minute timeout
+    signal: AbortSignal.timeout(120000), // 2 minute timeout for compilation
   });
 
   const data = await response.json();

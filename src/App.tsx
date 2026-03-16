@@ -155,7 +155,6 @@ function AppContent() {
         code={codeRef.current}
         boardId={board.id}
         onClose={() => setShowUploadDialog(false)}
-        onDisconnectSerial={serial.disconnect}
       />
       <ExamplesDialog
         open={showExamples}
