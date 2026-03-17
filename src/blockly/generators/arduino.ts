@@ -250,7 +250,7 @@ gen.forBlock['controls_whileUntil'] = function (block) {
 };
 
 gen.forBlock['controls_for'] = function (block) {
-  const v = block.getFieldValue('VAR') || 'i';
+  const v = getVarName(block, 'VAR', 'i');
   const from = gen.valueToCode(block, 'FROM', ORDER_NONE) || '1';
   const to = gen.valueToCode(block, 'TO', ORDER_NONE) || '10';
   const by = gen.valueToCode(block, 'BY', ORDER_NONE) || '1';
@@ -262,12 +262,23 @@ gen.forBlock['controls_flow_statements'] = function (block) {
 };
 
 // === Variables (built-in, kept for compatibility) ===
+// Helper: getFieldValue('VAR') on FieldVariable returns the variable's internal ID,
+// not its human-readable name. We resolve the name via the workspace variable map.
+function getVarName(block: any, fieldName: string, fallback: string): string {
+  const id = block.getFieldValue(fieldName);
+  if (id && block.workspace) {
+    const variable = Blockly.Variables.getVariable(block.workspace, id);
+    if (variable) return variable.name;
+  }
+  return fallback;
+}
+
 gen.forBlock['variables_get'] = function (block) {
-  return [block.getFieldValue('VAR') || 'variable', ORDER_ATOMIC];
+  return [getVarName(block, 'VAR', 'variable'), ORDER_ATOMIC];
 };
 
 gen.forBlock['variables_set'] = function (block) {
-  const v = block.getFieldValue('VAR') || 'variable';
+  const v = getVarName(block, 'VAR', 'variable');
   const val = gen.valueToCode(block, 'VALUE', ORDER_ASSIGNMENT) || '0';
   return v + ' = ' + val + ';\n';
 };
