@@ -845,10 +845,22 @@ export function generateArduinoCode(workspace: Blockly.Workspace, board?: BoardP
   if (board) setGeneratorBoard(board);
   resetGeneratorState();
 
+  // Collect variable names declared by list blocks (they handle their own declarations)
+  const listVarNames = new Set<string>();
+  for (const b of workspace.getAllBlocks(false)) {
+    if (b.type === 'lists_create_with_number') {
+      const id = b.getFieldValue('VAR');
+      const resolved = Blockly.Variables.getVariable(workspace, id);
+      if (resolved) listVarNames.add(resolved.name);
+    }
+  }
+
   // Declare all workspace variables as globals (default to int)
   const allVars = Blockly.Variables.allUsedVarModels(workspace);
   for (const v of allVars) {
     const name = v.name;
+    // Skip variables declared by list blocks (they emit int X[] = {...})
+    if (listVarNames.has(name)) continue;
     // Infer type from initial value: scan all variables_set blocks
     let varType = 'int';
     for (const b of workspace.getAllBlocks(false)) {
