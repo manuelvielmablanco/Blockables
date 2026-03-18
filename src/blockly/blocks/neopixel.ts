@@ -30,6 +30,34 @@ Blockly.Blocks['neopixel_setcolor'] = {
   },
 };
 
+Blockly.Blocks['neopixel_setbrightness'] = {
+  init: function (this: Blockly.Block) {
+    this.appendValueInput('BRIGHTNESS')
+      .setCheck('Number')
+      .appendField('NeoPixel brillo');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setStyle('neopixel_blocks');
+    this.setTooltip('Ajusta el brillo de la tira NeoPixel (0-255)');
+  },
+};
+
+Blockly.Blocks['neopixel_setcolor_picker'] = {
+  init: function (this: Blockly.Block) {
+    this.appendValueInput('LEDNUMBER')
+      .setCheck('Number')
+      .appendField('NeoPixel LED nº');
+    this.appendValueInput('COLOUR')
+      .setCheck('Colour')
+      .appendField('color');
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setStyle('neopixel_blocks');
+    this.setTooltip('Establece el color de un LED NeoPixel con selector de color');
+  },
+};
+
 Blockly.Blocks['neopixel_show'] = {
   init: function (this: Blockly.Block) {
     this.appendDummyInput().appendField('NeoPixel mostrar');

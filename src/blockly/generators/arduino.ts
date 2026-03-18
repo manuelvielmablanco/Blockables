@@ -559,6 +559,11 @@ gen.forBlock['motor_stepper_init'] = function (block) {
   return '';
 };
 
+gen.forBlock['motor_stepper_setspeed'] = function (block) {
+  const rpm = gen.valueToCode(block, 'RPM', ORDER_NONE) || '10';
+  return 'stepper.setSpeed(' + rpm + ');\n';
+};
+
 gen.forBlock['motor_stepper_step'] = function (block) {
   const steps = gen.valueToCode(block, 'STEPS', ORDER_NONE) || '100';
   return 'stepper.step(' + steps + ');\n';
@@ -608,6 +613,21 @@ gen.forBlock['neopixel_show'] = function () {
 
 gen.forBlock['neopixel_clear'] = function () {
   return 'strip.clear();\nstrip.show();\n';
+};
+
+gen.forBlock['neopixel_setbrightness'] = function (block) {
+  const brightness = gen.valueToCode(block, 'BRIGHTNESS', ORDER_NONE) || '50';
+  return 'strip.setBrightness(' + brightness + ');\n';
+};
+
+gen.forBlock['neopixel_setcolor_picker'] = function (block) {
+  const idx = gen.valueToCode(block, 'LEDNUMBER', ORDER_NONE) || '0';
+  const colour = gen.valueToCode(block, 'COLOUR', ORDER_NONE) || "'#ff0000'";
+  // Convert hex colour string to RGB at runtime
+  return 'strip.setPixelColor(' + idx + ', strip.Color(\n'
+    + '  (int)strtol(String(' + colour + ').substring(1, 3).c_str(), NULL, 16),\n'
+    + '  (int)strtol(String(' + colour + ').substring(3, 5).c_str(), NULL, 16),\n'
+    + '  (int)strtol(String(' + colour + ').substring(5, 7).c_str(), NULL, 16)));\n';
 };
 
 // === Lists ===

@@ -64,13 +64,13 @@ export function exportProject(project: ProjectData): void {
 }
 
 /**
- * Import project from a .ib file.
+ * Import project from a .ib or .hb (Hello Blocks) file.
  */
 export function importProject(): Promise<ProjectData | null> {
   return new Promise((resolve) => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = '.ib,.json';
+    input.accept = '.ib,.json,.hb';
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) {
@@ -79,6 +79,22 @@ export function importProject(): Promise<ProjectData | null> {
       }
       try {
         const text = await file.text();
+
+        // Hello Blocks .hb files are Blockly XML
+        if (file.name.endsWith('.hb')) {
+          const projectName = file.name.replace('.hb', '');
+          resolve({
+            name: projectName,
+            boardId: 'arduino-nano',
+            workspace: '', // Will be loaded via XML path
+            version: PROJECT_VERSION,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            _hbXml: transformHelloBlocksXml(text),
+          } as ProjectData & { _hbXml: string });
+          return;
+        }
+
         const project = JSON.parse(text) as ProjectData;
         if (!project.workspace || !project.name) {
           throw new Error('Archivo de proyecto inválido');
@@ -91,6 +107,139 @@ export function importProject(): Promise<ProjectData | null> {
     };
     input.click();
   });
+}
+
+/**
+ * Transform Hello Blocks XML to Blockables-compatible XML.
+ * Maps block types, field names, and value input names.
+ */
+function transformHelloBlocksXml(xml: string): string {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xml, 'text/xml');
+
+  // Block type mapping: Hello Blocks → Blockables
+  const blockTypeMap: Record<string, string> = {
+    'control_arduino_setup': 'arduino_setup',
+    'control_arduino_loop': 'arduino_loop',
+    'neopixel_setled_colour_picker': 'neopixel_setcolor_picker',
+    'io_digital_read': 'io_digitalread',
+    'io_digital_write': 'io_digitalwrite',
+    'io_analog_read': 'io_analogread',
+    'io_analog_write': 'io_analogwrite',
+    'logic_boolean_io': 'logic_boolean',
+    'variables_set_number': 'variables_set',
+    'variables_get_number': 'variables_get',
+    'variables_set_bool': 'variables_set',
+    'variables_get_bool': 'variables_get',
+  };
+
+  // Remap block types
+  const blocks = doc.querySelectorAll('block, shadow');
+  blocks.forEach((block) => {
+    const type = block.getAttribute('type');
+    if (type && blockTypeMap[type]) {
+      block.setAttribute('type', blockTypeMap[type]);
+    }
+  });
+
+  // Remap statement name "DO" → "SETUP"/"LOOP" for setup/loop blocks
+  const statements = doc.querySelectorAll('statement');
+  statements.forEach((stmt) => {
+    const parent = stmt.parentElement;
+    if (!parent) return;
+    const parentType = parent.getAttribute('type');
+    if (parentType === 'arduino_setup' && stmt.getAttribute('name') === 'DO') {
+      stmt.setAttribute('name', 'SETUP');
+    }
+    if (parentType === 'arduino_loop' && stmt.getAttribute('name') === 'DO') {
+      stmt.setAttribute('name', 'LOOP');
+    }
+  });
+
+  // Remap value input names
+  const valueMap: Record<string, Record<string, string>> = {
+    'time_delay': { 'DELAY_TIME_MILI': 'MS' },
+    'motor_stepper_step': { 'STEP': 'STEPS' },
+    'motor_stepper_init': { 'STEPS': 'STEPS_REV' },
+    'neopixel_init': { 'LEDCOUNT': 'NUM' },
+  };
+
+  const values = doc.querySelectorAll('value');
+  values.forEach((val) => {
+    const parent = val.parentElement;
+    if (!parent) return;
+    const parentType = parent.getAttribute('type');
+    const valName = val.getAttribute('name');
+    if (parentType && valName && valueMap[parentType]?.[valName]) {
+      val.setAttribute('name', valueMap[parentType][valName]);
+    }
+  });
+
+  // Remove ID fields from stepper blocks (Blockables doesn't use multi-stepper IDs)
+  const fields = doc.querySelectorAll('field');
+  fields.forEach((field) => {
+    const parent = field.parentElement;
+    if (!parent) return;
+    const parentType = parent.getAttribute('type');
+    if (parentType?.startsWith('motor_stepper') && field.getAttribute('name') === 'ID') {
+      field.remove();
+    }
+    // Remove variabletype attribute from VAR fields (use generic variables)
+    if (field.getAttribute('name') === 'VAR') {
+      field.removeAttribute('variabletype');
+    }
+  });
+
+  // Clean variabletype from variable declarations
+  const variables = doc.querySelectorAll('variable');
+  variables.forEach((v) => {
+    v.removeAttribute('type');
+  });
+
+  // For neopixel_init: convert LEDCOUNT value input to NUM field
+  const neopixelInits = doc.querySelectorAll('block[type="neopixel_init"]');
+  neopixelInits.forEach((block) => {
+    // Find the LEDCOUNT/NUM value input and extract the number
+    const numValue = block.querySelector('value[name="NUM"]');
+    if (numValue) {
+      const shadowNum = numValue.querySelector('field[name="NUM"]');
+      if (shadowNum) {
+        // Create a field element instead of value input
+        const numField = doc.createElement('field');
+        numField.setAttribute('name', 'NUM');
+        numField.textContent = shadowNum.textContent;
+        block.appendChild(numField);
+        numValue.remove();
+      }
+    }
+    // Remove RGBMODE and FREQ fields (Blockables uses fixed GRB + 800KHz)
+    const rgbField = block.querySelector('field[name="RGBMODE"]');
+    const freqField = block.querySelector('field[name="FREQ"]');
+    rgbField?.remove();
+    freqField?.remove();
+  });
+
+  // Make setup/loop blocks not deletable
+  const setupLoop = doc.querySelectorAll('block[type="arduino_setup"], block[type="arduino_loop"]');
+  setupLoop.forEach((block) => {
+    block.setAttribute('deletable', 'false');
+    block.setAttribute('editable', 'false');
+  });
+
+  const serializer = new XMLSerializer();
+  return serializer.serializeToString(doc);
+}
+
+/**
+ * Load a Hello Blocks XML string into the workspace.
+ */
+export function loadHelloBlocksXml(
+  workspace: Blockly.WorkspaceSvg,
+  xml: string
+): void {
+  workspace.clear();
+  const dom = Blockly.utils.xml.textToDom(xml);
+  Blockly.Xml.domToWorkspace(dom, workspace);
 }
 
 /**

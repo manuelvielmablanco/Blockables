@@ -165,6 +165,7 @@ export const toolboxConfig = {
         { kind: 'block', type: 'motor_dc_stop' },
         { kind: 'block', type: 'motor_servo' },
         { kind: 'block', type: 'motor_stepper_init' },
+        { kind: 'block', type: 'motor_stepper_setspeed' },
         { kind: 'block', type: 'motor_stepper_step' },
       ],
     },
@@ -185,7 +186,9 @@ export const toolboxConfig = {
       categorystyle: 'neopixel_category',
       contents: [
         { kind: 'block', type: 'neopixel_init' },
+        { kind: 'block', type: 'neopixel_setbrightness' },
         { kind: 'block', type: 'neopixel_setcolor' },
+        { kind: 'block', type: 'neopixel_setcolor_picker' },
         { kind: 'block', type: 'neopixel_show' },
         { kind: 'block', type: 'neopixel_clear' },
       ],

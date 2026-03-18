@@ -9,7 +9,7 @@ import UploadDialog from './components/dialogs/UploadDialog';
 import ExamplesDialog from './components/dialogs/ExamplesDialog';
 import SerialMonitor from './components/serial/SerialMonitor';
 import { useSerial } from './hooks/useSerial';
-import { serializeProject, exportProject, importProject, exportCode, autoSave } from './services/project';
+import { serializeProject, exportProject, importProject, exportCode, autoSave, loadHelloBlocksXml } from './services/project';
 import type { ExampleProject } from './data/examples';
 
 function AppContent() {
@@ -88,6 +88,14 @@ function AppContent() {
 
     const ws = workspaceRef.current?.getWorkspace();
     if (!ws) return;
+
+    // Hello Blocks .hb files use XML format with _hbXml property
+    const hbXml = (project as ProjectData & { _hbXml?: string })._hbXml;
+    if (hbXml) {
+      loadHelloBlocksXml(ws, hbXml);
+      setProjectName(project.name);
+      return;
+    }
 
     ws.clear();
     const state = JSON.parse(project.workspace);

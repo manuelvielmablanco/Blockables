@@ -75,6 +75,18 @@ Blockly.Blocks['motor_stepper_init'] = {
   },
 };
 
+Blockly.Blocks['motor_stepper_setspeed'] = {
+  init: function (this: Blockly.Block) {
+    this.appendValueInput('RPM')
+      .setCheck('Number')
+      .appendField('velocidad stepper (RPM)');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setStyle('motor_blocks');
+    this.setTooltip('Cambia la velocidad del motor paso a paso');
+  },
+};
+
 Blockly.Blocks['motor_stepper_step'] = {
   init: function (this: Blockly.Block) {
     this.appendValueInput('STEPS')
