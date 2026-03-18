@@ -633,6 +633,53 @@ gen.forBlock['neopixel_setbrightness'] = function (block) {
   return 'strip.setBrightness(' + brightness + ');\n';
 };
 
+gen.forBlock['neopixel_effect'] = function (block) {
+  const effect = block.getFieldValue('EFFECT');
+  // Helper function emitted once as global
+  if (effect === 'RAINBOW' || effect === 'RAINBOW_CYCLE') {
+    addGlobalVar(
+      'uint32_t Wheel(byte WheelPos) {\n'
+      + '  WheelPos = 255 - WheelPos;\n'
+      + '  if (WheelPos < 85) return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);\n'
+      + '  if (WheelPos < 170) { WheelPos -= 85; return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3); }\n'
+      + '  WheelPos -= 170; return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);\n'
+      + '}'
+    );
+  }
+  if (effect === 'RAINBOW') {
+    addGlobalVar(
+      'void rainbow(uint8_t wait) {\n'
+      + '  for (uint16_t j = 0; j < 256; j++) {\n'
+      + '    for (uint16_t i = 0; i < strip.numPixels(); i++) {\n'
+      + '      strip.setPixelColor(i, Wheel((i + j) & 255));\n'
+      + '    }\n'
+      + '    strip.show();\n'
+      + '    delay(wait);\n'
+      + '  }\n'
+      + '}'
+    );
+    return 'rainbow(20);\n';
+  } else if (effect === 'RAINBOW_CYCLE') {
+    addGlobalVar(
+      'void rainbowCycle(uint8_t wait) {\n'
+      + '  for (uint16_t j = 0; j < 256 * 5; j++) {\n'
+      + '    for (uint16_t i = 0; i < strip.numPixels(); i++) {\n'
+      + '      strip.setPixelColor(i, Wheel(((i * 256 / strip.numPixels()) + j) & 255));\n'
+      + '    }\n'
+      + '    strip.show();\n'
+      + '    delay(wait);\n'
+      + '  }\n'
+      + '}'
+    );
+    return 'rainbowCycle(20);\n';
+  } else {
+    // RANDOM
+    return 'for (uint16_t i = 0; i < strip.numPixels(); i++) {\n'
+      + '  strip.setPixelColor(i, strip.Color(random(256), random(256), random(256)));\n'
+      + '}\nstrip.show();\n';
+  }
+};
+
 gen.forBlock['neopixel_setcolor_picker'] = function (block) {
   const idx = gen.valueToCode(block, 'LEDNUMBER', ORDER_NONE) || '0';
   const colour = gen.valueToCode(block, 'COLOUR', ORDER_NONE) || "'#ff0000'";

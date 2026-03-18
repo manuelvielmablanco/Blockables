@@ -131,6 +131,7 @@ function transformHelloBlocksXml(xml: string): string {
     'variables_get_number': 'variables_get',
     'variables_set_bool': 'variables_set',
     'variables_get_bool': 'variables_get',
+    'neopixel_examples': 'neopixel_effect',
   };
 
   // Remap block types
@@ -175,6 +176,14 @@ function transformHelloBlocksXml(xml: string): string {
     }
   });
 
+  // Remap field names and values for specific blocks
+  const fieldNameMap: Record<string, Record<string, string>> = {
+    'neopixel_effect': { 'EXAMPLE': 'EFFECT' },
+  };
+  const fieldValueMap: Record<string, Record<string, string>> = {
+    'neopixel_effect': { 'Arcoiris': 'RAINBOW', 'ArcoirisCiclico': 'RAINBOW_CYCLE', 'Aleatorio': 'RANDOM' },
+  };
+
   // Remove ID fields from stepper blocks (Blockables doesn't use multi-stepper IDs)
   const fields = doc.querySelectorAll('field');
   fields.forEach((field) => {
@@ -183,6 +192,16 @@ function transformHelloBlocksXml(xml: string): string {
     const parentType = parent.getAttribute('type');
     if (parentType?.startsWith('motor_stepper') && field.getAttribute('name') === 'ID') {
       field.remove();
+    }
+    // Remap field names
+    const fieldName = field.getAttribute('name');
+    if (parentType && fieldName && fieldNameMap[parentType]?.[fieldName]) {
+      field.setAttribute('name', fieldNameMap[parentType][fieldName]);
+    }
+    // Remap field values
+    const val = field.textContent?.trim();
+    if (parentType && val && fieldValueMap[parentType]?.[val]) {
+      field.textContent = fieldValueMap[parentType][val];
     }
     // Remove variabletype attribute from VAR fields (use generic variables)
     if (field.getAttribute('name') === 'VAR') {

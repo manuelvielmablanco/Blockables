@@ -58,6 +58,22 @@ Blockly.Blocks['neopixel_setcolor_picker'] = {
   },
 };
 
+Blockly.Blocks['neopixel_effect'] = {
+  init: function (this: Blockly.Block) {
+    this.appendDummyInput()
+      .appendField('NeoPixel efecto')
+      .appendField(new Blockly.FieldDropdown([
+        ['Arcoíris', 'RAINBOW'],
+        ['Arcoíris cíclico', 'RAINBOW_CYCLE'],
+        ['Color aleatorio', 'RANDOM'],
+      ]) as Blockly.Field, 'EFFECT');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setStyle('neopixel_blocks');
+    this.setTooltip('Aplica un efecto predefinido a la tira NeoPixel');
+  },
+};
+
 Blockly.Blocks['neopixel_show'] = {
   init: function (this: Blockly.Block) {
     this.appendDummyInput().appendField('NeoPixel mostrar');

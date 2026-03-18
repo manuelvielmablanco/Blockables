@@ -191,6 +191,7 @@ export const toolboxConfig = {
         { kind: 'block', type: 'neopixel_setcolor_picker' },
         { kind: 'block', type: 'neopixel_show' },
         { kind: 'block', type: 'neopixel_clear' },
+        { kind: 'block', type: 'neopixel_effect' },
       ],
     },
     { kind: 'sep' },
