@@ -135,6 +135,16 @@ function transformHelloBlocksXml(xml: string): string {
     'neopixel_setled': 'neopixel_setcolor',
     'serial_init': 'serial_begin',
     'logic_compare_bool': 'logic_compare',
+    // Bluetooth (Hello Blocks → Blockables)
+    'bluetooth_init': 'bt_begin',
+    'bluetooth_set_name': 'bt_rename',
+    'bluetooth_send': 'bt_send',
+    'bluetooth_send_byte': 'bt_send_byte',
+    'bluetooth_available': 'bt_available',
+    'bluetooth_receive_text': 'bt_receive_text',
+    'bluetooth_receive_number': 'bt_receive_number',
+    'bluetooth_receive_byte': 'bt_receive_byte',
+    'bluetooth_set_timeout': 'bt_set_timeout',
   };
 
   // Remap block types

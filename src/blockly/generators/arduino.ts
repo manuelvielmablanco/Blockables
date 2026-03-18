@@ -814,38 +814,69 @@ gen.forBlock['wifi_http_post'] = function (block) {
   return ['httpPOST(' + url + ', ' + body + ')', ORDER_UNARY_POSTFIX];
 };
 
-// === Bluetooth ===
+// === Bluetooth (NeoSWSerial for AVR, BluetoothSerial for ESP32) ===
 gen.forBlock['bt_begin'] = function (block) {
-  const name = gen.valueToCode(block, 'NAME', ORDER_NONE) || '"ESP32"';
-  addInclude('#include "BluetoothSerial.h"');
-  addGlobalVar('BluetoothSerial SerialBT;');
-  return 'SerialBT.begin(' + name + ');\n';
+  const rx = block.getFieldValue('RX') || '2';
+  const tx = block.getFieldValue('TX') || '3';
+  const baud = block.getFieldValue('BAUD') || '9600';
+  if (isESP32()) {
+    addInclude('#include "BluetoothSerial.h"');
+    addGlobalVar('BluetoothSerial btSerial;');
+    addSetupCode('  btSerial.begin("Blockables");\n');
+  } else {
+    addInclude('#include <NeoSWSerial.h>');
+    addGlobalVar('NeoSWSerial btSerial(' + rx + ', ' + tx + ');');
+    addSetupCode('  btSerial.begin(' + baud + ');\n');
+  }
+  return '';
+};
+
+gen.forBlock['bt_rename'] = function (block) {
+  const name = gen.valueToCode(block, 'NAME', ORDER_NONE) || '"BT"';
+  if (isESP32()) {
+    return '// BT rename not supported on ESP32 (set name in begin)\n';
+  }
+  return 'btSerial.print(String("AT+NAME") + String(' + name + '));\n';
+};
+
+gen.forBlock['bt_send'] = function (block) {
+  const v = gen.valueToCode(block, 'VALUE', ORDER_NONE) || '""';
+  const nl = block.getFieldValue('NEWLINE') === 'TRUE';
+  return 'btSerial.' + (nl ? 'println' : 'print') + '(' + v + ');\n';
+};
+
+gen.forBlock['bt_send_byte'] = function (block) {
+  const v = gen.valueToCode(block, 'BYTE', ORDER_NONE) || '0';
+  return 'btSerial.write(' + v + ');\n';
 };
 
 gen.forBlock['bt_available'] = function () {
-  return ['SerialBT.available()', ORDER_UNARY_POSTFIX];
+  return ['btSerial.available()', ORDER_UNARY_POSTFIX];
 };
 
-gen.forBlock['bt_read'] = function () {
-  return ['SerialBT.read()', ORDER_UNARY_POSTFIX];
+gen.forBlock['bt_receive_text'] = function (block) {
+  const untilNl = block.getFieldValue('UNTIL_NL') === 'TRUE';
+  if (untilNl) {
+    return ['btSerial.readStringUntil(\'\\n\')', ORDER_UNARY_POSTFIX];
+  }
+  return ['btSerial.readString()', ORDER_UNARY_POSTFIX];
 };
 
-gen.forBlock['bt_readstring'] = function () {
-  return ['SerialBT.readString()', ORDER_UNARY_POSTFIX];
+gen.forBlock['bt_receive_number'] = function (block) {
+  const untilNl = block.getFieldValue('UNTIL_NL') === 'TRUE';
+  if (untilNl) {
+    return ['btSerial.readStringUntil(\'\\n\').toInt()', ORDER_UNARY_POSTFIX];
+  }
+  return ['btSerial.parseInt()', ORDER_UNARY_POSTFIX];
 };
 
-gen.forBlock['bt_print'] = function (block) {
-  const v = gen.valueToCode(block, 'VALUE', ORDER_NONE) || '""';
-  return 'SerialBT.print(' + v + ');\n';
+gen.forBlock['bt_receive_byte'] = function () {
+  return ['btSerial.read()', ORDER_UNARY_POSTFIX];
 };
 
-gen.forBlock['bt_println'] = function (block) {
-  const v = gen.valueToCode(block, 'VALUE', ORDER_NONE) || '""';
-  return 'SerialBT.println(' + v + ');\n';
-};
-
-gen.forBlock['bt_connected'] = function () {
-  return ['SerialBT.connected()', ORDER_UNARY_POSTFIX];
+gen.forBlock['bt_set_timeout'] = function (block) {
+  const ms = gen.valueToCode(block, 'TIMEOUT', ORDER_NONE) || '1000';
+  return 'btSerial.setTimeout(' + ms + ');\n';
 };
 
 // === Main generation function ===

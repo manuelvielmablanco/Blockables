@@ -215,12 +215,14 @@ export const toolboxConfig = {
       categorystyle: 'bluetooth_category',
       contents: [
         { kind: 'block', type: 'bt_begin' },
+        { kind: 'block', type: 'bt_rename' },
+        { kind: 'block', type: 'bt_send' },
+        { kind: 'block', type: 'bt_send_byte' },
         { kind: 'block', type: 'bt_available' },
-        { kind: 'block', type: 'bt_read' },
-        { kind: 'block', type: 'bt_readstring' },
-        { kind: 'block', type: 'bt_print' },
-        { kind: 'block', type: 'bt_println' },
-        { kind: 'block', type: 'bt_connected' },
+        { kind: 'block', type: 'bt_receive_text' },
+        { kind: 'block', type: 'bt_receive_number' },
+        { kind: 'block', type: 'bt_receive_byte' },
+        { kind: 'block', type: 'bt_set_timeout' },
       ],
     },
   ],
@@ -232,7 +234,6 @@ import type { BoardProfile } from '../boards/types';
 // Category names that require specific features
 const FEATURE_CATEGORIES: Record<string, keyof BoardProfile['features']> = {
   '📶 WiFi': 'wifi',
-  '🔵 Bluetooth': 'bluetooth',
 };
 
 export function getToolboxForBoard(board: BoardProfile) {
