@@ -17,11 +17,13 @@ export function isESP32(): boolean {
 let includes: Set<string>;
 let setupCode: string[];
 let globalVars: string[];
+let declaredVars: Set<string>;
 
 function resetGeneratorState() {
   includes = new Set();
   setupCode = [];
   globalVars = [];
+  declaredVars = new Set();
 }
 
 export function addInclude(include: string) {
@@ -280,6 +282,17 @@ gen.forBlock['variables_get'] = function (block) {
 gen.forBlock['variables_set'] = function (block) {
   const v = getVarName(block, 'VAR', 'variable');
   const val = gen.valueToCode(block, 'VALUE', ORDER_ASSIGNMENT) || '0';
+  // Auto-declare variable as global if not already declared
+  if (!declaredVars.has(v)) {
+    declaredVars.add(v);
+    const child = block.getInputTargetBlock('VALUE');
+    let varType = 'int';
+    if (child) {
+      if (child.type === 'logic_boolean' || child.type === 'logic_negate') varType = 'bool';
+      else if (child.type === 'text') varType = 'String';
+    }
+    addGlobalVar(varType + ' ' + v + ';');
+  }
   return v + ' = ' + val + ';\n';
 };
 
@@ -789,6 +802,7 @@ export function generateArduinoCode(workspace: Blockly.Workspace, board?: BoardP
         }
       }
     }
+    declaredVars.add(name);
     addGlobalVar(varType + ' ' + name + ';');
   }
 
