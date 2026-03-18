@@ -17,12 +17,14 @@ export function isESP32(): boolean {
 let includes: Set<string>;
 let setupCode: string[];
 let globalVars: string[];
+let functionDefs: string[];
 let declaredVars: Set<string>;
 
 function resetGeneratorState() {
   includes = new Set();
   setupCode = [];
   globalVars = [];
+  functionDefs = [];
   declaredVars = new Set();
 }
 
@@ -39,6 +41,12 @@ export function addSetupCode(code: string) {
 export function addGlobalVar(declaration: string) {
   if (!globalVars.includes(declaration)) {
     globalVars.push(declaration);
+  }
+}
+
+export function addFunctionDef(definition: string) {
+  if (!functionDefs.includes(definition)) {
+    functionDefs.push(definition);
   }
 }
 
@@ -721,14 +729,14 @@ gen.forBlock['lists_getIndex_number'] = function (block) {
 // === Procedures ===
 gen.forBlock['procedures_defnoreturn'] = function (block) {
   const name = block.getFieldValue('NAME') || 'miFuncion';
-  addGlobalVar('void ' + name + '() {\n' + gen.statementToCode(block, 'STACK') + '}');
+  addFunctionDef('void ' + name + '() {\n' + gen.statementToCode(block, 'STACK') + '}');
   return '';
 };
 
 gen.forBlock['procedures_defreturn'] = function (block) {
   const name = block.getFieldValue('NAME') || 'miFuncion';
   const ret = gen.valueToCode(block, 'RETURN', ORDER_NONE) || '0';
-  addGlobalVar('int ' + name + '() {\n' + gen.statementToCode(block, 'STACK') + '  return ' + ret + ';\n}');
+  addFunctionDef('int ' + name + '() {\n' + gen.statementToCode(block, 'STACK') + '  return ' + ret + ';\n}');
   return '';
 };
 
@@ -901,6 +909,7 @@ export function generateArduinoCode(workspace: Blockly.Workspace, board?: BoardP
 
   if (includes.size > 0) code += Array.from(includes).join('\n') + '\n\n';
   if (globalVars.length > 0) code += globalVars.join('\n') + '\n\n';
+  if (functionDefs.length > 0) code += functionDefs.join('\n\n') + '\n\n';
 
   code += 'void setup() {\n';
   for (const sc of setupCode) code += sc;
