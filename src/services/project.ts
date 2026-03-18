@@ -133,6 +133,8 @@ function transformHelloBlocksXml(xml: string): string {
     'variables_get_bool': 'variables_get',
     'neopixel_examples': 'neopixel_effect',
     'neopixel_setled': 'neopixel_setcolor',
+    'serial_init': 'serial_begin',
+    'logic_compare_bool': 'logic_compare',
   };
 
   // Remap block types
@@ -141,6 +143,18 @@ function transformHelloBlocksXml(xml: string): string {
     const type = block.getAttribute('type');
     if (type && blockTypeMap[type]) {
       block.setAttribute('type', blockTypeMap[type]);
+    }
+    // HB serial_print with NEWLINE=TRUE → serial_println, and remap STRINGOUTPUT → VALUE
+    if (type === 'serial_print') {
+      const nlField = block.querySelector(':scope > field[name="NEWLINE"]');
+      if (nlField) {
+        if (nlField.textContent?.trim() === 'TRUE') {
+          block.setAttribute('type', 'serial_println');
+        }
+        nlField.remove();
+      }
+      const strOut = block.querySelector(':scope > value[name="STRINGOUTPUT"]');
+      if (strOut) strOut.setAttribute('name', 'VALUE');
     }
   });
 
