@@ -42,7 +42,7 @@ export default function TopBar({
 
   return (
     <header className="flex items-center gap-2 px-3 py-2 bg-white border-b border-gray-200 shadow-sm h-14 shrink-0">
-      <img src="/logo-ingeniables.svg" alt="Ingeniables" className="h-7" />
+      <img src={`${import.meta.env.BASE_URL}logo-ingeniables.svg`} alt="Ingeniables" className="h-7" />
       <div className="w-px h-6 bg-gray-300" />
       <span className="text-sm font-bold text-brand-teal font-heading tracking-tight">Blocks</span>
       <div className="w-px h-6 bg-gray-300" />
