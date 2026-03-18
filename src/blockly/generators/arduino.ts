@@ -767,6 +767,31 @@ export function generateArduinoCode(workspace: Blockly.Workspace, board?: BoardP
   if (board) setGeneratorBoard(board);
   resetGeneratorState();
 
+  // Declare all workspace variables as globals (default to int)
+  const allVars = Blockly.Variables.allUsedVarModels(workspace);
+  for (const v of allVars) {
+    const name = v.name;
+    // Infer type from initial value: scan all variables_set blocks
+    let varType = 'int';
+    for (const b of workspace.getAllBlocks(false)) {
+      if (b.type === 'variables_set') {
+        const id = b.getFieldValue('VAR');
+        const resolved = Blockly.Variables.getVariable(workspace, id);
+        if (resolved && resolved.name === name) {
+          const child = b.getInputTargetBlock('VALUE');
+          if (child) {
+            if (child.type === 'logic_boolean' || child.type === 'logic_negate') varType = 'bool';
+            else if (child.type === 'math_number') varType = 'int';
+            else if (child.type === 'text') varType = 'String';
+            else if (child.type === 'math_arithmetic' || child.type === 'math_number_property') varType = 'int';
+          }
+          break;
+        }
+      }
+    }
+    addGlobalVar(varType + ' ' + name + ';');
+  }
+
   const allBlocks = workspace.getTopBlocks(true);
   let setupStatements = '';
   let loopStatements = '';
