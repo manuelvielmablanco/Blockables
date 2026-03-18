@@ -156,6 +156,10 @@ function transformHelloBlocksXml(xml: string): string {
     if (parentType === 'arduino_loop' && stmt.getAttribute('name') === 'DO') {
       stmt.setAttribute('name', 'LOOP');
     }
+    // Hello Blocks uses DO_ELSE for controls_if else branch; standard Blockly uses ELSE
+    if (parentType === 'controls_if' && stmt.getAttribute('name') === 'DO_ELSE') {
+      stmt.setAttribute('name', 'ELSE');
+    }
   });
 
   // Remap value input names
