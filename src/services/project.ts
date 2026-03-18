@@ -132,6 +132,7 @@ function transformHelloBlocksXml(xml: string): string {
     'variables_set_bool': 'variables_set',
     'variables_get_bool': 'variables_get',
     'neopixel_examples': 'neopixel_effect',
+    'neopixel_setled': 'neopixel_setcolor',
   };
 
   // Remap block types
@@ -163,6 +164,7 @@ function transformHelloBlocksXml(xml: string): string {
     'motor_stepper_step': { 'STEP': 'STEPS' },
     'motor_stepper_init': { 'STEPS': 'STEPS_REV' },
     'neopixel_init': { 'LEDCOUNT': 'NUM' },
+    'neopixel_setcolor': { 'LEDNUMBER': 'INDEX' },
   };
 
   const values = doc.querySelectorAll('value');
@@ -202,6 +204,11 @@ function transformHelloBlocksXml(xml: string): string {
     const val = field.textContent?.trim();
     if (parentType && val && fieldValueMap[parentType]?.[val]) {
       field.textContent = fieldValueMap[parentType][val];
+    }
+    // Rename VARLISTNUM → VAR for list blocks and remove variabletype
+    if (fieldName === 'VARLISTNUM') {
+      field.setAttribute('name', 'VAR');
+      field.removeAttribute('variabletype');
     }
     // Remove variabletype attribute from VAR fields (use generic variables)
     if (field.getAttribute('name') === 'VAR') {

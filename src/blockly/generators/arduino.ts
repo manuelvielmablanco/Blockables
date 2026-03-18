@@ -700,6 +700,24 @@ gen.forBlock['lists_length'] = function (block) {
   return ['sizeof(' + l + ') / sizeof(' + l + '[0])', ORDER_MULTIPLICATIVE];
 };
 
+// Hello Blocks compatible typed lists
+gen.forBlock['lists_create_with_number'] = function (block) {
+  const varName = getVarName(block, 'VAR', 'arr');
+  const items: string[] = [];
+  for (let i = 0; block.getInput('ADD' + i); i++) {
+    items.push(gen.valueToCode(block, 'ADD' + i, ORDER_NONE) || '0');
+  }
+  declaredVars.add(varName);
+  addGlobalVar('int ' + varName + '[] = {' + items.join(', ') + '};');
+  return '';
+};
+
+gen.forBlock['lists_getIndex_number'] = function (block) {
+  const varName = getVarName(block, 'VAR', 'arr');
+  const index = gen.valueToCode(block, 'AT', ORDER_NONE) || '0';
+  return [varName + '[' + index + ']', ORDER_ATOMIC];
+};
+
 // === Procedures ===
 gen.forBlock['procedures_defnoreturn'] = function (block) {
   const name = block.getFieldValue('NAME') || 'miFuncion';
