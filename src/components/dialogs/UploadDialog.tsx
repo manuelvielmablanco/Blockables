@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { compileCode } from '../../services/compiler';
 import { uploadFirmware } from '../../services/uploader';
 import type { UploadProgress } from '../../services/uploader';
@@ -20,6 +20,16 @@ export default function UploadDialog({ open, code, boardId, onClose }: UploadDia
   });
   const [errorMsg, setErrorMsg] = useState('');
   const [errorDetails, setErrorDetails] = useState('');
+
+  // Reset state every time the dialog opens
+  useEffect(() => {
+    if (open) {
+      setStep('ready');
+      setFlashProgress({ status: 'idle', percent: 0, message: '' });
+      setErrorMsg('');
+      setErrorDetails('');
+    }
+  }, [open]);
 
   const isSerialConnected = serialService.isConnected;
 
