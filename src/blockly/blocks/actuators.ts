@@ -84,19 +84,8 @@ Blockly.Blocks['actuator_buzzer_melody'] = {
   },
 };
 
-Blockly.Blocks['actuator_servo'] = {
-  init: function (this: Blockly.Block) {
-    this.appendValueInput('ANGLE')
-      .setCheck('Number')
-      .appendField('servo PIN')
-      .appendField(new Blockly.FieldDropdown(DIGITAL_PINS) as Blockly.Field, 'PIN')
-      .appendField('ángulo');
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setStyle('actuator_blocks');
-    this.setTooltip('Mueve un servo al ángulo indicado (0-180)');
-  },
-};
+// actuator_servo moved to motor.ts as motor_servo
+// Generator kept in arduino.ts for backwards compatibility
 
 Blockly.Blocks['actuator_relay'] = {
   init: function (this: Blockly.Block) {

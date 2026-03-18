@@ -538,6 +538,32 @@ gen.forBlock['motor_dc_stop'] = function (block) {
   return 'digitalWrite(' + in1 + ', LOW);\ndigitalWrite(' + in2 + ', LOW);\nanalogWrite(' + en + ', 0);\n';
 };
 
+gen.forBlock['motor_servo'] = function (block) {
+  const pin = block.getFieldValue('PIN');
+  const angle = gen.valueToCode(block, 'ANGLE', ORDER_NONE) || '90';
+  const varName = 'servo_' + pin;
+  addInclude('#include <Servo.h>');
+  addGlobalVar('Servo ' + varName + ';');
+  addSetupCode('  ' + varName + '.attach(' + pin + ');\n');
+  return varName + '.write(' + angle + ');\n';
+};
+
+gen.forBlock['motor_stepper_init'] = function (block) {
+  const stepsRev = gen.valueToCode(block, 'STEPS_REV', ORDER_NONE) || '2048';
+  const p1 = block.getFieldValue('PIN1'), p2 = block.getFieldValue('PIN2');
+  const p3 = block.getFieldValue('PIN3'), p4 = block.getFieldValue('PIN4');
+  const speed = gen.valueToCode(block, 'SPEED', ORDER_NONE) || '10';
+  addInclude('#include <Stepper.h>');
+  addGlobalVar('Stepper stepper(' + stepsRev + ', ' + p1 + ', ' + p3 + ', ' + p2 + ', ' + p4 + ');');
+  addSetupCode('  stepper.setSpeed(' + speed + ');\n');
+  return '';
+};
+
+gen.forBlock['motor_stepper_step'] = function (block) {
+  const steps = gen.valueToCode(block, 'STEPS', ORDER_NONE) || '100';
+  return 'stepper.step(' + steps + ');\n';
+};
+
 // === Display ===
 gen.forBlock['lcd_init'] = function (block) {
   const [cols, rows] = block.getFieldValue('SIZE').split(',');

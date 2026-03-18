@@ -35,3 +35,54 @@ Blockly.Blocks['motor_dc_stop'] = {
     this.setTooltip('Detiene el motor DC');
   },
 };
+
+// === Servo ===
+Blockly.Blocks['motor_servo'] = {
+  init: function (this: Blockly.Block) {
+    this.appendValueInput('ANGLE')
+      .setCheck('Number')
+      .appendField('servo PIN')
+      .appendField(new Blockly.FieldDropdown(DIGITAL_PINS) as Blockly.Field, 'PIN')
+      .appendField('ángulo');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setStyle('motor_blocks');
+    this.setTooltip('Mueve un servomotor al ángulo indicado (0-180)');
+  },
+};
+
+// === Stepper (28BYJ-48 / NEMA 17) ===
+Blockly.Blocks['motor_stepper_init'] = {
+  init: function (this: Blockly.Block) {
+    this.appendDummyInput()
+      .appendField('configurar stepper');
+    this.appendValueInput('STEPS_REV')
+      .setCheck('Number')
+      .appendField('pasos/vuelta');
+    this.appendDummyInput()
+      .appendField('PIN1').appendField(new Blockly.FieldDropdown(DIGITAL_PINS) as Blockly.Field, 'PIN1')
+      .appendField('PIN2').appendField(new Blockly.FieldDropdown(DIGITAL_PINS) as Blockly.Field, 'PIN2')
+      .appendField('PIN3').appendField(new Blockly.FieldDropdown(DIGITAL_PINS) as Blockly.Field, 'PIN3')
+      .appendField('PIN4').appendField(new Blockly.FieldDropdown(DIGITAL_PINS) as Blockly.Field, 'PIN4');
+    this.appendValueInput('SPEED')
+      .setCheck('Number')
+      .appendField('velocidad (RPM)');
+    this.setInputsInline(false);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setStyle('motor_blocks');
+    this.setTooltip('Configura un motor paso a paso (28BYJ-48, NEMA 17, etc.)');
+  },
+};
+
+Blockly.Blocks['motor_stepper_step'] = {
+  init: function (this: Blockly.Block) {
+    this.appendValueInput('STEPS')
+      .setCheck('Number')
+      .appendField('mover stepper pasos');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setStyle('motor_blocks');
+    this.setTooltip('Mueve el stepper N pasos (positivo = horario, negativo = antihorario)');
+  },
+};

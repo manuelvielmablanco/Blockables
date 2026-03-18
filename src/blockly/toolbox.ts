@@ -153,7 +153,6 @@ export const toolboxConfig = {
         { kind: 'block', type: 'actuator_led_rgb' },
         { kind: 'block', type: 'actuator_buzzer_tone' },
         { kind: 'block', type: 'actuator_buzzer_melody' },
-        { kind: 'block', type: 'actuator_servo' },
         { kind: 'block', type: 'actuator_relay' },
       ],
     },
@@ -164,6 +163,9 @@ export const toolboxConfig = {
       contents: [
         { kind: 'block', type: 'motor_dc' },
         { kind: 'block', type: 'motor_dc_stop' },
+        { kind: 'block', type: 'motor_servo' },
+        { kind: 'block', type: 'motor_stepper_init' },
+        { kind: 'block', type: 'motor_stepper_step' },
       ],
     },
     {
