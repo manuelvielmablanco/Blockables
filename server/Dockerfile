@@ -30,6 +30,7 @@ RUN arduino-cli config init \
     && arduino-cli lib install "Servo" \
     && arduino-cli lib install "IRremote" \
     && arduino-cli lib install "LiquidCrystal I2C" \
+    && arduino-cli lib install "Stepper" \
     && arduino-cli lib install "SD" \
     && arduino-cli cache clean
 
