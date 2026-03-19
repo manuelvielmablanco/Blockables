@@ -941,7 +941,7 @@ export function generateArduinoCode(workspace: Blockly.Workspace, board?: BoardP
     const name = v.name;
     // Skip variables declared by list blocks (they emit int X[] = {...})
     if (listVarNames.has(name)) continue;
-    // Infer type from initial value: scan all variables_set blocks
+    // Infer type from all variables_set blocks for this variable
     let varType = 'int';
     for (const b of workspace.getAllBlocks(false)) {
       if (b.type === 'variables_set') {
@@ -950,12 +950,17 @@ export function generateArduinoCode(workspace: Blockly.Workspace, board?: BoardP
         if (resolved && resolved.name === name) {
           const child = b.getInputTargetBlock('VALUE');
           if (child) {
-            if (child.type === 'logic_boolean' || child.type === 'logic_negate') varType = 'bool';
-            else if (child.type === 'math_number') varType = 'int';
-            else if (child.type === 'text') varType = 'String';
-            else if (child.type === 'math_arithmetic' || child.type === 'math_number_property') varType = 'int';
+            if (child.type === 'logic_boolean' || child.type === 'logic_negate') { varType = 'bool'; break; }
+            else if (child.type === 'text') { varType = 'String'; break; }
+            else if (child.type === 'math_number' || child.type === 'math_arithmetic' || child.type === 'math_number_property') { varType = 'int'; break; }
+            // Check output type for blocks not explicitly listed above
+            const outCheck = (child.outputConnection as any)?.getCheck?.();
+            if (outCheck) {
+              if (outCheck.includes('String')) { varType = 'String'; break; }
+              if (outCheck.includes('Boolean')) { varType = 'bool'; break; }
+            }
           }
-          break;
+          // Don't break — keep scanning other set blocks for better type info
         }
       }
     }
