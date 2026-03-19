@@ -1,5 +1,21 @@
 import * as Blockly from 'blockly';
 
+// === Math Change (increment variable) ===
+Blockly.Blocks['math_change'] = {
+  init: function (this: Blockly.Block) {
+    this.appendDummyInput()
+      .appendField('cambiar')
+      .appendField(new Blockly.FieldVariable('item') as Blockly.Field, 'VAR')
+      .appendField('por');
+    this.appendValueInput('DELTA').setCheck('Number');
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setStyle('math_blocks');
+    this.setTooltip('Incrementa una variable por un valor');
+  },
+};
+
 Blockly.Blocks['math_map'] = {
   init: function (this: Blockly.Block) {
     this.appendValueInput('VALUE').setCheck('Number').appendField('mapear');

@@ -590,6 +590,47 @@ gen.forBlock['motor_stepper_step'] = function (block) {
   return 'stepper.step(' + steps + ');\n';
 };
 
+// === DC Motor (HB-style with ID + PIN_A/PIN_B) ===
+gen.forBlock['motor_dc_init'] = function (block) {
+  const id = block.getFieldValue('ID');
+  const pinA = block.getFieldValue('PIN_A'), pinB = block.getFieldValue('PIN_B');
+  addGlobalVar('const int motorA_' + id + ' = ' + pinA + ';');
+  addGlobalVar('const int motorB_' + id + ' = ' + pinB + ';');
+  addSetupCode('  pinMode(motorA_' + id + ', OUTPUT);\n');
+  addSetupCode('  pinMode(motorB_' + id + ', OUTPUT);\n');
+  return '';
+};
+
+gen.forBlock['motor_dc_direction'] = function (block) {
+  const id = block.getFieldValue('ID');
+  const dir = parseInt(block.getFieldValue('DIRECCION'));
+  const speed = gen.valueToCode(block, 'VELOCIDAD', ORDER_NONE) || '255';
+  if (dir === 1) {
+    return 'analogWrite(motorA_' + id + ', ' + speed + ');\nanalogWrite(motorB_' + id + ', 0);\n';
+  } else if (dir === -1) {
+    return 'analogWrite(motorA_' + id + ', 0);\nanalogWrite(motorB_' + id + ', ' + speed + ');\n';
+  }
+  return 'analogWrite(motorA_' + id + ', 0);\nanalogWrite(motorB_' + id + ', 0);\n';
+};
+
+// === Text Compare ===
+gen.forBlock['text_compare'] = function (block) {
+  const t1 = gen.valueToCode(block, 'TEXT1', ORDER_NONE) || '""';
+  const t2 = gen.valueToCode(block, 'TEXT2', ORDER_NONE) || '""';
+  const op = block.getFieldValue('TYPE');
+  if (op === 'equals') {
+    return ['String(' + t1 + ') == String(' + t2 + ')', ORDER_EQUALITY];
+  }
+  return ['String(' + t1 + ') != String(' + t2 + ')', ORDER_EQUALITY];
+};
+
+// === Math Change ===
+gen.forBlock['math_change'] = function (block) {
+  const varName = getVarName(block, 'VAR', 'item');
+  const delta = gen.valueToCode(block, 'DELTA', ORDER_NONE) || '1';
+  return varName + ' += ' + delta + ';\n';
+};
+
 // === Display ===
 gen.forBlock['lcd_init'] = function (block) {
   const [cols, rows] = block.getFieldValue('SIZE').split(',');

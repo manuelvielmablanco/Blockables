@@ -135,16 +135,23 @@ function transformHelloBlocksXml(xml: string): string {
     'neopixel_setled': 'neopixel_setcolor',
     'serial_init': 'serial_begin',
     'logic_compare_bool': 'logic_compare',
+    // Variables (typed → generic)
+    'variables_set_text': 'variables_set',
+    'variables_get_text': 'variables_get',
     // Bluetooth (Hello Blocks → Blockables)
     'bluetooth_init': 'bt_begin',
     'bluetooth_set_name': 'bt_rename',
     'bluetooth_send': 'bt_send',
     'bluetooth_send_byte': 'bt_send_byte',
     'bluetooth_available': 'bt_available',
+    'bluetooth_read_available': 'bt_available',
     'bluetooth_receive_text': 'bt_receive_text',
+    'bluetooth_read_string': 'bt_receive_text',
     'bluetooth_receive_number': 'bt_receive_number',
     'bluetooth_receive_byte': 'bt_receive_byte',
     'bluetooth_set_timeout': 'bt_set_timeout',
+    // Actuator
+    'actuator_buzzer': 'actuator_buzzer_tone',
   };
 
   // Remap block types
@@ -193,6 +200,7 @@ function transformHelloBlocksXml(xml: string): string {
     'motor_stepper_init': { 'STEPS': 'STEPS_REV' },
     'neopixel_init': { 'LEDCOUNT': 'NUM' },
     'neopixel_setcolor': { 'LEDNUMBER': 'INDEX' },
+    'actuator_buzzer_tone': { 'MS': 'DURATION', 'TONE': 'FREQ' },
   };
 
   const values = doc.querySelectorAll('value');
@@ -209,9 +217,13 @@ function transformHelloBlocksXml(xml: string): string {
   // Remap field names and values for specific blocks
   const fieldNameMap: Record<string, Record<string, string>> = {
     'neopixel_effect': { 'EXAMPLE': 'EFFECT' },
+    'sensor_ultrasonic': { 'TRIGGER_PIN': 'TRIG', 'ECHO_PIN': 'ECHO', 'UNITS': 'UNIT' },
+    'bt_receive_text': { 'NEWLINE': 'UNTIL_NL' },
+    'math_change': { 'VARNUM': 'VAR' },
   };
   const fieldValueMap: Record<string, Record<string, string>> = {
     'neopixel_effect': { 'Arcoiris': 'RAINBOW', 'ArcoirisCiclico': 'RAINBOW_CYCLE', 'Aleatorio': 'RANDOM' },
+    'sensor_ultrasonic': { 'cm': 'CM', 'inch': 'INCH' },
   };
 
   // Remove ID fields from stepper blocks (Blockables doesn't use multi-stepper IDs)

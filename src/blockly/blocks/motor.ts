@@ -36,6 +36,37 @@ Blockly.Blocks['motor_dc_stop'] = {
   },
 };
 
+// === DC Motor (HB-style with ID + PIN_A/PIN_B) ===
+Blockly.Blocks['motor_dc_init'] = {
+  init: function (this: Blockly.Block) {
+    this.appendDummyInput()
+      .appendField('motor DC')
+      .appendField(new Blockly.FieldDropdown([['1','1'],['2','2'],['3','3'],['4','4']]) as Blockly.Field, 'ID')
+      .appendField('PIN_A').appendField(new Blockly.FieldDropdown(PWM_PINS) as Blockly.Field, 'PIN_A')
+      .appendField('PIN_B').appendField(new Blockly.FieldDropdown(PWM_PINS) as Blockly.Field, 'PIN_B');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setStyle('motor_blocks');
+    this.setTooltip('Configura un motor DC con dos pines PWM (estilo puente H simple)');
+  },
+};
+
+Blockly.Blocks['motor_dc_direction'] = {
+  init: function (this: Blockly.Block) {
+    this.appendDummyInput()
+      .appendField('motor DC')
+      .appendField(new Blockly.FieldDropdown([['1','1'],['2','2'],['3','3'],['4','4']]) as Blockly.Field, 'ID')
+      .appendField('dirección')
+      .appendField(new Blockly.FieldDropdown([['adelante','1'],['atrás','-1']]) as Blockly.Field, 'DIRECCION');
+    this.appendValueInput('VELOCIDAD').setCheck('Number').appendField('velocidad');
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setStyle('motor_blocks');
+    this.setTooltip('Mueve el motor DC en la dirección y velocidad indicadas');
+  },
+};
+
 // === Servo ===
 Blockly.Blocks['motor_servo'] = {
   init: function (this: Blockly.Block) {
