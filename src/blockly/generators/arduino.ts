@@ -865,11 +865,8 @@ gen.forBlock['bt_begin'] = function (block) {
     addGlobalVar('BluetoothSerial btSerial;');
     addSetupCode('  btSerial.begin("Blockables");\n');
   } else {
-    // NeoSWSerial(rxPin, txPin): rxPin = where Arduino RECEIVES, txPin = where Arduino SENDS
-    // Block labels match the BT MODULE pins, so they are swapped for the Arduino:
-    // Block RX (module's RX) = Arduino's TX pin, Block TX (module's TX) = Arduino's RX pin
     addInclude('#include <NeoSWSerial.h>');
-    addGlobalVar('NeoSWSerial btSerial(' + tx + ', ' + rx + ');');
+    addGlobalVar('NeoSWSerial btSerial(' + rx + ', ' + tx + ');');
     addSetupCode('  btSerial.begin(' + baud + ');\n');
   }
   return '';
