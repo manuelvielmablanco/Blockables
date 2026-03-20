@@ -313,7 +313,9 @@ gen.forBlock['typed_variable_declare'] = function (block) {
   const type = block.getFieldValue('TYPE') || 'int';
   const name = block.getFieldValue('VAR') || 'miVariable';
   const value = gen.valueToCode(block, 'VALUE', ORDER_ASSIGNMENT) || TYPE_DEFAULTS[type] || '0';
-  return type + ' ' + name + ' = ' + value + ';\n';
+  // Declare as global variable so it's accessible from both setup() and loop()
+  addGlobalVar(type + ' ' + name + ' = ' + value + ';');
+  return '';
 };
 
 gen.forBlock['typed_variable_set'] = function (block) {
@@ -935,12 +937,39 @@ export function generateArduinoCode(workspace: Blockly.Workspace, board?: BoardP
     }
   }
 
+  // Pre-scan typed_variable_declare blocks to register them as globals
+  // (regardless of whether they are connected to setup/loop or floating)
+  const typedDeclaredVars = new Set<string>();
+  for (const b of workspace.getAllBlocks(false)) {
+    if (b.type === 'typed_variable_declare') {
+      const type = b.getFieldValue('TYPE') || 'int';
+      const name = b.getFieldValue('VAR') || 'miVariable';
+      const child = b.getInputTargetBlock('VALUE');
+      let value = TYPE_DEFAULTS[type] || '0';
+      if (child) {
+        // Read value from common block types without calling gen.blockToCode
+        // to avoid side-effects during pre-scan
+        if (child.type === 'math_number') {
+          value = String(child.getFieldValue('NUM') ?? 0);
+        } else if (child.type === 'text') {
+          value = '"' + (child.getFieldValue('TEXT') ?? '') + '"';
+        } else if (child.type === 'logic_boolean') {
+          value = child.getFieldValue('BOOL') === 'TRUE' ? 'true' : 'false';
+        }
+      }
+      typedDeclaredVars.add(name);
+      addGlobalVar(type + ' ' + name + ' = ' + value + ';');
+    }
+  }
+
   // Declare all workspace variables as globals (default to int)
   const allVars = Blockly.Variables.allUsedVarModels(workspace);
   for (const v of allVars) {
     const name = v.name;
     // Skip variables declared by list blocks (they emit int X[] = {...})
     if (listVarNames.has(name)) continue;
+    // Skip variables already declared by typed_variable_declare
+    if (typedDeclaredVars.has(name)) continue;
     // Infer type from all variables_set blocks for this variable
     let varType = 'int';
     for (const b of workspace.getAllBlocks(false)) {
