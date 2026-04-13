@@ -457,6 +457,19 @@ gen.forBlock['sensor_ultrasonic'] = function (block) {
   return [fn + '()', ORDER_UNARY_POSTFIX];
 };
 
+gen.forBlock['sensor_tof_vl53l0x'] = function (block) {
+  const unit = block.getFieldValue('UNIT');
+  addInclude('#include <Wire.h>');
+  addInclude('#include <VL53L0X.h>');
+  addGlobalVar('VL53L0X tofSensor;');
+  addSetupCode('  Wire.begin();\n');
+  addSetupCode('  tofSensor.setTimeout(500);\n');
+  addSetupCode('  tofSensor.init();\n');
+  addSetupCode('  tofSensor.startContinuous();\n');
+  if (unit === 'CM') return ['(tofSensor.readRangeContinuousMillimeters() / 10)', ORDER_MULTIPLICATIVE];
+  return ['tofSensor.readRangeContinuousMillimeters()', ORDER_UNARY_POSTFIX];
+};
+
 gen.forBlock['sensor_pir'] = function (block) {
   const pin = block.getFieldValue('PIN');
   addSetupCode('  pinMode(' + pin + ', INPUT);\n');

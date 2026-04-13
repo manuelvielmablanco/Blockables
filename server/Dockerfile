@@ -32,6 +32,7 @@ RUN arduino-cli config init \
     && arduino-cli lib install "LiquidCrystal I2C" \
     && arduino-cli lib install "Stepper" \
     && arduino-cli lib install "NeoSWSerial" \
+    && arduino-cli lib install "VL53L0X" \
     && arduino-cli lib install "SD" \
     && arduino-cli cache clean
 

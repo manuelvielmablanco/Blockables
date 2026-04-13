@@ -136,6 +136,7 @@ export const toolboxConfig = {
         { kind: 'block', type: 'sensor_light' },
         { kind: 'block', type: 'sensor_dht_read' },
         { kind: 'block', type: 'sensor_ultrasonic' },
+        { kind: 'block', type: 'sensor_tof_vl53l0x' },
         { kind: 'block', type: 'sensor_pir' },
         { kind: 'block', type: 'sensor_soil_moisture' },
         { kind: 'block', type: 'sensor_sound' },

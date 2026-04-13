@@ -118,6 +118,17 @@ Blockly.Blocks['sensor_tilt'] = {
   },
 };
 
+Blockly.Blocks['sensor_tof_vl53l0x'] = {
+  init: function (this: Blockly.Block) {
+    this.appendDummyInput()
+      .appendField('distancia ToF VL53L0X')
+      .appendField(new Blockly.FieldDropdown([['mm','MM'],['cm','CM']]) as Blockly.Field, 'UNIT');
+    this.setOutput(true, 'Number');
+    this.setStyle('sensor_blocks');
+    this.setTooltip('Lee la distancia con el sensor Time-of-Flight VL53L0X (I2C)');
+  },
+};
+
 Blockly.Blocks['sensor_joystick'] = {
   init: function (this: Blockly.Block) {
     this.appendDummyInput()
