@@ -11,6 +11,34 @@ const VAR_TYPES: [string, string][] = [
   ['Número largo', 'long'],
 ];
 
+/**
+ * Dynamic dropdown generator that scans the workspace for all
+ * typed_variable_declare blocks and returns their names as options.
+ * Falls back to [['miVariable', 'miVariable']] if none found.
+ */
+function declaredVarOptions(this: Blockly.FieldDropdown): Blockly.MenuOption[] {
+  const block = (this as any).getSourceBlock?.();
+  if (!block) return [['miVariable', 'miVariable']];
+  const workspace = block.workspace;
+  if (!workspace) return [['miVariable', 'miVariable']];
+
+  const names = new Set<string>();
+  for (const b of workspace.getAllBlocks(false)) {
+    if (b.type === 'typed_variable_declare') {
+      const name = b.getFieldValue('VAR');
+      if (name) names.add(name);
+    }
+  }
+
+  if (names.size === 0) return [['miVariable', 'miVariable']];
+
+  const options: Blockly.MenuOption[] = [];
+  for (const name of names) {
+    options.push([name, name]);
+  }
+  return options;
+}
+
 // ── Declare variable ──
 Blockly.Blocks['typed_variable_declare'] = {
   init: function (this: Blockly.Block) {
@@ -33,7 +61,7 @@ Blockly.Blocks['typed_variable_set'] = {
   init: function (this: Blockly.Block) {
     this.appendValueInput('VALUE')
       .appendField('establecer')
-      .appendField(new Blockly.FieldTextInput('miVariable') as Blockly.Field, 'VAR')
+      .appendField(new Blockly.FieldDropdown(declaredVarOptions) as Blockly.Field, 'VAR')
       .appendField('=');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
@@ -47,7 +75,7 @@ Blockly.Blocks['typed_variable_set'] = {
 Blockly.Blocks['typed_variable_get'] = {
   init: function (this: Blockly.Block) {
     this.appendDummyInput()
-      .appendField(new Blockly.FieldTextInput('miVariable') as Blockly.Field, 'VAR');
+      .appendField(new Blockly.FieldDropdown(declaredVarOptions) as Blockly.Field, 'VAR');
     this.setOutput(true, null);
     this.setStyle('variable_blocks');
     this.setTooltip('Obtiene el valor de una variable');
@@ -59,7 +87,7 @@ Blockly.Blocks['typed_variable_change'] = {
   init: function (this: Blockly.Block) {
     this.appendValueInput('DELTA')
       .appendField(new Blockly.FieldDropdown([['incrementar', '+='], ['decrementar', '-=']]) as Blockly.Field, 'OP')
-      .appendField(new Blockly.FieldTextInput('miVariable') as Blockly.Field, 'VAR')
+      .appendField(new Blockly.FieldDropdown(declaredVarOptions) as Blockly.Field, 'VAR')
       .appendField('en');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
