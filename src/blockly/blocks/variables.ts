@@ -23,6 +23,8 @@ function declaredVarOptions(this: Blockly.FieldDropdown): Blockly.MenuOption[] {
   if (!workspace) return [['miVariable', 'miVariable']];
 
   const names = new Set<string>();
+
+  // 1. Variables from typed_variable_declare blocks
   for (const b of workspace.getAllBlocks(false)) {
     if (b.type === 'typed_variable_declare') {
       const name = b.getFieldValue('VAR');
@@ -30,10 +32,16 @@ function declaredVarOptions(this: Blockly.FieldDropdown): Blockly.MenuOption[] {
     }
   }
 
+  // 2. Variables from Blockly's variable system (for loops, forEach, etc.)
+  const allVars = Blockly.Variables.allUsedVarModels(workspace);
+  for (const v of allVars) {
+    if (v.name) names.add(v.name);
+  }
+
   if (names.size === 0) return [['miVariable', 'miVariable']];
 
   const options: Blockly.MenuOption[] = [];
-  for (const name of names) {
+  for (const name of Array.from(names).sort()) {
     options.push([name, name]);
   }
   return options;
