@@ -47,15 +47,78 @@ function declaredVarOptions(this: Blockly.FieldDropdown): Blockly.MenuOption[] {
   return options;
 }
 
+/**
+ * Map Arduino/C++ type to Blockly input check type.
+ */
+function typeToCheck(type: string): string | null {
+  switch (type) {
+    case 'bool': return 'Boolean';
+    case 'String': return 'String';
+    case 'char': return null; // allow anything (char is tricky)
+    default: return 'Number'; // int, float, long, byte
+  }
+}
+
+/**
+ * Update the VALUE input's check and its shadow block based on the selected TYPE.
+ */
+function updateValueInputForType(block: Blockly.Block, type: string) {
+  const input = block.getInput('VALUE');
+  if (!input) return;
+  const check = typeToCheck(type);
+  input.setCheck(check);
+
+  // Replace shadow block with one appropriate for the type
+  const target = input.connection?.targetBlock();
+  // Only replace if current target is a shadow (auto-generated default)
+  if (target && target.isShadow()) {
+    target.dispose(false);
+  }
+  if (!input.connection?.targetBlock()) {
+    let shadowType = 'math_number';
+    let fields: Record<string, string | number> = { NUM: 0 };
+    if (type === 'bool') {
+      shadowType = 'logic_boolean';
+      fields = { BOOL: 'FALSE' };
+    } else if (type === 'String') {
+      shadowType = 'text';
+      fields = { TEXT: '' };
+    }
+    try {
+      const ws = block.workspace;
+      const shadow = ws.newBlock(shadowType);
+      shadow.setShadow(true);
+      for (const [fname, fval] of Object.entries(fields)) {
+        shadow.setFieldValue(String(fval), fname);
+      }
+      if ((shadow as any).initSvg) (shadow as any).initSvg();
+      if ((shadow as any).render) (shadow as any).render();
+      const outCon = shadow.outputConnection;
+      if (outCon && input.connection) {
+        input.connection.connect(outCon);
+      }
+    } catch {
+      // ignore if shadow creation fails
+    }
+  }
+}
+
 // ── Declare variable ──
 Blockly.Blocks['typed_variable_declare'] = {
   init: function (this: Blockly.Block) {
+    const self = this;
     this.appendDummyInput()
       .appendField('crear variable')
-      .appendField(new Blockly.FieldDropdown(VAR_TYPES) as Blockly.Field, 'TYPE')
+      .appendField(
+        new Blockly.FieldDropdown(VAR_TYPES, function (newValue: string) {
+          // Defer until block is fully constructed and rendered
+          setTimeout(() => updateValueInputForType(self, newValue), 0);
+          return undefined;
+        }) as Blockly.Field,
+        'TYPE',
+      )
       .appendField(new Blockly.FieldTextInput('miVariable') as Blockly.Field, 'VAR');
-    this.appendValueInput('VALUE')
-      .appendField('=');
+    this.appendValueInput('VALUE').setCheck('Number').appendField('=');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
