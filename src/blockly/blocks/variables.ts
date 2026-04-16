@@ -17,22 +17,45 @@ const VAR_TYPES: [string, string][] = [
  * Falls back to [['miVariable', 'miVariable']] if none found.
  */
 function declaredVarOptions(this: Blockly.FieldDropdown): Blockly.MenuOption[] {
-  const block = (this as unknown as { getSourceBlock: () => Blockly.Block | null }).getSourceBlock?.();
+  return collectVarOptions(this, null);
+}
+
+/**
+ * Dynamic dropdown for blocks that require NUMERIC variables only
+ * (e.g. increment/decrement). Filters out bool, String, char variables.
+ */
+function numericVarOptions(this: Blockly.FieldDropdown): Blockly.MenuOption[] {
+  return collectVarOptions(this, 'numeric');
+}
+
+/**
+ * Shared helper: collect variable names from the workspace,
+ * optionally filtered by category ('numeric' = int/float/long/byte).
+ */
+function collectVarOptions(
+  field: Blockly.FieldDropdown,
+  filter: 'numeric' | null,
+): Blockly.MenuOption[] {
+  const block = (field as unknown as { getSourceBlock: () => Blockly.Block | null }).getSourceBlock?.();
   if (!block) return [['miVariable', 'miVariable']];
   const workspace = block.workspace;
   if (!workspace) return [['miVariable', 'miVariable']];
 
+  const NUMERIC_TYPES = new Set(['int', 'float', 'long', 'byte']);
   const names = new Set<string>();
 
   // 1. Variables from typed_variable_declare blocks
   for (const b of workspace.getAllBlocks(false)) {
     if (b.type === 'typed_variable_declare') {
       const name = b.getFieldValue('VAR');
-      if (name) names.add(name);
+      const type = b.getFieldValue('TYPE');
+      if (!name) continue;
+      if (filter === 'numeric' && !NUMERIC_TYPES.has(type)) continue;
+      names.add(name);
     }
   }
 
-  // 2. Variables from Blockly's variable system (for loops, forEach, etc.)
+  // 2. Variables from Blockly's variable system (loop counters etc. — assumed numeric)
   const allVars = Blockly.Variables.allUsedVarModels(workspace);
   for (const v of allVars) {
     if (v.name) names.add(v.name);
@@ -260,7 +283,7 @@ Blockly.Blocks['typed_variable_change'] = {
     this.appendValueInput('DELTA')
       .setCheck('Number')
       .appendField(new Blockly.FieldDropdown([['incrementar', '+='], ['decrementar', '-=']]) as Blockly.Field, 'OP')
-      .appendField(new Blockly.FieldDropdown(declaredVarOptions) as Blockly.Field, 'VAR')
+      .appendField(new Blockly.FieldDropdown(numericVarOptions) as Blockly.Field, 'VAR')
       .appendField('en');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
