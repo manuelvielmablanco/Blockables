@@ -83,8 +83,45 @@ function shadowForType(type: string | null): { shadowType: string; fields: Recor
 }
 
 /**
+ * Check if a block's output is compatible with a given check type.
+ */
+function isOutputCompatible(target: Blockly.Block, check: string | null): boolean {
+  if (!check) return true;
+  const outCheck = target.outputConnection?.getCheck?.();
+  if (!outCheck) return true; // no check means accept anything
+  if (Array.isArray(outCheck)) return outCheck.includes(check);
+  return outCheck === check;
+}
+
+/**
+ * Create and attach a shadow block of the appropriate type.
+ */
+function attachShadow(block: Blockly.Block, inputName: string, type: string | null) {
+  const input = block.getInput(inputName);
+  if (!input || !input.connection) return;
+  if (input.connection.targetBlock()) return; // already has something
+  const { shadowType, fields } = shadowForType(type);
+  try {
+    const ws = block.workspace;
+    const shadow = ws.newBlock(shadowType);
+    shadow.setShadow(true);
+    for (const [fname, fval] of Object.entries(fields)) {
+      shadow.setFieldValue(String(fval), fname);
+    }
+    const shadowWithSvg = shadow as unknown as { initSvg?: () => void; render?: () => void };
+    if (shadowWithSvg.initSvg) shadowWithSvg.initSvg();
+    if (shadowWithSvg.render) shadowWithSvg.render();
+    const outCon = shadow.outputConnection;
+    if (outCon) input.connection.connect(outCon);
+  } catch {
+    // ignore
+  }
+}
+
+/**
  * Update a value input's check and (optionally) replace its shadow block.
- * If the currently connected block is incompatible, disconnect and dispose it.
+ * Order matters: dispose the old block BEFORE calling setCheck, because
+ * setCheck auto-disconnects incompatible blocks and leaves them as orphans.
  */
 function updateValueInput(
   block: Blockly.Block,
@@ -95,40 +132,22 @@ function updateValueInput(
   const input = block.getInput(inputName);
   if (!input || !input.connection) return;
   const check = typeToCheck(type);
-  input.setCheck(check);
 
+  // 1. Capture target BEFORE setCheck (setCheck would orphan incompatible blocks)
   const target = input.connection.targetBlock();
 
-  // If there is a connected block that doesn't match the new check, detach + dispose it
-  if (target) {
-    const outCheck = target.outputConnection?.getCheck?.();
-    const compatible =
-      !check || !outCheck || (Array.isArray(outCheck) && outCheck.includes(check));
-    if (!compatible || target.isShadow()) {
-      target.unplug(false);
-      target.dispose(false);
-    }
+  // 2. Dispose the target if it's a shadow (always replace defaults) or incompatible
+  if (target && (target.isShadow() || !isOutputCompatible(target, check))) {
+    target.unplug(false);
+    target.dispose(false);
   }
 
-  if (replaceShadow && !input.connection.targetBlock()) {
-    const { shadowType, fields } = shadowForType(type);
-    try {
-      const ws = block.workspace;
-      const shadow = ws.newBlock(shadowType);
-      shadow.setShadow(true);
-      for (const [fname, fval] of Object.entries(fields)) {
-        shadow.setFieldValue(String(fval), fname);
-      }
-      const shadowWithSvg = shadow as unknown as { initSvg?: () => void; render?: () => void };
-      if (shadowWithSvg.initSvg) shadowWithSvg.initSvg();
-      if (shadowWithSvg.render) shadowWithSvg.render();
-      const outCon = shadow.outputConnection;
-      if (outCon && input.connection) {
-        input.connection.connect(outCon);
-      }
-    } catch {
-      // ignore if shadow creation fails
-    }
+  // 3. Now it's safe to set the new check
+  input.setCheck(check);
+
+  // 4. If setCheck orphaned yet another block (edge case) or the input is empty, attach shadow
+  if (replaceShadow) {
+    attachShadow(block, inputName, type);
   }
 }
 
@@ -193,11 +212,12 @@ Blockly.Blocks['typed_variable_set'] = {
     ) {
       return;
     }
+    // Don't react to our own field changes during validation
+    if (this.isInFlyout) return;
     const varName = this.getFieldValue('VAR');
     const type = lookupVariableType(this.workspace, varName);
-    const check = typeToCheck(type);
-    const input = this.getInput('VALUE');
-    if (input) input.setCheck(check);
+    // Use updateValueInput to dispose incompatible blocks cleanly
+    updateValueInput(this, 'VALUE', type, false);
   },
 };
 
