@@ -17,7 +17,7 @@ const VAR_TYPES: [string, string][] = [
  * Falls back to [['miVariable', 'miVariable']] if none found.
  */
 function declaredVarOptions(this: Blockly.FieldDropdown): Blockly.MenuOption[] {
-  const block = (this as any).getSourceBlock?.();
+  const block = (this as unknown as { getSourceBlock: () => Blockly.Block | null }).getSourceBlock?.();
   if (!block) return [['miVariable', 'miVariable']];
   const workspace = block.workspace;
   if (!workspace) return [['miVariable', 'miVariable']];
@@ -48,9 +48,23 @@ function declaredVarOptions(this: Blockly.FieldDropdown): Blockly.MenuOption[] {
 }
 
 /**
+ * Look up the declared type of a variable by scanning typed_variable_declare blocks.
+ * Returns null if variable is not declared via typed_variable_declare (e.g. loop counters).
+ */
+function lookupVariableType(workspace: Blockly.Workspace, varName: string): string | null {
+  for (const b of workspace.getAllBlocks(false)) {
+    if (b.type === 'typed_variable_declare' && b.getFieldValue('VAR') === varName) {
+      return b.getFieldValue('TYPE') || null;
+    }
+  }
+  return null;
+}
+
+/**
  * Map Arduino/C++ type to Blockly input check type.
  */
-function typeToCheck(type: string): string | null {
+function typeToCheck(type: string | null): string | null {
+  if (!type) return null;
   switch (type) {
     case 'bool': return 'Boolean';
     case 'String': return 'String';
@@ -60,30 +74,44 @@ function typeToCheck(type: string): string | null {
 }
 
 /**
- * Update the VALUE input's check and its shadow block based on the selected TYPE.
+ * Get shadow block configuration for a type.
  */
-function updateValueInputForType(block: Blockly.Block, type: string) {
-  const input = block.getInput('VALUE');
-  if (!input) return;
+function shadowForType(type: string | null): { shadowType: string; fields: Record<string, string | number> } {
+  if (type === 'bool') return { shadowType: 'logic_boolean', fields: { BOOL: 'FALSE' } };
+  if (type === 'String') return { shadowType: 'text', fields: { TEXT: '' } };
+  return { shadowType: 'math_number', fields: { NUM: 0 } };
+}
+
+/**
+ * Update a value input's check and (optionally) replace its shadow block.
+ * If the currently connected block is incompatible, disconnect and dispose it.
+ */
+function updateValueInput(
+  block: Blockly.Block,
+  inputName: string,
+  type: string | null,
+  replaceShadow: boolean = true,
+) {
+  const input = block.getInput(inputName);
+  if (!input || !input.connection) return;
   const check = typeToCheck(type);
   input.setCheck(check);
 
-  // Replace shadow block with one appropriate for the type
-  const target = input.connection?.targetBlock();
-  // Only replace if current target is a shadow (auto-generated default)
-  if (target && target.isShadow()) {
-    target.dispose(false);
-  }
-  if (!input.connection?.targetBlock()) {
-    let shadowType = 'math_number';
-    let fields: Record<string, string | number> = { NUM: 0 };
-    if (type === 'bool') {
-      shadowType = 'logic_boolean';
-      fields = { BOOL: 'FALSE' };
-    } else if (type === 'String') {
-      shadowType = 'text';
-      fields = { TEXT: '' };
+  const target = input.connection.targetBlock();
+
+  // If there is a connected block that doesn't match the new check, detach + dispose it
+  if (target) {
+    const outCheck = target.outputConnection?.getCheck?.();
+    const compatible =
+      !check || !outCheck || (Array.isArray(outCheck) && outCheck.includes(check));
+    if (!compatible || target.isShadow()) {
+      target.unplug(false);
+      target.dispose(false);
     }
+  }
+
+  if (replaceShadow && !input.connection.targetBlock()) {
+    const { shadowType, fields } = shadowForType(type);
     try {
       const ws = block.workspace;
       const shadow = ws.newBlock(shadowType);
@@ -91,8 +119,9 @@ function updateValueInputForType(block: Blockly.Block, type: string) {
       for (const [fname, fval] of Object.entries(fields)) {
         shadow.setFieldValue(String(fval), fname);
       }
-      if ((shadow as any).initSvg) (shadow as any).initSvg();
-      if ((shadow as any).render) (shadow as any).render();
+      const shadowWithSvg = shadow as unknown as { initSvg?: () => void; render?: () => void };
+      if (shadowWithSvg.initSvg) shadowWithSvg.initSvg();
+      if (shadowWithSvg.render) shadowWithSvg.render();
       const outCon = shadow.outputConnection;
       if (outCon && input.connection) {
         input.connection.connect(outCon);
@@ -112,7 +141,7 @@ Blockly.Blocks['typed_variable_declare'] = {
       .appendField(
         new Blockly.FieldDropdown(VAR_TYPES, function (newValue: string) {
           // Defer until block is fully constructed and rendered
-          setTimeout(() => updateValueInputForType(self, newValue), 0);
+          setTimeout(() => updateValueInput(self, 'VALUE', newValue, true), 0);
           return undefined;
         }) as Blockly.Field,
         'TYPE',
@@ -130,9 +159,19 @@ Blockly.Blocks['typed_variable_declare'] = {
 // ── Set variable ──
 Blockly.Blocks['typed_variable_set'] = {
   init: function (this: Blockly.Block) {
+    const self = this;
     this.appendValueInput('VALUE')
       .appendField('establecer')
-      .appendField(new Blockly.FieldDropdown(declaredVarOptions) as Blockly.Field, 'VAR')
+      .appendField(
+        new Blockly.FieldDropdown(declaredVarOptions, function (newValue: string) {
+          setTimeout(() => {
+            const type = lookupVariableType(self.workspace, newValue);
+            updateValueInput(self, 'VALUE', type, true);
+          }, 0);
+          return undefined;
+        }) as Blockly.Field,
+        'VAR',
+      )
       .appendField('=');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
@@ -140,16 +179,58 @@ Blockly.Blocks['typed_variable_set'] = {
     this.setStyle('variable_blocks');
     this.setTooltip('Asigna un valor a una variable existente');
   },
+  /**
+   * Keep VALUE check in sync with the variable's declared type.
+   * Called by Blockly whenever the workspace changes.
+   */
+  onchange: function (this: Blockly.Block, event: Blockly.Events.Abstract) {
+    // Only react to events that could change variable declarations
+    const t = event.type;
+    if (
+      t !== Blockly.Events.BLOCK_CREATE &&
+      t !== Blockly.Events.BLOCK_CHANGE &&
+      t !== Blockly.Events.BLOCK_DELETE
+    ) {
+      return;
+    }
+    const varName = this.getFieldValue('VAR');
+    const type = lookupVariableType(this.workspace, varName);
+    const check = typeToCheck(type);
+    const input = this.getInput('VALUE');
+    if (input) input.setCheck(check);
+  },
 };
 
 // ── Get variable ──
 Blockly.Blocks['typed_variable_get'] = {
   init: function (this: Blockly.Block) {
-    this.appendDummyInput()
-      .appendField(new Blockly.FieldDropdown(declaredVarOptions) as Blockly.Field, 'VAR');
+    const self = this;
+    this.appendDummyInput().appendField(
+      new Blockly.FieldDropdown(declaredVarOptions, function (newValue: string) {
+        setTimeout(() => {
+          const type = lookupVariableType(self.workspace, newValue);
+          self.setOutput(true, typeToCheck(type));
+        }, 0);
+        return undefined;
+      }) as Blockly.Field,
+      'VAR',
+    );
     this.setOutput(true, null);
     this.setStyle('variable_blocks');
     this.setTooltip('Obtiene el valor de una variable');
+  },
+  onchange: function (this: Blockly.Block, event: Blockly.Events.Abstract) {
+    const t = event.type;
+    if (
+      t !== Blockly.Events.BLOCK_CREATE &&
+      t !== Blockly.Events.BLOCK_CHANGE &&
+      t !== Blockly.Events.BLOCK_DELETE
+    ) {
+      return;
+    }
+    const varName = this.getFieldValue('VAR');
+    const type = lookupVariableType(this.workspace, varName);
+    this.setOutput(true, typeToCheck(type));
   },
 };
 
@@ -157,6 +238,7 @@ Blockly.Blocks['typed_variable_get'] = {
 Blockly.Blocks['typed_variable_change'] = {
   init: function (this: Blockly.Block) {
     this.appendValueInput('DELTA')
+      .setCheck('Number')
       .appendField(new Blockly.FieldDropdown([['incrementar', '+='], ['decrementar', '-=']]) as Blockly.Field, 'OP')
       .appendField(new Blockly.FieldDropdown(declaredVarOptions) as Blockly.Field, 'VAR')
       .appendField('en');
