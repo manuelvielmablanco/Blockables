@@ -31,18 +31,36 @@ function numericVarOptions(this: Blockly.FieldDropdown): Blockly.MenuOption[] {
 /**
  * Shared helper: collect variable names from the workspace,
  * optionally filtered by category ('numeric' = int/float/long/byte).
+ *
+ * IMPORTANT: always includes the field's current value_ so that
+ * Blockly's doClassValidation_() passes during workspace deserialization,
+ * even when the workspace is still being built incrementally.
  */
 function collectVarOptions(
   field: Blockly.FieldDropdown,
   filter: 'numeric' | null,
 ): Blockly.MenuOption[] {
+  // Ensure the currently-stored value is always a valid option.
+  // This prevents Blockly from rejecting a saved variable name when the
+  // generator is called before all blocks are in the workspace.
+  const currentValue = (field as unknown as { value_: string }).value_;
+
   const block = (field as unknown as { getSourceBlock: () => Blockly.Block | null }).getSourceBlock?.();
-  if (!block) return [['miVariable', 'miVariable']];
+  if (!block) {
+    const name = currentValue || 'miVariable';
+    return [[name, name]];
+  }
   const workspace = block.workspace;
-  if (!workspace) return [['miVariable', 'miVariable']];
+  if (!workspace) {
+    const name = currentValue || 'miVariable';
+    return [[name, name]];
+  }
 
   const NUMERIC_TYPES = new Set(['int', 'float', 'long', 'byte']);
   const names = new Set<string>();
+
+  // Always include the current value first (deserialization safety)
+  if (currentValue && currentValue !== 'miVariable') names.add(currentValue);
 
   // 1. Variables from typed_variable_declare blocks
   for (const b of workspace.getAllBlocks(false)) {
@@ -118,6 +136,7 @@ function isOutputCompatible(target: Blockly.Block, check: string | null): boolea
 
 /**
  * Create and attach a shadow block of the appropriate type.
+ * No-op if the input already has a connected block.
  */
 function attachShadow(block: Blockly.Block, inputName: string, type: string | null) {
   const input = block.getInput(inputName);
@@ -142,9 +161,17 @@ function attachShadow(block: Blockly.Block, inputName: string, type: string | nu
 }
 
 /**
- * Update a value input's check and (optionally) replace its shadow block.
- * Order matters: dispose the old block BEFORE calling setCheck, because
- * setCheck auto-disconnects incompatible blocks and leaves them as orphans.
+ * Update a value input's check and (optionally) schedule a shadow replacement.
+ *
+ * KEY FIX: setCheck() runs SYNCHRONOUSLY so that Blockly's deserialization can
+ * connect child blocks with the correct type immediately. attachShadow() runs
+ * asynchronously (setTimeout) so that during deserialization the JSON shadow
+ * connects via setShadowState() first — and the guard in attachShadow() will
+ * then see a connected block and skip creating a duplicate shadow.
+ *
+ * During user interaction the flow is the same: the old shadow is disposed
+ * synchronously, setCheck() updates the restriction, and after the current
+ * call stack the input is empty, so attachShadow() creates the new shadow.
  */
 function updateValueInput(
   block: Blockly.Block,
@@ -156,7 +183,8 @@ function updateValueInput(
   if (!input || !input.connection) return;
   const check = typeToCheck(type);
 
-  // 1. Capture target BEFORE setCheck (setCheck would orphan incompatible blocks)
+  // 1. Capture target BEFORE setCheck (setCheck auto-disconnects incompatible
+  //    blocks and leaves them as orphans if we don't dispose them first)
   const target = input.connection.targetBlock();
 
   // 2. Dispose the target if it's a shadow (always replace defaults) or incompatible
@@ -168,9 +196,14 @@ function updateValueInput(
   // 3. Now it's safe to set the new check
   input.setCheck(check);
 
-  // 4. If setCheck orphaned yet another block (edge case) or the input is empty, attach shadow
+  // 4. Schedule shadow attachment asynchronously.
+  //    - During deserialization: the JSON shadow is connected synchronously via
+  //      Blockly's setShadowState() before this timeout fires, so attachShadow's
+  //      guard ("already has something") correctly skips duplicate creation.
+  //    - During user interaction: by the time this fires, the old shadow has been
+  //      disposed in step 2, so the input is empty and a fresh shadow is attached.
   if (replaceShadow) {
-    attachShadow(block, inputName, type);
+    setTimeout(() => attachShadow(block, inputName, type), 0);
   }
 }
 
@@ -182,8 +215,9 @@ Blockly.Blocks['typed_variable_declare'] = {
       .appendField('crear variable')
       .appendField(
         new Blockly.FieldDropdown(VAR_TYPES, function (newValue: string) {
-          // Defer until block is fully constructed and rendered
-          setTimeout(() => updateValueInput(self, 'VALUE', newValue, true), 0);
+          // Synchronous update — required for correct workspace deserialization.
+          // (Shadow attachment is deferred inside updateValueInput.)
+          updateValueInput(self, 'VALUE', newValue, true);
           return undefined;
         }) as Blockly.Field,
         'TYPE',
@@ -206,10 +240,9 @@ Blockly.Blocks['typed_variable_set'] = {
       .appendField('establecer')
       .appendField(
         new Blockly.FieldDropdown(declaredVarOptions, function (newValue: string) {
-          setTimeout(() => {
-            const type = lookupVariableType(self.workspace, newValue);
-            updateValueInput(self, 'VALUE', type, true);
-          }, 0);
+          // Synchronous update — required for correct workspace deserialization.
+          const type = lookupVariableType(self.workspace, newValue);
+          updateValueInput(self, 'VALUE', type, true);
           return undefined;
         }) as Blockly.Field,
         'VAR',
@@ -235,11 +268,10 @@ Blockly.Blocks['typed_variable_set'] = {
     ) {
       return;
     }
-    // Don't react to our own field changes during validation
     if (this.isInFlyout) return;
     const varName = this.getFieldValue('VAR');
     const type = lookupVariableType(this.workspace, varName);
-    // Use updateValueInput to dispose incompatible blocks cleanly
+    // replaceShadow=false: don't create new shadows from onchange (only from explicit VAR change)
     updateValueInput(this, 'VALUE', type, false);
   },
 };
@@ -250,10 +282,9 @@ Blockly.Blocks['typed_variable_get'] = {
     const self = this;
     this.appendDummyInput().appendField(
       new Blockly.FieldDropdown(declaredVarOptions, function (newValue: string) {
-        setTimeout(() => {
-          const type = lookupVariableType(self.workspace, newValue);
-          self.setOutput(true, typeToCheck(type));
-        }, 0);
+        // Synchronous update
+        const type = lookupVariableType(self.workspace, newValue);
+        self.setOutput(true, typeToCheck(type));
         return undefined;
       }) as Blockly.Field,
       'VAR',
