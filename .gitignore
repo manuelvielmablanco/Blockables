@@ -34,3 +34,7 @@ server/dist/
 
 # Claude
 .claude/
+
+# Design assets (archivos pesados locales, no se suben al repo)
+# El sistema de diseño está documentado en DESIGN.md
+design-assets/
