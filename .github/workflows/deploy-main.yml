@@ -1,0 +1,40 @@
+name: Deploy /main → blocks.ingeniables.com/main
+
+# Se dispara con cada push a la rama main
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Build para /main/
+        env:
+          VITE_BASE_PATH: /main/
+        run: npm run build
+
+      - name: Subir a SiteGround via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          local-dir: ./dist/
+          server-dir: /blocks.ingeniables.com/public_html/main/
+          # Borra en el servidor los archivos que ya no existen en dist/
+          dangerous-clean-slate: false
