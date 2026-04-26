@@ -36,6 +36,9 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           local-dir: ./dist/
           server-dir: /blocks.ingeniables.com/public_html/dev/
-          # Borra en el servidor los archivos que ya no existen en dist/
-          # (útil en dev para limpiar builds anteriores)
-          dangerous-clean-slate: false
+          # En dev limpiamos los archivos huérfanos para que no queden
+          # bundles con hashes viejos en el servidor. Si un cliente con
+          # caché obsoleta los pide, recibe un 404 real (no HTML del
+          # SPA fallback gracias al .htaccess) y se ve forzado a
+          # recargar el index.html con los nuevos hashes.
+          dangerous-clean-slate: true
