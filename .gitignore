@@ -38,3 +38,6 @@ server/dist/
 # Design assets (archivos pesados locales, no se suben al repo)
 # El sistema de diseño está documentado en DESIGN.md
 design-assets/
+
+# Claude Design handoff bundles (working files locales)
+.design-iteration/

@@ -1,6 +1,15 @@
+import {
+  Plug,
+  Loader2,
+  AlertTriangle,
+  Activity,
+  Upload,
+  Code2,
+  Undo2,
+  Redo2,
+} from 'lucide-react';
 import BoardSelector from './BoardSelector';
 import FileMenu from './FileMenu';
-import { useBoard } from '../../context/BoardContext';
 import type { ConnectionStatus } from '../../services/serial';
 
 interface TopBarProps {
@@ -36,18 +45,38 @@ export default function TopBar({
   onExportCode,
   onExamples,
 }: TopBarProps) {
-  const { board } = useBoard();
   const isConnected = serialStatus === 'connected';
   const isConnecting = serialStatus === 'connecting';
+  const isError = serialStatus === 'error';
+
+  const connectClass = isConnected
+    ? 'btn btn-connect-connected'
+    : isConnecting
+    ? 'btn btn-connect-connecting'
+    : isError
+    ? 'btn btn-connect-error'
+    : 'btn btn-connect-disconnected';
+
+  const connectLabel = isConnected
+    ? 'Conectado'
+    : isConnecting
+    ? 'Conectando…'
+    : isError
+    ? 'Error'
+    : 'Conectar';
 
   return (
-    <header className="flex items-center gap-2 px-3 py-2 bg-white border-b border-gray-200 shadow-sm h-14 shrink-0">
-      <img src={`${import.meta.env.BASE_URL}logo-ingeniables.svg`} alt="Ingeniables" className="h-7" />
-      <div className="w-px h-6 bg-gray-300" />
-      <span className="text-sm font-bold text-brand-teal font-heading tracking-tight">Blocks</span>
-      <div className="w-px h-6 bg-gray-300" />
-
-      {/* File menu */}
+    <header
+      className="flex items-center gap-2.5 px-4 shrink-0"
+      style={{
+        height: 56,
+        background: '#fff',
+        borderBottom: '1px solid var(--border)',
+        boxShadow: '0 2px 8px rgba(0,63,70,.06)',
+        fontFamily: 'var(--font-ui)',
+      }}
+    >
+      {/* File menu trigger (hamburger) */}
       <FileMenu
         onNew={onNew || (() => {})}
         onOpen={onOpen || (() => {})}
@@ -56,91 +85,124 @@ export default function TopBar({
         onExamples={onExamples || (() => {})}
       />
 
+      {/* Brand */}
+      <div className="flex items-center gap-2">
+        <img
+          src={`${import.meta.env.BASE_URL}logo-ingeniables.svg`}
+          alt="Ingeniables"
+          style={{ height: 26 }}
+        />
+        <span
+          className="font-bold"
+          style={{ color: 'var(--teal)', fontSize: 16, fontFamily: 'var(--font-ui)' }}
+        >
+          Blocks
+        </span>
+      </div>
+
+      <div style={{ width: 1, height: 24, background: 'var(--border)' }} />
+
+      {/* Project name */}
       <input
         type="text"
         value={projectName}
         onChange={(e) => onProjectNameChange(e.target.value)}
-        className="px-3 py-1 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-yellow focus:border-transparent w-44"
+        className="topbar-project-input"
         placeholder="Nombre del proyecto"
+        aria-label="Nombre del proyecto"
+        style={{
+          padding: '6px 12px',
+          background: 'var(--bg-subtle)',
+          border: '1px solid var(--border)',
+          borderRadius: 'var(--radius-sm)',
+          fontSize: 13,
+          fontWeight: 600,
+          width: 180,
+          color: 'var(--fg-1)',
+          outline: 'none',
+          fontFamily: 'var(--font-ui)',
+        }}
       />
 
-      <div className="w-px h-6 bg-gray-300" />
+      <div style={{ width: 1, height: 24, background: 'var(--border)' }} />
+
+      {/* Board selector */}
       <BoardSelector />
 
+      {/* Código toggle */}
       <button
         onClick={onToggleCode}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
+        className="btn btn-bg"
+        aria-pressed={showCode}
+        title="Ver código"
+        style={
           showCode
-            ? 'bg-brand-teal text-white'
-            : 'bg-brand-teal/10 text-brand-teal hover:bg-brand-teal/20'
-        }`}
+            ? { background: 'var(--teal)', color: '#fff' }
+            : undefined
+        }
       >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-        </svg>
+        <Code2 className="w-[14px] h-[14px]" />
         Código
       </button>
 
+      {/* Undo / Redo */}
       <div className="flex gap-1">
-        <button id="undo-btn" className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors" title="Deshacer">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a4 4 0 014 4v0a4 4 0 01-4 4H3m0-8l4-4m-4 4l4 4" />
-          </svg>
+        <button
+          id="undo-btn"
+          className="p-1.5 rounded-md transition-colors"
+          style={{ color: 'var(--fg-3)', background: 'transparent' }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-subtle)')}
+          onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+          title="Deshacer"
+        >
+          <Undo2 className="w-[16px] h-[16px]" />
         </button>
-        <button id="redo-btn" className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors" title="Rehacer">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 10H11a4 4 0 00-4 4v0a4 4 0 004 4h10m0-8l-4-4m4 4l-4 4" />
-          </svg>
+        <button
+          id="redo-btn"
+          className="p-1.5 rounded-md transition-colors"
+          style={{ color: 'var(--fg-3)', background: 'transparent' }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-subtle)')}
+          onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+          title="Rehacer"
+        >
+          <Redo2 className="w-[16px] h-[16px]" />
         </button>
       </div>
 
       <div className="flex-1" />
 
-      {/* Connect button */}
+      {/* Connect */}
       <button
         onClick={onConnect}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
-          isConnected
-            ? 'bg-green-500 text-white hover:bg-green-600'
-            : isConnecting
-            ? 'bg-brand-yellow/60 text-brand-black cursor-wait'
-            : 'bg-brand-yellow text-brand-black hover:bg-brand-yellow/80'
-        }`}
+        className={connectClass}
         disabled={isConnecting}
+        title={connectLabel}
       >
         {isConnected ? (
-          <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+          <span className="pulse-dot" />
+        ) : isConnecting ? (
+          <Loader2 className="w-[14px] h-[14px] anim-spin" />
+        ) : isError ? (
+          <AlertTriangle className="w-[14px] h-[14px]" />
         ) : (
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
+          <Plug className="w-[14px] h-[14px]" />
         )}
-        {isConnected ? 'Conectado' : isConnecting ? '...' : 'Conectar'}
+        {connectLabel}
       </button>
 
-      {/* Monitor button */}
+      {/* Monitor (ghost) */}
       <button
         onClick={onToggleMonitor}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
-          showMonitor
-            ? 'bg-brand-teal text-white'
-            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-        }`}
+        className={showMonitor ? 'btn btn-secondary' : 'btn btn-ghost'}
+        title="Monitor serie"
       >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-        </svg>
+        <Activity className="w-[14px] h-[14px]" />
         Monitor
       </button>
 
-      {/* Upload button */}
-      <button
-        onClick={onUpload}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold bg-brand-teal text-white hover:bg-brand-teal/90 transition-colors"
-      >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-        </svg>
+      {/* Upload (secondary teal) */}
+      <button onClick={onUpload} className="btn btn-secondary" title="Compilar y subir">
+        <Upload className="w-[14px] h-[14px]" />
         Subir
       </button>
     </header>

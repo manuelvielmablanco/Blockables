@@ -1,5 +1,9 @@
+/* ──────────────────────────────────────────────────────────────
+   Blockly visual overrides — Ingeniables design system
+   ────────────────────────────────────────────────────────────── */
+
 .blocklySvg {
-  background-color: #fafafa !important;
+  background-color: transparent !important;
   width: 100% !important;
   height: 100% !important;
 }
@@ -12,52 +16,263 @@
   left: 0 !important;
   border: none !important;
   outline: none !important;
+  /* Trama de circuito (PCB) — temático maker, opacidad 0.18 sobre #f7faf9
+     (Iteración v0.3 · Dirección B) */
+  background-color: #f7faf9;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'><g fill='none' stroke='%234e9995' stroke-width='0.75' stroke-opacity='0.12'><path d='M0 40 L20 40 L20 20 L40 20'/><path d='M40 80 L40 60 L60 60 L60 40 L80 40'/><path d='M0 0 L0 12'/><path d='M80 80 L80 68'/></g><g fill='%234e9995' fill-opacity='0.22'><rect x='18.5' y='18.5' width='3' height='3' rx='0.75'/><rect x='38.5' y='58.5' width='3' height='3' rx='0.75'/></g><g fill='%2363c0bb' fill-opacity='0.32'><circle cx='60' cy='40' r='1.5'/><circle cx='20' cy='40' r='1.5'/></g></svg>");
+  background-repeat: repeat;
 }
 
-/* Ensure workspace container fills its parent */
+/* Make Blockly's own bg layer transparent so the dot pattern shows */
+.blocklyMainBackground {
+  fill: transparent !important;
+  stroke: none !important;
+}
+.blocklySvg > g > rect,
+.blocklySvg rect.blocklyMainBackground {
+  stroke: none !important;
+  fill: transparent !important;
+}
+
+/* Blockly internal popups must sit above app chrome that uses position:fixed */
 .blocklyWidgetDiv,
 .blocklyDropDownDiv {
   z-index: 60 !important;
 }
 
-/* Remove any borders/lines between workspace zones */
 .blocklyMainWorkspaceScrollbar {
   z-index: 1;
 }
 
-/* Toolbox styling */
+/* ──────────────────────────────────────────────────────────────
+   Toolbox — Píldoras flotantes (Iteración v0.3 · Dirección A)
+   Cada categoría es una píldora con su tinte de color de fondo
+   por defecto, hover sube saturación + desliza ligeramente,
+   selected llena con el color sólido. Iconos Lucide vía mask-image.
+   ────────────────────────────────────────────────────────────── */
+
+/* Per-category color tokens — derived directly from the block colours defined
+   in src/blockly/theme.ts (categoryStyles[*].colour, which equals the primary
+   block fill). Each pill therefore tints to match the blocks that appear in
+   its flyout. The four tones are computed with color-mix:
+     --cat-color : block primary (selected fill, label/icon source)
+     --cat-bg    : 10% block + 90% white (default pill tint)
+     --cat-soft  : 22% block + 78% white (hover tint)
+     --cat-depth : 78% block + 22% black (label colour & masked icon fill) */
+.cat-logic     { --cat-color: #5b6da7; --cat-bg: color-mix(in srgb, #5b6da7 10%, #ffffff); --cat-soft: color-mix(in srgb, #5b6da7 22%, #ffffff); --cat-depth: color-mix(in srgb, #5b6da7 78%, #000000); }
+.cat-control   { --cat-color: #49a563; --cat-bg: color-mix(in srgb, #49a563 10%, #ffffff); --cat-soft: color-mix(in srgb, #49a563 22%, #ffffff); --cat-depth: color-mix(in srgb, #49a563 78%, #000000); }
+.cat-math      { --cat-color: #4ECDC4; --cat-bg: color-mix(in srgb, #4ECDC4 10%, #ffffff); --cat-soft: color-mix(in srgb, #4ECDC4 22%, #ffffff); --cat-depth: color-mix(in srgb, #4ECDC4 78%, #000000); }
+.cat-text      { --cat-color: #E8A838; --cat-bg: color-mix(in srgb, #E8A838 12%, #ffffff); --cat-soft: color-mix(in srgb, #E8A838 26%, #ffffff); --cat-depth: color-mix(in srgb, #E8A838 78%, #000000); }
+.cat-variables { --cat-color: #E07C38; --cat-bg: color-mix(in srgb, #E07C38 11%, #ffffff); --cat-soft: color-mix(in srgb, #E07C38 24%, #ffffff); --cat-depth: color-mix(in srgb, #E07C38 78%, #000000); }
+.cat-lists     { --cat-color: #E05676; --cat-bg: color-mix(in srgb, #E05676 10%, #ffffff); --cat-soft: color-mix(in srgb, #E05676 22%, #ffffff); --cat-depth: color-mix(in srgb, #E05676 78%, #000000); }
+.cat-functions { --cat-color: #9B59B6; --cat-bg: color-mix(in srgb, #9B59B6 10%, #ffffff); --cat-soft: color-mix(in srgb, #9B59B6 22%, #ffffff); --cat-depth: color-mix(in srgb, #9B59B6 78%, #000000); }
+.cat-io        { --cat-color: #2980B9; --cat-bg: color-mix(in srgb, #2980B9 10%, #ffffff); --cat-soft: color-mix(in srgb, #2980B9 22%, #ffffff); --cat-depth: color-mix(in srgb, #2980B9 78%, #000000); }
+.cat-time      { --cat-color: #3498DB; --cat-bg: color-mix(in srgb, #3498DB 10%, #ffffff); --cat-soft: color-mix(in srgb, #3498DB 22%, #ffffff); --cat-depth: color-mix(in srgb, #3498DB 78%, #000000); }
+.cat-serial    { --cat-color: #27AE60; --cat-bg: color-mix(in srgb, #27AE60 10%, #ffffff); --cat-soft: color-mix(in srgb, #27AE60 22%, #ffffff); --cat-depth: color-mix(in srgb, #27AE60 78%, #000000); }
+.cat-sensors   { --cat-color: #2C3E50; --cat-bg: color-mix(in srgb, #2C3E50 10%, #ffffff); --cat-soft: color-mix(in srgb, #2C3E50 22%, #ffffff); --cat-depth: color-mix(in srgb, #2C3E50 88%, #000000); }
+.cat-actuators { --cat-color: #F39C12; --cat-bg: color-mix(in srgb, #F39C12 12%, #ffffff); --cat-soft: color-mix(in srgb, #F39C12 26%, #ffffff); --cat-depth: color-mix(in srgb, #F39C12 75%, #000000); }
+.cat-motor     { --cat-color: #D35400; --cat-bg: color-mix(in srgb, #D35400 10%, #ffffff); --cat-soft: color-mix(in srgb, #D35400 22%, #ffffff); --cat-depth: color-mix(in srgb, #D35400 80%, #000000); }
+.cat-display   { --cat-color: #8E44AD; --cat-bg: color-mix(in srgb, #8E44AD 10%, #ffffff); --cat-soft: color-mix(in srgb, #8E44AD 22%, #ffffff); --cat-depth: color-mix(in srgb, #8E44AD 78%, #000000); }
+.cat-neopixel  { --cat-color: #E74C3C; --cat-bg: color-mix(in srgb, #E74C3C 10%, #ffffff); --cat-soft: color-mix(in srgb, #E74C3C 22%, #ffffff); --cat-depth: color-mix(in srgb, #E74C3C 78%, #000000); }
+.cat-wifi      { --cat-color: #1ABC9C; --cat-bg: color-mix(in srgb, #1ABC9C 10%, #ffffff); --cat-soft: color-mix(in srgb, #1ABC9C 22%, #ffffff); --cat-depth: color-mix(in srgb, #1ABC9C 78%, #000000); }
+.cat-bluetooth { --cat-color: #2C82C9; --cat-bg: color-mix(in srgb, #2C82C9 10%, #ffffff); --cat-soft: color-mix(in srgb, #2C82C9 22%, #ffffff); --cat-depth: color-mix(in srgb, #2C82C9 78%, #000000); }
+
 .blocklyToolboxDiv {
   background-color: #ffffff !important;
-  border-right: 1px solid #e5e7eb !important;
-  width: 220px !important;
+  border-right: 1px solid var(--border) !important;
+  width: 224px !important;
+  padding: 10px 6px !important;
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.02);
 }
 
-.blocklyTreeRow {
-  padding: 6px 12px !important;
-  margin: 2px 8px !important;
-  border-radius: 8px !important;
-  font-family: 'Noto Sans', sans-serif !important;
-  font-size: 14px !important;
+/* Blockly's built-in toolbox CSS pins the row to height: 22px; line-height: 22px;
+   and `addColourBorder_(this.colour_)` (toolbox/category.js) injects an inline
+   `border-left: <borderWidth>px solid <colour>` on this element. We zero those
+   out here so the flex pill layout and our --cat-bg fill take over. */
+.blocklyToolboxCategory {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 9px 12px !important;
+  margin: 0 4px 4px !important;
+  height: auto !important;
+  line-height: 1.2 !important;
+  border: 0 !important;
+  border-left: 0 !important;
+  border-radius: 999px !important;
+  font-family: var(--font-ui), 'Noto Sans', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--cat-depth, var(--ink)) !important;
+  background-color: var(--cat-bg, var(--bg-subtle)) !important;
+  letter-spacing: -0.005em !important;
+  cursor: pointer;
+  transition: background-color 150ms var(--ease-ui), transform 120ms var(--ease-ui), color 150ms var(--ease-ui);
+  white-space: nowrap !important;
+  position: relative;
 }
 
-.blocklyTreeRow:hover {
-  background-color: #f3f4f6 !important;
+/* The row contents container is the flex parent of icon + label inside rowDiv_. */
+.blocklyTreeRowContentContainer {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex: 1 1 auto !important;
 }
 
-.blocklyTreeSelected {
-  background-color: #FFEF67 !important;
+.blocklyToolboxCategory:hover {
+  background-color: var(--cat-soft, var(--teal-soft)) !important;
+  transform: translateX(2px);
 }
 
-/* Flyout background */
+.blocklyToolboxSelected {
+  background-color: var(--cat-color, var(--teal)) !important;
+  color: #ffffff !important;
+}
+.blocklyToolboxSelected .blocklyToolboxCategoryLabel {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+/* Icono: span 16×16 cuyo background-color (el saturado oscuro de la categoría)
+   atraviesa el canal alfa de mask-image (Lucide SVG inline) para pintar el
+   icono con ese color. En estado seleccionado el icono pasa a blanco.
+   Blockly's built-in CSS sets `visibility: hidden` and `background-image:
+   url(.../sprites.png)` on this element — both must be reset for our mask
+   technique to render. */
+.blocklyToolboxCategoryIcon {
+  display: inline-block !important;
+  visibility: visible !important;
+  width: 16px !important;
+  height: 16px !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  background-image: none !important;
+  background-color: var(--cat-depth, var(--teal-depth)) !important;
+  vertical-align: middle !important;
+  -webkit-mask-size: contain !important;
+          mask-size: contain !important;
+  -webkit-mask-repeat: no-repeat !important;
+          mask-repeat: no-repeat !important;
+  -webkit-mask-position: center !important;
+          mask-position: center !important;
+}
+
+.blocklyToolboxSelected .blocklyToolboxCategoryIcon {
+  background-color: #ffffff !important;
+}
+
+.blocklyToolboxCategoryLabel {
+  font-family: var(--font-ui), 'Noto Sans', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.005em !important;
+}
+
+/* Separador entre grupos de categorías del toolbox */
+.blocklyTreeSeparator {
+  height: 1px !important;
+  background-color: var(--border) !important;
+  margin: 6px 16px !important;
+  border: 0 !important;
+}
+
+/* ──── Per-category Lucide icon masks ──── */
+.cat-logic .blocklyToolboxCategoryIcon {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M15 6a9 9 0 0 0-9 9V3'/><circle cx='18' cy='6' r='3'/><circle cx='6' cy='18' r='3'/></svg>") !important;
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M15 6a9 9 0 0 0-9 9V3'/><circle cx='18' cy='6' r='3'/><circle cx='6' cy='18' r='3'/></svg>") !important;
+}
+
+.cat-control .blocklyToolboxCategoryIcon {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m17 2 4 4-4 4'/><path d='M3 11v-1a4 4 0 0 1 4-4h14'/><path d='m7 22-4-4 4-4'/><path d='M21 13v1a4 4 0 0 1-4 4H3'/></svg>") !important;
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m17 2 4 4-4 4'/><path d='M3 11v-1a4 4 0 0 1 4-4h14'/><path d='m7 22-4-4 4-4'/><path d='M21 13v1a4 4 0 0 1-4 4H3'/></svg>") !important;
+}
+
+.cat-math .blocklyToolboxCategoryIcon {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 7V5a1 1 0 0 0-1-1H6.5a.5.5 0 0 0-.4.8l4.5 6a2 2 0 0 1 0 2.4l-4.5 6a.5.5 0 0 0 .4.8H17a1 1 0 0 0 1-1v-2'/></svg>") !important;
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 7V5a1 1 0 0 0-1-1H6.5a.5.5 0 0 0-.4.8l4.5 6a2 2 0 0 1 0 2.4l-4.5 6a.5.5 0 0 0 .4.8H17a1 1 0 0 0 1-1v-2'/></svg>") !important;
+}
+
+.cat-text .blocklyToolboxCategoryIcon {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 4v16'/><path d='M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2'/><path d='M9 20h6'/></svg>") !important;
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 4v16'/><path d='M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2'/><path d='M9 20h6'/></svg>") !important;
+}
+
+.cat-variables .blocklyToolboxCategoryIcon {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M8 21s-4-3-4-9 4-9 4-9'/><path d='M16 3s4 3 4 9-4 9-4 9'/><line x1='15' x2='9' y1='9' y2='15'/><line x1='9' x2='15' y1='9' y2='15'/></svg>") !important;
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M8 21s-4-3-4-9 4-9 4-9'/><path d='M16 3s4 3 4 9-4 9-4 9'/><line x1='15' x2='9' y1='9' y2='15'/><line x1='9' x2='15' y1='9' y2='15'/></svg>") !important;
+}
+
+.cat-lists .blocklyToolboxCategoryIcon {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 5h.01'/><path d='M3 12h.01'/><path d='M3 19h.01'/><path d='M8 5h13'/><path d='M8 12h13'/><path d='M8 19h13'/></svg>") !important;
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 5h.01'/><path d='M3 12h.01'/><path d='M3 19h.01'/><path d='M8 5h13'/><path d='M8 12h13'/><path d='M8 19h13'/></svg>") !important;
+}
+
+.cat-functions .blocklyToolboxCategoryIcon {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1'/><path d='M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1'/></svg>") !important;
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1'/><path d='M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1'/></svg>") !important;
+}
+
+.cat-io .blocklyToolboxCategoryIcon {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='9' cy='12' r='3'/><rect width='20' height='14' x='2' y='5' rx='7'/></svg>") !important;
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='9' cy='12' r='3'/><rect width='20' height='14' x='2' y='5' rx='7'/></svg>") !important;
+}
+
+.cat-time .blocklyToolboxCategoryIcon {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><path d='M12 6v6l4 2'/></svg>") !important;
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><path d='M12 6v6l4 2'/></svg>") !important;
+}
+
+.cat-serial .blocklyToolboxCategoryIcon {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 19h8'/><path d='m4 17 6-6-6-6'/></svg>") !important;
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 19h8'/><path d='m4 17 6-6-6-6'/></svg>") !important;
+}
+
+.cat-sensors .blocklyToolboxCategoryIcon {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2'/></svg>") !important;
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2'/></svg>") !important;
+}
+
+.cat-actuators .blocklyToolboxCategoryIcon {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z'/></svg>") !important;
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z'/></svg>") !important;
+}
+
+.cat-motor .blocklyToolboxCategoryIcon {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M11 10.27 7 3.34'/><path d='m11 13.73-4 6.93'/><path d='M12 22v-2'/><path d='M12 2v2'/><path d='M14 12h8'/><path d='m17 20.66-1-1.73'/><path d='m17 3.34-1 1.73'/><path d='M2 12h2'/><path d='m20.66 17-1.73-1'/><path d='m20.66 7-1.73 1'/><path d='m3.34 17 1.73-1'/><path d='m3.34 7 1.73 1'/><circle cx='12' cy='12' r='2'/><circle cx='12' cy='12' r='8'/></svg>") !important;
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M11 10.27 7 3.34'/><path d='m11 13.73-4 6.93'/><path d='M12 22v-2'/><path d='M12 2v2'/><path d='M14 12h8'/><path d='m17 20.66-1-1.73'/><path d='m17 3.34-1 1.73'/><path d='M2 12h2'/><path d='m20.66 17-1.73-1'/><path d='m20.66 7-1.73 1'/><path d='m3.34 17 1.73-1'/><path d='m3.34 7 1.73 1'/><circle cx='12' cy='12' r='2'/><circle cx='12' cy='12' r='8'/></svg>") !important;
+}
+
+.cat-display .blocklyToolboxCategoryIcon {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect width='20' height='14' x='2' y='3' rx='2'/><line x1='8' x2='16' y1='21' y2='21'/><line x1='12' x2='12' y1='17' y2='21'/></svg>") !important;
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect width='20' height='14' x='2' y='3' rx='2'/><line x1='8' x2='16' y1='21' y2='21'/><line x1='12' x2='12' y1='17' y2='21'/></svg>") !important;
+}
+
+.cat-neopixel .blocklyToolboxCategoryIcon {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z'/><circle cx='13.5' cy='6.5' r='.5' fill='black'/><circle cx='17.5' cy='10.5' r='.5' fill='black'/><circle cx='6.5' cy='12.5' r='.5' fill='black'/><circle cx='8.5' cy='7.5' r='.5' fill='black'/></svg>") !important;
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z'/><circle cx='13.5' cy='6.5' r='.5' fill='black'/><circle cx='17.5' cy='10.5' r='.5' fill='black'/><circle cx='6.5' cy='12.5' r='.5' fill='black'/><circle cx='8.5' cy='7.5' r='.5' fill='black'/></svg>") !important;
+}
+
+.cat-wifi .blocklyToolboxCategoryIcon {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 20h.01'/><path d='M2 8.82a15 15 0 0 1 20 0'/><path d='M5 12.859a10 10 0 0 1 14 0'/><path d='M8.5 16.429a5 5 0 0 1 7 0'/></svg>") !important;
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 20h.01'/><path d='M2 8.82a15 15 0 0 1 20 0'/><path d='M5 12.859a10 10 0 0 1 14 0'/><path d='M8.5 16.429a5 5 0 0 1 7 0'/></svg>") !important;
+}
+
+.cat-bluetooth .blocklyToolboxCategoryIcon {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m7 7 10 10-5 5V2l5 5L7 17'/></svg>") !important;
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m7 7 10 10-5 5V2l5 5L7 17'/></svg>") !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Flyout
+   ────────────────────────────────────────────────────────────── */
 .blocklyFlyoutBackground {
-  fill: #f9fafb !important;
-  fill-opacity: 0.95 !important;
+  fill: #ffffff !important;
+  fill-opacity: 0.98 !important;
 }
 
-/*
- * Hide the flyout scrollbar - it persists as a visible vertical line
- * after closing a toolbox category. Users can still scroll with mouse wheel.
- */
 .blocklyFlyoutScrollbar,
 .blocklyFlyout .blocklyScrollbarVertical,
 .blocklyFlyout .blocklyScrollbarHorizontal {
@@ -65,23 +280,89 @@
   pointer-events: none !important;
 }
 
-/* Uniform background - prevent visual division */
-.blocklyMainBackground {
-  fill: #fafafa !important;
-  stroke: none !important;
-}
-
-/* Remove any SVG rect borders that could cause visual lines */
-.blocklySvg > g > rect,
-.blocklySvg rect.blocklyMainBackground {
-  stroke: none !important;
-  fill: #fafafa !important;
-}
-
+/* ──────────────────────────────────────────────────────────────
+   Scrollbars & zoom
+   ────────────────────────────────────────────────────────────── */
 .blocklyScrollbarHandle {
-  fill: #d1d5db !important;
+  fill: #c9d4d4 !important;
 }
 
 .blocklyZoom > image {
-  opacity: 0.6;
+  opacity: 0.55;
+  transition: opacity 150ms var(--ease-ui);
+}
+.blocklyZoom > image:hover {
+  opacity: 0.9;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Empty-state Minin overlay
+   ────────────────────────────────────────────────────────────── */
+.ws-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  pointer-events: none;
+  z-index: 5;
+}
+.ws-empty-figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.ws-empty-figure img {
+  width: 320px;
+  height: 320px;
+  object-fit: contain;
+}
+.ws-empty-shadow {
+  width: 210px;
+  height: 16px;
+  background: rgba(0, 63, 70, 0.18);
+  border-radius: 50%;
+  filter: blur(6px);
+  margin-top: -14px;
+}
+.ws-empty-msg {
+  font-family: var(--font-serif), 'Noto Serif', serif;
+  font-style: italic;
+  font-size: 18px;
+  color: var(--teal-depth);
+  margin-top: 16px;
+}
+.ws-empty-hint {
+  font-family: var(--font-ui), 'Noto Sans', sans-serif;
+  font-size: 13px;
+  color: var(--fg-3);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.ws-empty-link {
+  pointer-events: auto;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: var(--teal-depth);
+  font: inherit;
+  padding: 0;
+  text-decoration: underline;
+}
+.ws-empty-link:hover { color: var(--teal); }
+.kbd {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--fg-2);
 }

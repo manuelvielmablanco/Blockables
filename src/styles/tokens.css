@@ -1,0 +1,243 @@
+/* ════════════════════════════════════════════════════════════════
+   Ingeniables Blockables — Design Tokens (v0.2)
+   ════════════════════════════════════════════════════════════════ */
+
+/* ─── Fonts ────────────────────────────────────────────────── */
+/* Noto Color Emoji — kid-friendly, consistent emoji rendering across OSes.
+   Subset to only the codepoints we actually use in the toolbox / UI: ~5 KB. */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&text=%E2%9A%A1%E2%8F%B1%F0%9F%93%A1%F0%9F%93%8F%F0%9F%92%A1%E2%9A%99%EF%B8%8F%F0%9F%96%A5%F0%9F%8C%88%F0%9F%93%B6%F0%9F%94%B5%F0%9F%93%84%F0%9F%93%82%F0%9F%92%BE%F0%9F%93%9D%F0%9F%93%9A%E2%9C%85%E2%9D%8C%F0%9F%92%A1&display=swap');
+
+@font-face {
+  font-family: 'Paytone One';
+  src: url('/fonts/PaytoneOne-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Noto Sans';
+  src: url('/fonts/NotoSans-Variable.ttf') format('truetype-variations'),
+       url('/fonts/NotoSans-Variable.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Noto Serif';
+  src: url('/fonts/NotoSerif-Italic-Variable.ttf') format('truetype-variations'),
+       url('/fonts/NotoSerif-Italic-Variable.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  /* ─── Yellow family ─── */
+  --yellow:           #ffd002;
+  --yellow-depth:     #fab511;
+  --yellow-contrast:  #f4951b;
+  --yellow-light:     #ffef67;
+  --yellow-soft:      #fcf8cd;
+  --yellow-bg:        #fffdee;
+
+  /* ─── Turquoise family (identity) ─── */
+  --teal:             #63c0bb;
+  --teal-depth:       #4e9995;
+  --teal-contrast:    #003f46;
+  --teal-light:       #99d3d7;
+  --teal-soft:        #cee9ee;
+  --teal-bg:          #ebf5f4;
+  --teal-mid:         #4e9995;
+
+  /* ─── Blue family ─── */
+  --blue:             #4a7abd;
+  --blue-depth:       #244b95;
+  --blue-contrast:    #2a366b;
+  --blue-light:       #7db1e0;
+  --blue-soft:        #bde4fa;
+  --blue-bg:          #ecf7fe;
+
+  /* ─── Red family ─── */
+  --red:              #e94d27;
+  --red-depth:        #db3815;
+  --red-contrast:     #c0110d;
+  --red-light:        #ef7c60;
+  --red-soft:         #f7bbb0;
+  --red-bg:           #fef5f6;
+
+  /* ─── Neutrals ─── */
+  --ink:              #1e1e1c;
+  --fg-1:             #1e1e1c;
+  --fg-2:             #3d3d3b;
+  --fg-3:             #7a7a78;
+  --border:           #e5e5e5;
+  --border-strong:    #d4d4d2;
+  --bg-subtle:        #fafafa;
+  --bg-mute:          #f0f0ee;
+  --white:            #ffffff;
+
+  /* ─── Typography ─── */
+  --font-display:     'Paytone One', system-ui, sans-serif;
+  --font-ui:          'Noto Sans', system-ui, -apple-system, sans-serif;
+  --font-serif:       'Noto Serif', Georgia, serif;
+  --font-mono:        'JetBrains Mono', ui-monospace, 'Fira Code', Consolas, monospace;
+
+  /* ─── Spacing ─── */
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  32px;
+
+  /* ─── Radii ─── */
+  --radius-sm:    6px;
+  --radius-md:    10px;
+  --radius-lg:    16px;
+  --radius-full:  9999px;
+
+  /* ─── Shadows ─── */
+  --shadow-sm:    0 2px 8px rgba(0, 63, 70, 0.10);
+  --shadow-md:    0 8px 24px rgba(0, 63, 70, 0.14);
+  --shadow-lg:    0 24px 48px rgba(0, 63, 70, 0.20);
+  --shadow-focus: 0 0 0 3px rgba(99, 192, 187, 0.28);
+
+  /* ─── Easing ─── */
+  --ease-ui:     cubic-bezier(0.2, 0, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   Keyframe animations
+   ════════════════════════════════════════════════════════════════ */
+
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(108,210,154,.55); }
+  70%  { box-shadow: 0 0 0 6px rgba(108,210,154,0); }
+  100% { box-shadow: 0 0 0 0 rgba(108,210,154,0); }
+}
+
+@keyframes toast-in {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes minin-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+@keyframes minin-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-12px); }
+}
+
+@keyframes minin-shake {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-4px); }
+  75%      { transform: translateX(4px); }
+}
+
+@keyframes minin-think {
+  0%, 100% { transform: rotate(-2deg); }
+  50%      { transform: rotate(2deg); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes progress-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: 0 0; }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   Helper utility classes (used across components)
+   ════════════════════════════════════════════════════════════════ */
+
+.font-display { font-family: var(--font-display); }
+.font-ui      { font-family: var(--font-ui); }
+.font-serif   { font-family: var(--font-serif); font-style: italic; }
+.font-mono    { font-family: var(--font-mono); }
+
+/* Pulse dot (connect-connected state) */
+.pulse-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #6cd29a;
+  box-shadow: 0 0 0 0 rgba(108,210,154,.6);
+  animation: pulse 1.6s infinite;
+}
+
+/* Minin animations */
+.anim-float  { animation: minin-float 2.6s var(--ease-spring) infinite; }
+.anim-bounce { animation: minin-bounce 1s var(--ease-spring) infinite; }
+.anim-shake  { animation: minin-shake .6s var(--ease-spring) infinite; }
+.anim-think  { animation: minin-think 2s var(--ease-smooth) infinite; }
+.anim-spin   { animation: spin 1s linear infinite; }
+.anim-toast-in { animation: toast-in .35s var(--ease-spring); }
+
+/* Minin shadow */
+.minin-with-shadow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.minin-shadow {
+  width: 60%;
+  height: 10px;
+  background: rgba(0, 63, 70, .18);
+  border-radius: 50%;
+  filter: blur(4px);
+  margin-top: -8px;
+}
+
+/* Buttons (shared) — used as opt-in classes */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--font-ui);
+  transition: background 150ms var(--ease-ui), filter 150ms var(--ease-ui),
+              box-shadow 150ms var(--ease-ui), transform 100ms var(--ease-ui);
+}
+.btn:active { transform: scale(.97); }
+.btn:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+.btn svg { width: 14px; height: 14px; stroke-width: 2; }
+
+.btn-primary   { background: var(--yellow); color: var(--ink); }
+.btn-primary:hover:not(:disabled)   { background: var(--yellow-depth); box-shadow: var(--shadow-sm); }
+
+.btn-secondary { background: var(--teal); color: #fff; }
+.btn-secondary:hover:not(:disabled) { background: var(--teal-depth); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--teal-depth);
+  border: 1.5px solid var(--teal);
+}
+.btn-ghost:hover:not(:disabled) { background: var(--teal-bg); }
+
+.btn-bg     { background: var(--teal-bg); color: var(--teal-contrast); }
+.btn-bg:hover:not(:disabled) { background: var(--teal-soft); }
+
+.btn-danger { background: var(--red); color: #fff; }
+.btn-danger:hover:not(:disabled) { background: var(--red-depth); }
+
+/* Connect button states */
+.btn-connect-disconnected { background: var(--teal); color: #fff; }
+.btn-connect-disconnected:hover { background: var(--teal-depth); }
+.btn-connect-connecting   { background: var(--yellow); color: var(--ink); }
+.btn-connect-connected    { background: var(--teal-depth); color: #fff; }
+.btn-connect-error        { background: var(--red); color: #fff; }
+.btn-connect-error:hover  { background: var(--red-depth); }
