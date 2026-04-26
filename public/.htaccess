@@ -38,6 +38,13 @@
     Header set Cache-Control "no-cache, no-store, must-revalidate"
     Header set Pragma "no-cache"
     Header set Expires "0"
+    # SiteGround Dynamic Cache (su proxy NGINX por encima de Apache) ignora
+    # Cache-Control para HTML por defecto: cachea respuestas durante horas.
+    # Para que NO cachee este HTML hay que añadir el header propietario que
+    # SiteGround sí honra. Sin esto, los hashes hash-fingerprinted de Vite
+    # quedan obsoletos en el cache de SiteGround tras cada deploy y los
+    # clientes piden bundles que ya no existen → pantalla en blanco.
+    Header set X-Cache-Enabled "False"
   </FilesMatch>
 
   <FilesMatch "\.htaccess$">
