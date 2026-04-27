@@ -176,6 +176,11 @@ export const toolboxConfig = {
       cssConfig: { container: 'blocklyToolboxCategoryContainer cat-motor' },
       contents: [
         { kind: 'block', type: 'motor_dc' },
+        {
+          kind: 'block',
+          type: 'motor_dc_run',
+          inputs: { SPEED: { shadow: { type: 'math_number', fields: { NUM: 255 } } } },
+        },
         { kind: 'block', type: 'motor_dc_stop' },
         { kind: 'block', type: 'motor_servo' },
         { kind: 'block', type: 'motor_stepper_init' },

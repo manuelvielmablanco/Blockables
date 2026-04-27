@@ -554,24 +554,34 @@ gen.forBlock['actuator_relay'] = function (block) {
   return 'digitalWrite(' + pin + ', ' + block.getFieldValue('STATE') + ');\n';
 };
 
-// === Motor ===
+// === Motor DC (estilo Hello Blocks: ID + 2 pines PWM, sin EN) ===
+// motor_dc registra los pines del motor como `motor<ID>_pin1` / `motor<ID>_pin2`
+// en globals + setup. motor_dc_run y motor_dc_stop los reutilizan por nombre,
+// así que basta con poner un único motor_dc en setup() para cada motor.
+
 gen.forBlock['motor_dc'] = function (block) {
-  const in1 = block.getFieldValue('IN1'), in2 = block.getFieldValue('IN2'), en = block.getFieldValue('EN');
+  const id = block.getFieldValue('ID');
+  const pin1 = block.getFieldValue('PIN1'), pin2 = block.getFieldValue('PIN2');
+  addGlobalVar('const int motor' + id + '_pin1 = ' + pin1 + ';');
+  addGlobalVar('const int motor' + id + '_pin2 = ' + pin2 + ';');
+  addSetupCode('  pinMode(motor' + id + '_pin1, OUTPUT);\n');
+  addSetupCode('  pinMode(motor' + id + '_pin2, OUTPUT);\n');
+  return '';
+};
+
+gen.forBlock['motor_dc_run'] = function (block) {
+  const id = block.getFieldValue('ID');
   const dir = block.getFieldValue('DIR');
   const speed = gen.valueToCode(block, 'SPEED', ORDER_NONE) || '255';
-  addSetupCode('  pinMode(' + in1 + ', OUTPUT);\n');
-  addSetupCode('  pinMode(' + in2 + ', OUTPUT);\n');
-  addSetupCode('  pinMode(' + en + ', OUTPUT);\n');
-  let code = dir === 'FORWARD'
-    ? 'digitalWrite(' + in1 + ', HIGH);\ndigitalWrite(' + in2 + ', LOW);\n'
-    : 'digitalWrite(' + in1 + ', LOW);\ndigitalWrite(' + in2 + ', HIGH);\n';
-  code += 'analogWrite(' + en + ', ' + speed + ');\n';
-  return code;
+  if (dir === 'FORWARD') {
+    return 'analogWrite(motor' + id + '_pin1, ' + speed + ');\nanalogWrite(motor' + id + '_pin2, 0);\n';
+  }
+  return 'analogWrite(motor' + id + '_pin1, 0);\nanalogWrite(motor' + id + '_pin2, ' + speed + ');\n';
 };
 
 gen.forBlock['motor_dc_stop'] = function (block) {
-  const in1 = block.getFieldValue('IN1'), in2 = block.getFieldValue('IN2'), en = block.getFieldValue('EN');
-  return 'digitalWrite(' + in1 + ', LOW);\ndigitalWrite(' + in2 + ', LOW);\nanalogWrite(' + en + ', 0);\n';
+  const id = block.getFieldValue('ID');
+  return 'analogWrite(motor' + id + '_pin1, 0);\nanalogWrite(motor' + id + '_pin2, 0);\n';
 };
 
 gen.forBlock['motor_servo'] = function (block) {
@@ -603,29 +613,6 @@ gen.forBlock['motor_stepper_setspeed'] = function (block) {
 gen.forBlock['motor_stepper_step'] = function (block) {
   const steps = gen.valueToCode(block, 'STEPS', ORDER_NONE) || '100';
   return 'stepper.step(' + steps + ');\n';
-};
-
-// === DC Motor (HB-style with ID + PIN_A/PIN_B) ===
-gen.forBlock['motor_dc_init'] = function (block) {
-  const id = block.getFieldValue('ID');
-  const pinA = block.getFieldValue('PIN_A'), pinB = block.getFieldValue('PIN_B');
-  addGlobalVar('const int motorA_' + id + ' = ' + pinA + ';');
-  addGlobalVar('const int motorB_' + id + ' = ' + pinB + ';');
-  addSetupCode('  pinMode(motorA_' + id + ', OUTPUT);\n');
-  addSetupCode('  pinMode(motorB_' + id + ', OUTPUT);\n');
-  return '';
-};
-
-gen.forBlock['motor_dc_direction'] = function (block) {
-  const id = block.getFieldValue('ID');
-  const dir = parseInt(block.getFieldValue('DIRECCION'));
-  const speed = gen.valueToCode(block, 'VELOCIDAD', ORDER_NONE) || '255';
-  if (dir === 1) {
-    return 'analogWrite(motorA_' + id + ', ' + speed + ');\nanalogWrite(motorB_' + id + ', 0);\n';
-  } else if (dir === -1) {
-    return 'analogWrite(motorA_' + id + ', 0);\nanalogWrite(motorB_' + id + ', ' + speed + ');\n';
-  }
-  return 'analogWrite(motorA_' + id + ', 0);\nanalogWrite(motorB_' + id + ', 0);\n';
 };
 
 // === Text Compare ===
