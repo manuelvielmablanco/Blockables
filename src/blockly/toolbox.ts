@@ -190,14 +190,22 @@ export const toolboxConfig = {
     },
     {
       kind: 'category',
-      name: 'Pantalla LCD',
+      name: 'Pantallas',
       categorystyle: 'display_category',
       cssConfig: { container: 'blocklyToolboxCategoryContainer cat-display' },
       contents: [
+        { kind: 'label', text: 'LCD I2C' },
         { kind: 'block', type: 'lcd_init' },
         { kind: 'block', type: 'lcd_print' },
         { kind: 'block', type: 'lcd_setcursor' },
         { kind: 'block', type: 'lcd_clear' },
+        { kind: 'label', text: 'OLED SSD1306 128x64 I2C' },
+        { kind: 'block', type: 'oled_init' },
+        { kind: 'block', type: 'oled_clear' },
+        { kind: 'block', type: 'oled_setcursor' },
+        { kind: 'block', type: 'oled_textsize' },
+        { kind: 'block', type: 'oled_print' },
+        { kind: 'block', type: 'oled_display' },
       ],
     },
     {

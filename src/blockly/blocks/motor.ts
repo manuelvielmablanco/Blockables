@@ -3,6 +3,13 @@ import * as Blockly from 'blockly';
 const DIGITAL_PINS: [string, string][] = [['2','2'],['3','3'],['4','4'],['5','5'],['6','6'],['7','7'],['8','8'],['9','9'],['10','10'],['11','11'],['12','12'],['13','13']];
 const PWM_PINS: [string, string][] = [['3','3'],['5','5'],['6','6'],['9','9'],['10','10'],['11','11']];
 const MOTOR_IDS: [string, string][] = [['1','1'],['2','2'],['3','3'],['4','4']];
+// Pines admitidos por el servo: digitales 2-13 + analógicos A0-A5 (en Uno/Nano,
+// los pines A0-A5 pueden usarse como digitales y la librería Servo los acepta).
+const SERVO_PINS: [string, string][] = [
+  ['2','2'],['3','3'],['4','4'],['5','5'],['6','6'],['7','7'],
+  ['8','8'],['9','9'],['10','10'],['11','11'],['12','12'],['13','13'],
+  ['A0','A0'],['A1','A1'],['A2','A2'],['A3','A3'],['A4','A4'],['A5','A5'],
+];
 
 // === Motor DC (estilo Hello Blocks: 2 pines PWM por motor + ID, sin EN) ===
 // Modelo de driver: puente H simple (TB6612FNG, DRV8833, MX1508…) donde cada
@@ -58,7 +65,7 @@ Blockly.Blocks['motor_servo'] = {
     this.appendValueInput('ANGLE')
       .setCheck('Number')
       .appendField('servo PIN')
-      .appendField(new Blockly.FieldDropdown(DIGITAL_PINS) as Blockly.Field, 'PIN')
+      .appendField(new Blockly.FieldDropdown(SERVO_PINS) as Blockly.Field, 'PIN')
       .appendField('ángulo');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);

@@ -655,6 +655,46 @@ gen.forBlock['lcd_clear'] = function () {
   return 'lcd.clear();\n';
 };
 
+// === OLED SSD1306 128x64 I2C ===
+gen.forBlock['oled_init'] = function (block) {
+  const addr = block.getFieldValue('ADDR');
+  addInclude('#include <Wire.h>');
+  addInclude('#include <Adafruit_GFX.h>');
+  addInclude('#include <Adafruit_SSD1306.h>');
+  addGlobalVar('Adafruit_SSD1306 display(128, 64, &Wire, -1);');
+  addSetupCode('  display.begin(SSD1306_SWITCHCAPVCC, ' + addr + ');\n');
+  addSetupCode('  display.clearDisplay();\n');
+  addSetupCode('  display.setTextSize(1);\n');
+  addSetupCode('  display.setTextColor(SSD1306_WHITE);\n');
+  addSetupCode('  display.setCursor(0, 0);\n');
+  addSetupCode('  display.display();\n');
+  return '';
+};
+
+gen.forBlock['oled_clear'] = function () {
+  return 'display.clearDisplay();\n';
+};
+
+gen.forBlock['oled_setcursor'] = function (block) {
+  const x = block.getFieldValue('X');
+  const y = block.getFieldValue('Y');
+  return 'display.setCursor(' + x + ', ' + y + ');\n';
+};
+
+gen.forBlock['oled_textsize'] = function (block) {
+  const size = block.getFieldValue('SIZE');
+  return 'display.setTextSize(' + size + ');\n';
+};
+
+gen.forBlock['oled_print'] = function (block) {
+  const text = gen.valueToCode(block, 'TEXT', ORDER_NONE) || '""';
+  return 'display.print(' + text + ');\n';
+};
+
+gen.forBlock['oled_display'] = function () {
+  return 'display.display();\n';
+};
+
 // === NeoPixel ===
 gen.forBlock['neopixel_init'] = function (block) {
   const pin = block.getFieldValue('PIN'), num = block.getFieldValue('NUM');
