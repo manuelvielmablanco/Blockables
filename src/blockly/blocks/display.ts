@@ -122,3 +122,111 @@ Blockly.Blocks['oled_display'] = {
     this.setTooltip('Vuelca el buffer al hardware (display.display())');
   },
 };
+
+const OLED_FILL: [string, string][] = [
+  ['línea', 'line'],
+  ['lleno', 'fill'],
+];
+
+Blockly.Blocks['oled_drawline'] = {
+  init: function (this: Blockly.Block) {
+    this.appendDummyInput()
+      .appendField('OLED dibujar línea de X1')
+      .appendField(new Blockly.FieldNumber(0, 0, 127) as Blockly.Field, 'X1')
+      .appendField('Y1')
+      .appendField(new Blockly.FieldNumber(0, 0, 63) as Blockly.Field, 'Y1')
+      .appendField('a X2')
+      .appendField(new Blockly.FieldNumber(127, 0, 127) as Blockly.Field, 'X2')
+      .appendField('Y2')
+      .appendField(new Blockly.FieldNumber(63, 0, 63) as Blockly.Field, 'Y2');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setStyle('display_blocks');
+    this.setTooltip('Dibuja una línea entre dos puntos en la OLED');
+  },
+};
+
+Blockly.Blocks['oled_drawrect'] = {
+  init: function (this: Blockly.Block) {
+    this.appendDummyInput()
+      .appendField('OLED rectángulo')
+      .appendField(new Blockly.FieldDropdown(OLED_FILL) as Blockly.Field, 'MODE')
+      .appendField('X')
+      .appendField(new Blockly.FieldNumber(0, 0, 127) as Blockly.Field, 'X')
+      .appendField('Y')
+      .appendField(new Blockly.FieldNumber(0, 0, 63) as Blockly.Field, 'Y')
+      .appendField('ancho')
+      .appendField(new Blockly.FieldNumber(20, 1, 128) as Blockly.Field, 'W')
+      .appendField('alto')
+      .appendField(new Blockly.FieldNumber(20, 1, 64) as Blockly.Field, 'H');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setStyle('display_blocks');
+    this.setTooltip('Dibuja un rectángulo (línea o lleno) en la OLED');
+  },
+};
+
+Blockly.Blocks['oled_drawcircle'] = {
+  init: function (this: Blockly.Block) {
+    this.appendDummyInput()
+      .appendField('OLED círculo')
+      .appendField(new Blockly.FieldDropdown(OLED_FILL) as Blockly.Field, 'MODE')
+      .appendField('centro X')
+      .appendField(new Blockly.FieldNumber(64, 0, 127) as Blockly.Field, 'X')
+      .appendField('Y')
+      .appendField(new Blockly.FieldNumber(32, 0, 63) as Blockly.Field, 'Y')
+      .appendField('radio')
+      .appendField(new Blockly.FieldNumber(10, 1, 64) as Blockly.Field, 'R');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setStyle('display_blocks');
+    this.setTooltip('Dibuja un círculo (línea o lleno) en la OLED');
+  },
+};
+
+Blockly.Blocks['oled_drawtriangle'] = {
+  init: function (this: Blockly.Block) {
+    this.appendDummyInput()
+      .appendField('OLED triángulo')
+      .appendField(new Blockly.FieldDropdown(OLED_FILL) as Blockly.Field, 'MODE');
+    this.appendDummyInput()
+      .appendField('X1')
+      .appendField(new Blockly.FieldNumber(0, 0, 127) as Blockly.Field, 'X1')
+      .appendField('Y1')
+      .appendField(new Blockly.FieldNumber(63, 0, 63) as Blockly.Field, 'Y1')
+      .appendField('X2')
+      .appendField(new Blockly.FieldNumber(64, 0, 127) as Blockly.Field, 'X2')
+      .appendField('Y2')
+      .appendField(new Blockly.FieldNumber(0, 0, 63) as Blockly.Field, 'Y2')
+      .appendField('X3')
+      .appendField(new Blockly.FieldNumber(127, 0, 127) as Blockly.Field, 'X3')
+      .appendField('Y3')
+      .appendField(new Blockly.FieldNumber(63, 0, 63) as Blockly.Field, 'Y3');
+    this.setInputsInline(false);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setStyle('display_blocks');
+    this.setTooltip('Dibuja un triángulo (línea o lleno) en la OLED');
+  },
+};
+
+Blockly.Blocks['oled_scroll'] = {
+  init: function (this: Blockly.Block) {
+    this.appendDummyInput()
+      .appendField('OLED desplazar')
+      .appendField(
+        new Blockly.FieldDropdown([
+          ['→ derecha', 'right'],
+          ['← izquierda', 'left'],
+          ['↗ diagonal derecha', 'diagright'],
+          ['↖ diagonal izquierda', 'diagleft'],
+          ['■ detener', 'stop'],
+        ]) as Blockly.Field,
+        'DIR',
+      );
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setStyle('display_blocks');
+    this.setTooltip('Activa el desplazamiento (scroll) por hardware de la OLED');
+  },
+};

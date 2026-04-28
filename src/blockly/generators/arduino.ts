@@ -695,6 +695,57 @@ gen.forBlock['oled_display'] = function () {
   return 'display.display();\n';
 };
 
+gen.forBlock['oled_drawline'] = function (block) {
+  const x1 = block.getFieldValue('X1');
+  const y1 = block.getFieldValue('Y1');
+  const x2 = block.getFieldValue('X2');
+  const y2 = block.getFieldValue('Y2');
+  return 'display.drawLine(' + x1 + ', ' + y1 + ', ' + x2 + ', ' + y2 + ', SSD1306_WHITE);\n';
+};
+
+gen.forBlock['oled_drawrect'] = function (block) {
+  const mode = block.getFieldValue('MODE');
+  const x = block.getFieldValue('X');
+  const y = block.getFieldValue('Y');
+  const w = block.getFieldValue('W');
+  const h = block.getFieldValue('H');
+  const fn = mode === 'fill' ? 'fillRect' : 'drawRect';
+  return 'display.' + fn + '(' + x + ', ' + y + ', ' + w + ', ' + h + ', SSD1306_WHITE);\n';
+};
+
+gen.forBlock['oled_drawcircle'] = function (block) {
+  const mode = block.getFieldValue('MODE');
+  const x = block.getFieldValue('X');
+  const y = block.getFieldValue('Y');
+  const r = block.getFieldValue('R');
+  const fn = mode === 'fill' ? 'fillCircle' : 'drawCircle';
+  return 'display.' + fn + '(' + x + ', ' + y + ', ' + r + ', SSD1306_WHITE);\n';
+};
+
+gen.forBlock['oled_drawtriangle'] = function (block) {
+  const mode = block.getFieldValue('MODE');
+  const x1 = block.getFieldValue('X1');
+  const y1 = block.getFieldValue('Y1');
+  const x2 = block.getFieldValue('X2');
+  const y2 = block.getFieldValue('Y2');
+  const x3 = block.getFieldValue('X3');
+  const y3 = block.getFieldValue('Y3');
+  const fn = mode === 'fill' ? 'fillTriangle' : 'drawTriangle';
+  return (
+    'display.' + fn + '(' + x1 + ', ' + y1 + ', ' + x2 + ', ' + y2 + ', ' + x3 + ', ' + y3 + ', SSD1306_WHITE);\n'
+  );
+};
+
+gen.forBlock['oled_scroll'] = function (block) {
+  const dir = block.getFieldValue('DIR');
+  if (dir === 'stop') return 'display.stopscroll();\n';
+  // start=0x00 (página 0), stop=0x07 (página 7) → toda la pantalla 64px
+  if (dir === 'right') return 'display.startscrollright(0x00, 0x07);\n';
+  if (dir === 'left') return 'display.startscrollleft(0x00, 0x07);\n';
+  if (dir === 'diagright') return 'display.startscrolldiagright(0x00, 0x07);\n';
+  return 'display.startscrolldiagleft(0x00, 0x07);\n';
+};
+
 // === NeoPixel ===
 gen.forBlock['neopixel_init'] = function (block) {
   const pin = block.getFieldValue('PIN'), num = block.getFieldValue('NUM');

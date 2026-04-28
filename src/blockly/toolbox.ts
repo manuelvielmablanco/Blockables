@@ -206,6 +206,11 @@ export const toolboxConfig = {
         { kind: 'block', type: 'oled_textsize' },
         { kind: 'block', type: 'oled_print' },
         { kind: 'block', type: 'oled_display' },
+        { kind: 'block', type: 'oled_drawline' },
+        { kind: 'block', type: 'oled_drawrect' },
+        { kind: 'block', type: 'oled_drawcircle' },
+        { kind: 'block', type: 'oled_drawtriangle' },
+        { kind: 'block', type: 'oled_scroll' },
       ],
     },
     {
