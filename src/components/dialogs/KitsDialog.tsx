@@ -182,10 +182,10 @@ export default function KitsDialog({ open, onClose, onSelect }: KitsDialogProps)
         {/* Imagen / placeholder */}
         <div
           style={{
-            height: 160,
+            height: 200,
             background: imgFailed
               ? 'linear-gradient(135deg, var(--teal-bg, #e0f2f4) 0%, var(--yellow-light, #fff7d6) 100%)'
-              : 'transparent',
+              : kit.imageBg,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -201,7 +201,7 @@ export default function KitsDialog({ open, onClose, onSelect }: KitsDialogProps)
               style={{
                 width: '100%',
                 height: '100%',
-                objectFit: 'cover',
+                objectFit: 'contain',
                 display: 'block',
               }}
             />

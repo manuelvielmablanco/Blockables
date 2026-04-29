@@ -16,6 +16,8 @@ export interface KitProject {
   image: string;
   /** Emoji de respaldo si la imagen no carga. */
   emoji: string;
+  /** Color de fondo de la franja superior (debe coincidir con el fondo de la foto). */
+  imageBg: string;
   /** Lista breve de funcionalidades (máx 4). */
   features: string[];
   boardId: string;
@@ -416,6 +418,7 @@ export const kits: KitProject[] = [
       'Robot móvil con control Bluetooth y modo autónomo. Esquiva obstáculos con sensor ultrasónico y reacciona con NeoPixels.',
     image: 'kits/franky.jpg',
     emoji: '🤖',
+    imageBg: '#e8451f',
     features: [
       '2 motores DC con driver puente H',
       'Control Bluetooth (HC-05/06)',
@@ -432,6 +435,7 @@ export const kits: KitProject[] = [
       'Sistema solar mecánico motorizado. Tres botones táctiles controlan la rotación del planeta y la iluminación del Sol con NeoPixels.',
     image: 'kits/tellurion.jpg',
     emoji: '🌍',
+    imageBg: '#f5c518',
     features: [
       'Motor paso a paso 28BYJ-48',
       '3 sensores táctiles capacitivos',
