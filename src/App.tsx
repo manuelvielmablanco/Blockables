@@ -7,6 +7,7 @@ import type { WorkspaceHandle } from './components/layout/WorkspaceArea';
 import CodeViewer from './components/layout/CodeViewer';
 import UploadDialog from './components/dialogs/UploadDialog';
 import ExamplesDialog from './components/dialogs/ExamplesDialog';
+import KitsDialog from './components/dialogs/KitsDialog';
 import SerialMonitor from './components/serial/SerialMonitor';
 import { useSerial } from './hooks/useSerial';
 import {
@@ -19,6 +20,7 @@ import {
 } from './services/project';
 import type { ProjectData } from './services/project';
 import type { ExampleProject } from './data/examples';
+import type { KitProject } from './data/kits';
 import { useToast } from './components/ui/Toast';
 
 function AppContent() {
@@ -26,6 +28,7 @@ function AppContent() {
   const [showCode, setShowCode] = useState(false);
   const [showMonitor, setShowMonitor] = useState(false);
   const [showExamples, setShowExamples] = useState(false);
+  const [showKits, setShowKits] = useState(false);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [projectName, setProjectName] = useState('Mi proyecto');
   const codeRef = useRef(code);
@@ -165,6 +168,23 @@ function AppContent() {
     toast.info('Ejemplo cargado', example.name);
   }, [setBoard, toast]);
 
+  const handleSelectKit = useCallback((kit: KitProject) => {
+    const ws = workspaceRef.current?.getWorkspace();
+    if (!ws) return;
+
+    ws.clear();
+    try {
+      Blockly.serialization.workspaces.load(kit.workspace as object, ws);
+      setProjectName(kit.name);
+      setBoard(kit.boardId);
+      setShowKits(false);
+      toast.info('Kit cargado', `${kit.name} — programa original`);
+    } catch (err) {
+      console.error('Error cargando kit:', err);
+      toast.error('No se pudo cargar el kit', String(err));
+    }
+  }, [setBoard, toast]);
+
   return (
     <div className="flex flex-col h-screen" style={{ backgroundColor: 'var(--bg-subtle)' }}>
       <TopBar
@@ -182,6 +202,7 @@ function AppContent() {
         onSave={handleSaveProject}
         onExportCode={handleExportCode}
         onExamples={() => setShowExamples(true)}
+        onKits={() => setShowKits(true)}
       />
       <div className="flex flex-col flex-1 overflow-hidden">
         <div className="flex flex-1 overflow-hidden">
@@ -216,6 +237,11 @@ function AppContent() {
         open={showExamples}
         onClose={() => setShowExamples(false)}
         onSelect={handleSelectExample}
+      />
+      <KitsDialog
+        open={showKits}
+        onClose={() => setShowKits(false)}
+        onSelect={handleSelectKit}
       />
     </div>
   );

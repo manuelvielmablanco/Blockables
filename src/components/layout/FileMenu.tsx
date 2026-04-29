@@ -7,6 +7,7 @@ import {
   Save,
   FileCode,
   BookOpen,
+  Package,
   Trash2,
 } from 'lucide-react';
 
@@ -16,9 +17,10 @@ interface FileMenuProps {
   onSave: () => void;
   onExportCode: () => void;
   onExamples: () => void;
+  onKits: () => void;
 }
 
-export default function FileMenu({ onNew, onOpen, onSave, onExportCode, onExamples }: FileMenuProps) {
+export default function FileMenu({ onNew, onOpen, onSave, onExportCode, onExamples, onKits }: FileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [popupPos, setPopupPos] = useState<{ top: number; left: number } | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -118,6 +120,11 @@ export default function FileMenu({ onNew, onOpen, onSave, onExportCode, onExampl
           icon={<BookOpen className="w-[15px] h-[15px]" />}
           label="Ejemplos"
           onClick={() => handleAction(onExamples)}
+        />
+        <FmItem
+          icon={<Package className="w-[15px] h-[15px]" />}
+          label="Kits Ingeniables"
+          onClick={() => handleAction(onKits)}
         />
       </div>
 

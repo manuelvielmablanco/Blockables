@@ -12,6 +12,7 @@
   RewriteRule ^assets/     - [L]
   RewriteRule ^fonts/      - [L]
   RewriteRule ^characters/ - [L]
+  RewriteRule ^kits/       - [L]
 
   # Resto: si la ruta no es archivo ni directorio físico → index.html
   # (necesario para el routing client-side).

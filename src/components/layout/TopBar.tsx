@@ -27,6 +27,7 @@ interface TopBarProps {
   onSave?: () => void;
   onExportCode?: () => void;
   onExamples?: () => void;
+  onKits?: () => void;
 }
 
 export default function TopBar({
@@ -44,6 +45,7 @@ export default function TopBar({
   onSave,
   onExportCode,
   onExamples,
+  onKits,
 }: TopBarProps) {
   const isConnected = serialStatus === 'connected';
   const isConnecting = serialStatus === 'connecting';
@@ -83,6 +85,7 @@ export default function TopBar({
         onSave={onSave || (() => {})}
         onExportCode={onExportCode || (() => {})}
         onExamples={onExamples || (() => {})}
+        onKits={onKits || (() => {})}
       />
 
       {/* Brand */}
