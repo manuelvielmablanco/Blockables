@@ -16,8 +16,6 @@ export interface KitProject {
   image: string;
   /** Emoji de respaldo si la imagen no carga. */
   emoji: string;
-  /** Color de fondo de la franja superior (debe coincidir con el fondo de la foto). */
-  imageBg: string;
   /** Lista breve de funcionalidades (máx 4). */
   features: string[];
   boardId: string;
@@ -412,30 +410,12 @@ const tellurionWorkspace = {
 // ────────────────────────────────────────────────────────────────────────
 export const kits: KitProject[] = [
   {
-    id: 'franky',
-    name: 'Ingeniables Franky',
-    description:
-      'Robot móvil con control Bluetooth y modo autónomo. Esquiva obstáculos con sensor ultrasónico y reacciona con NeoPixels.',
-    image: 'kits/franky.jpg',
-    emoji: '🤖',
-    imageBg: '#e8451f',
-    features: [
-      '2 motores DC con driver puente H',
-      'Control Bluetooth (HC-05/06)',
-      'Modo autónomo con ultrasonidos',
-      'Anillo NeoPixel de 3 LEDs',
-    ],
-    boardId: 'arduino-nano',
-    workspace: frankyWorkspace,
-  },
-  {
     id: 'tellurion',
     name: 'Ingeniables Tellurion',
     description:
       'Sistema solar mecánico motorizado. Tres botones táctiles controlan la rotación del planeta y la iluminación del Sol con NeoPixels.',
-    image: 'kits/tellurion.jpg',
+    image: 'kits/tellurion.png',
     emoji: '🌍',
-    imageBg: '#f5c518',
     features: [
       'Motor paso a paso 28BYJ-48',
       '3 sensores táctiles capacitivos',
@@ -444,5 +424,21 @@ export const kits: KitProject[] = [
     ],
     boardId: 'arduino-nano',
     workspace: tellurionWorkspace,
+  },
+  {
+    id: 'franky',
+    name: 'Ingeniables Franky',
+    description:
+      'Robot móvil con control Bluetooth y modo autónomo. Esquiva obstáculos con sensor ultrasónico y reacciona con NeoPixels.',
+    image: 'kits/franky.png',
+    emoji: '🤖',
+    features: [
+      '2 motores DC con driver puente H',
+      'Control Bluetooth (HC-05/06)',
+      'Modo autónomo con ultrasonidos',
+      'Anillo NeoPixel de 3 LEDs',
+    ],
+    boardId: 'arduino-nano',
+    workspace: frankyWorkspace,
   },
 ];
