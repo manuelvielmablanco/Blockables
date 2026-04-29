@@ -82,27 +82,27 @@ const frankyWorkspace = {
       proc('adelante', stmt(
         { type: 'motor_dc_run', fields: { ID: '1', DIR: 'FORWARD' }, inputs: { SPEED: { shadow: num(255) } } },
         { type: 'motor_dc_run', fields: { ID: '2', DIR: 'FORWARD' }, inputs: { SPEED: { shadow: num(255) } } },
-      ), 420, 30),
+      ), 560, 30),
 
       proc('atras', stmt(
         { type: 'motor_dc_run', fields: { ID: '1', DIR: 'BACKWARD' }, inputs: { SPEED: { shadow: num(255) } } },
         { type: 'motor_dc_run', fields: { ID: '2', DIR: 'BACKWARD' }, inputs: { SPEED: { shadow: num(255) } } },
-      ), 420, 200),
+      ), 560, 260),
 
       proc('izquierda', stmt(
         { type: 'motor_dc_stop', fields: { ID: '1' } },
         { type: 'motor_dc_run', fields: { ID: '2', DIR: 'FORWARD' }, inputs: { SPEED: { shadow: num(255) } } },
-      ), 420, 380),
+      ), 560, 490),
 
       proc('derecha', stmt(
         { type: 'motor_dc_run', fields: { ID: '1', DIR: 'FORWARD' }, inputs: { SPEED: { shadow: num(255) } } },
         { type: 'motor_dc_stop', fields: { ID: '2' } },
-      ), 420, 560),
+      ), 560, 720),
 
       proc('parar', stmt(
         { type: 'motor_dc_stop', fields: { ID: '1' } },
         { type: 'motor_dc_stop', fields: { ID: '2' } },
-      ), 420, 740),
+      ), 560, 950),
 
       // Modo autónomo: si hay obstáculo a < 20cm, retrocede y gira.
       proc('modoAuto', {
@@ -135,13 +135,13 @@ const frankyWorkspace = {
             block: call('adelante'),
           },
         },
-      }, 820, 30),
+      }, 1100, 30),
 
       // LOOP
       {
         type: 'arduino_loop',
         x: 30,
-        y: 280,
+        y: 480,
         deletable: false,
         inputs: {
           LOOP: {
@@ -329,13 +329,13 @@ const tellurionWorkspace = {
           },
         },
         { type: 'neopixel_show' },
-      ), 580, 30),
+      ), 700, 30),
 
       // LOOP
       {
         type: 'arduino_loop',
         x: 30,
-        y: 540,
+        y: 720,
         deletable: false,
         inputs: {
           LOOP: {
