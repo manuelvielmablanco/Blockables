@@ -130,15 +130,12 @@ const OLED_FILL: [string, string][] = [
 
 Blockly.Blocks['oled_drawline'] = {
   init: function (this: Blockly.Block) {
-    this.appendDummyInput()
-      .appendField('OLED dibujar línea de X1')
-      .appendField(new Blockly.FieldNumber(0, 0, 127) as Blockly.Field, 'X1')
-      .appendField('Y1')
-      .appendField(new Blockly.FieldNumber(0, 0, 63) as Blockly.Field, 'Y1')
-      .appendField('a X2')
-      .appendField(new Blockly.FieldNumber(127, 0, 127) as Blockly.Field, 'X2')
-      .appendField('Y2')
-      .appendField(new Blockly.FieldNumber(63, 0, 63) as Blockly.Field, 'Y2');
+    this.appendDummyInput().appendField('OLED dibujar línea');
+    this.appendValueInput('X1').setCheck('Number').appendField('de X1');
+    this.appendValueInput('Y1').setCheck('Number').appendField('Y1');
+    this.appendValueInput('X2').setCheck('Number').appendField('a X2');
+    this.appendValueInput('Y2').setCheck('Number').appendField('Y2');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setStyle('display_blocks');
@@ -150,15 +147,12 @@ Blockly.Blocks['oled_drawrect'] = {
   init: function (this: Blockly.Block) {
     this.appendDummyInput()
       .appendField('OLED rectángulo')
-      .appendField(new Blockly.FieldDropdown(OLED_FILL) as Blockly.Field, 'MODE')
-      .appendField('X')
-      .appendField(new Blockly.FieldNumber(0, 0, 127) as Blockly.Field, 'X')
-      .appendField('Y')
-      .appendField(new Blockly.FieldNumber(0, 0, 63) as Blockly.Field, 'Y')
-      .appendField('ancho')
-      .appendField(new Blockly.FieldNumber(20, 1, 128) as Blockly.Field, 'W')
-      .appendField('alto')
-      .appendField(new Blockly.FieldNumber(20, 1, 64) as Blockly.Field, 'H');
+      .appendField(new Blockly.FieldDropdown(OLED_FILL) as Blockly.Field, 'MODE');
+    this.appendValueInput('X').setCheck('Number').appendField('X');
+    this.appendValueInput('Y').setCheck('Number').appendField('Y');
+    this.appendValueInput('W').setCheck('Number').appendField('ancho');
+    this.appendValueInput('H').setCheck('Number').appendField('alto');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setStyle('display_blocks');
@@ -170,13 +164,11 @@ Blockly.Blocks['oled_drawcircle'] = {
   init: function (this: Blockly.Block) {
     this.appendDummyInput()
       .appendField('OLED círculo')
-      .appendField(new Blockly.FieldDropdown(OLED_FILL) as Blockly.Field, 'MODE')
-      .appendField('centro X')
-      .appendField(new Blockly.FieldNumber(64, 0, 127) as Blockly.Field, 'X')
-      .appendField('Y')
-      .appendField(new Blockly.FieldNumber(32, 0, 63) as Blockly.Field, 'Y')
-      .appendField('radio')
-      .appendField(new Blockly.FieldNumber(10, 1, 64) as Blockly.Field, 'R');
+      .appendField(new Blockly.FieldDropdown(OLED_FILL) as Blockly.Field, 'MODE');
+    this.appendValueInput('X').setCheck('Number').appendField('centro X');
+    this.appendValueInput('Y').setCheck('Number').appendField('Y');
+    this.appendValueInput('R').setCheck('Number').appendField('radio');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setStyle('display_blocks');
@@ -189,20 +181,13 @@ Blockly.Blocks['oled_drawtriangle'] = {
     this.appendDummyInput()
       .appendField('OLED triángulo')
       .appendField(new Blockly.FieldDropdown(OLED_FILL) as Blockly.Field, 'MODE');
-    this.appendDummyInput()
-      .appendField('X1')
-      .appendField(new Blockly.FieldNumber(0, 0, 127) as Blockly.Field, 'X1')
-      .appendField('Y1')
-      .appendField(new Blockly.FieldNumber(63, 0, 63) as Blockly.Field, 'Y1')
-      .appendField('X2')
-      .appendField(new Blockly.FieldNumber(64, 0, 127) as Blockly.Field, 'X2')
-      .appendField('Y2')
-      .appendField(new Blockly.FieldNumber(0, 0, 63) as Blockly.Field, 'Y2')
-      .appendField('X3')
-      .appendField(new Blockly.FieldNumber(127, 0, 127) as Blockly.Field, 'X3')
-      .appendField('Y3')
-      .appendField(new Blockly.FieldNumber(63, 0, 63) as Blockly.Field, 'Y3');
-    this.setInputsInline(false);
+    this.appendValueInput('X1').setCheck('Number').appendField('X1');
+    this.appendValueInput('Y1').setCheck('Number').appendField('Y1');
+    this.appendValueInput('X2').setCheck('Number').appendField('X2');
+    this.appendValueInput('Y2').setCheck('Number').appendField('Y2');
+    this.appendValueInput('X3').setCheck('Number').appendField('X3');
+    this.appendValueInput('Y3').setCheck('Number').appendField('Y3');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setStyle('display_blocks');

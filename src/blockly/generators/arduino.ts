@@ -696,40 +696,40 @@ gen.forBlock['oled_display'] = function () {
 };
 
 gen.forBlock['oled_drawline'] = function (block) {
-  const x1 = block.getFieldValue('X1');
-  const y1 = block.getFieldValue('Y1');
-  const x2 = block.getFieldValue('X2');
-  const y2 = block.getFieldValue('Y2');
+  const x1 = gen.valueToCode(block, 'X1', ORDER_NONE) || '0';
+  const y1 = gen.valueToCode(block, 'Y1', ORDER_NONE) || '0';
+  const x2 = gen.valueToCode(block, 'X2', ORDER_NONE) || '0';
+  const y2 = gen.valueToCode(block, 'Y2', ORDER_NONE) || '0';
   return 'display.drawLine(' + x1 + ', ' + y1 + ', ' + x2 + ', ' + y2 + ', SSD1306_WHITE);\n';
 };
 
 gen.forBlock['oled_drawrect'] = function (block) {
   const mode = block.getFieldValue('MODE');
-  const x = block.getFieldValue('X');
-  const y = block.getFieldValue('Y');
-  const w = block.getFieldValue('W');
-  const h = block.getFieldValue('H');
+  const x = gen.valueToCode(block, 'X', ORDER_NONE) || '0';
+  const y = gen.valueToCode(block, 'Y', ORDER_NONE) || '0';
+  const w = gen.valueToCode(block, 'W', ORDER_NONE) || '0';
+  const h = gen.valueToCode(block, 'H', ORDER_NONE) || '0';
   const fn = mode === 'fill' ? 'fillRect' : 'drawRect';
   return 'display.' + fn + '(' + x + ', ' + y + ', ' + w + ', ' + h + ', SSD1306_WHITE);\n';
 };
 
 gen.forBlock['oled_drawcircle'] = function (block) {
   const mode = block.getFieldValue('MODE');
-  const x = block.getFieldValue('X');
-  const y = block.getFieldValue('Y');
-  const r = block.getFieldValue('R');
+  const x = gen.valueToCode(block, 'X', ORDER_NONE) || '0';
+  const y = gen.valueToCode(block, 'Y', ORDER_NONE) || '0';
+  const r = gen.valueToCode(block, 'R', ORDER_NONE) || '0';
   const fn = mode === 'fill' ? 'fillCircle' : 'drawCircle';
   return 'display.' + fn + '(' + x + ', ' + y + ', ' + r + ', SSD1306_WHITE);\n';
 };
 
 gen.forBlock['oled_drawtriangle'] = function (block) {
   const mode = block.getFieldValue('MODE');
-  const x1 = block.getFieldValue('X1');
-  const y1 = block.getFieldValue('Y1');
-  const x2 = block.getFieldValue('X2');
-  const y2 = block.getFieldValue('Y2');
-  const x3 = block.getFieldValue('X3');
-  const y3 = block.getFieldValue('Y3');
+  const x1 = gen.valueToCode(block, 'X1', ORDER_NONE) || '0';
+  const y1 = gen.valueToCode(block, 'Y1', ORDER_NONE) || '0';
+  const x2 = gen.valueToCode(block, 'X2', ORDER_NONE) || '0';
+  const y2 = gen.valueToCode(block, 'Y2', ORDER_NONE) || '0';
+  const x3 = gen.valueToCode(block, 'X3', ORDER_NONE) || '0';
+  const y3 = gen.valueToCode(block, 'Y3', ORDER_NONE) || '0';
   const fn = mode === 'fill' ? 'fillTriangle' : 'drawTriangle';
   return (
     'display.' + fn + '(' + x1 + ', ' + y1 + ', ' + x2 + ', ' + y2 + ', ' + x3 + ', ' + y3 + ', SSD1306_WHITE);\n'
