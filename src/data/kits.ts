@@ -82,27 +82,27 @@ const frankyWorkspace = {
       proc('adelante', stmt(
         { type: 'motor_dc_run', fields: { ID: '1', DIR: 'FORWARD' }, inputs: { SPEED: { shadow: num(255) } } },
         { type: 'motor_dc_run', fields: { ID: '2', DIR: 'FORWARD' }, inputs: { SPEED: { shadow: num(255) } } },
-      ), 560, 30),
+      ), 820,30),
 
       proc('atras', stmt(
         { type: 'motor_dc_run', fields: { ID: '1', DIR: 'BACKWARD' }, inputs: { SPEED: { shadow: num(255) } } },
         { type: 'motor_dc_run', fields: { ID: '2', DIR: 'BACKWARD' }, inputs: { SPEED: { shadow: num(255) } } },
-      ), 560, 260),
+      ), 820,260),
 
       proc('izquierda', stmt(
         { type: 'motor_dc_stop', fields: { ID: '1' } },
         { type: 'motor_dc_run', fields: { ID: '2', DIR: 'FORWARD' }, inputs: { SPEED: { shadow: num(255) } } },
-      ), 560, 490),
+      ), 820,490),
 
       proc('derecha', stmt(
         { type: 'motor_dc_run', fields: { ID: '1', DIR: 'FORWARD' }, inputs: { SPEED: { shadow: num(255) } } },
         { type: 'motor_dc_stop', fields: { ID: '2' } },
-      ), 560, 720),
+      ), 820,720),
 
       proc('parar', stmt(
         { type: 'motor_dc_stop', fields: { ID: '1' } },
         { type: 'motor_dc_stop', fields: { ID: '2' } },
-      ), 560, 950),
+      ), 820,950),
 
       // Modo autónomo: si hay obstáculo a < 20cm, retrocede y gira.
       proc('modoAuto', {
@@ -135,7 +135,7 @@ const frankyWorkspace = {
             block: call('adelante'),
           },
         },
-      }, 1100, 30),
+      }, 1380, 30),
 
       // LOOP
       {
