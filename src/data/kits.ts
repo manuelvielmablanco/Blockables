@@ -203,10 +203,10 @@ function ifElseChain(branches: Array<[B, B]>): B {
 //  NeoPixel = A3 (7 LEDs) · botones táctiles = 7,8,9
 // ────────────────────────────────────────────────────────────────────────
 const tellurionWorkspace = {
+  // 'i' es la variable Blockly estándar del controls_for.
+  // colorIndex es una variable tipada Arduino (typed_variable_declare).
   variables: [
-    { name: 'colorIndex', id: 'colorIndex_id', type: 'Number' },
-    { name: 'neoOn', id: 'neoOn_id', type: 'Boolean' },
-    { name: 'i', id: 'i_id', type: 'Number' },
+    { name: 'i', id: 'i_id', type: '' },
   ],
   blocks: {
     languageVersion: 0,
@@ -234,13 +234,8 @@ const tellurionWorkspace = {
               { type: 'io_pinmode', fields: { PIN: '9', MODE: 'INPUT' } },
               {
                 type: 'typed_variable_declare',
-                fields: { TYPE: 'Number', VAR: 'colorIndex' },
+                fields: { TYPE: 'int', VAR: 'colorIndex' },
                 inputs: { VALUE: { shadow: num(0) } },
-              },
-              {
-                type: 'typed_variable_declare',
-                fields: { TYPE: 'Boolean', VAR: 'neoOn' },
-                inputs: { VALUE: { shadow: bool(false) } },
               },
               { type: 'neopixel_clear' },
               { type: 'neopixel_show' },
@@ -345,7 +340,7 @@ const tellurionWorkspace = {
         inputs: {
           LOOP: {
             block: stmt(
-              // Botón táctil 1 (pin 7): on/off NeoPixel + ciclar color
+              // Botón táctil 1 (pin 7): cicla color del Sol (0→1→2→3→0…)
               {
                 type: 'controls_if',
                 inputs: {
@@ -353,59 +348,30 @@ const tellurionWorkspace = {
                   DO0: {
                     block: stmt(
                       {
-                        type: 'controls_if',
-                        extraState: { hasElse: true },
+                        type: 'typed_variable_set',
+                        fields: { VAR: 'colorIndex' },
                         inputs: {
-                          IF0: { block: { type: 'typed_variable_get', fields: { VAR: 'neoOn' } } },
-                          DO0: {
+                          VALUE: {
                             block: {
-                              type: 'typed_variable_set',
-                              fields: { VAR: 'colorIndex' },
+                              type: 'math_modulo',
                               inputs: {
-                                VALUE: {
+                                DIVIDEND: {
                                   block: {
-                                    type: 'math_modulo',
+                                    type: 'math_arithmetic',
+                                    fields: { OP: 'ADD' },
                                     inputs: {
-                                      DIVIDEND: {
-                                        block: {
-                                          type: 'math_arithmetic',
-                                          fields: { OP: 'ADD' },
-                                          inputs: {
-                                            A: { block: { type: 'typed_variable_get', fields: { VAR: 'colorIndex' } } },
-                                            B: { block: num(1) },
-                                          },
-                                        },
-                                      },
-                                      DIVISOR: { block: num(4) },
+                                      A: { block: { type: 'typed_variable_get', fields: { VAR: 'colorIndex' } } },
+                                      B: { block: num(1) },
                                     },
                                   },
                                 },
+                                DIVISOR: { block: num(4) },
                               },
                             },
                           },
-                          ELSE: {
-                            block: {
-                              type: 'typed_variable_set',
-                              fields: { VAR: 'neoOn' },
-                              inputs: { VALUE: { shadow: bool(true) } },
-                            },
-                          },
                         },
                       },
-                      {
-                        type: 'controls_if',
-                        extraState: { hasElse: true },
-                        inputs: {
-                          IF0: { block: { type: 'typed_variable_get', fields: { VAR: 'neoOn' } } },
-                          DO0: { block: call('pintarSol') },
-                          ELSE: {
-                            block: stmt(
-                              { type: 'neopixel_clear' },
-                              { type: 'neopixel_show' },
-                            )!,
-                          },
-                        },
-                      },
+                      call('pintarSol'),
                       { type: 'time_delay', inputs: { MS: { shadow: num(300) } } },
                     )!,
                   },
