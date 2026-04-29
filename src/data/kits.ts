@@ -414,7 +414,7 @@ export const kits: KitProject[] = [
     name: 'Ingeniables Franky',
     description:
       'Robot móvil con control Bluetooth y modo autónomo. Esquiva obstáculos con sensor ultrasónico y reacciona con NeoPixels.',
-    image: 'kits/franky.png',
+    image: 'kits/franky.jpg',
     emoji: '🤖',
     features: [
       '2 motores DC con driver puente H',
@@ -430,7 +430,7 @@ export const kits: KitProject[] = [
     name: 'Ingeniables Tellurion',
     description:
       'Sistema solar mecánico motorizado. Tres botones táctiles controlan la rotación del planeta y la iluminación del Sol con NeoPixels.',
-    image: 'kits/tellurion.png',
+    image: 'kits/tellurion.jpg',
     emoji: '🌍',
     features: [
       'Motor paso a paso 28BYJ-48',
