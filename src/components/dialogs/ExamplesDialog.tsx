@@ -28,7 +28,7 @@ export default function ExamplesDialog({ open, onClose, onSelect }: ExamplesDial
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 50,
+        zIndex: 200,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

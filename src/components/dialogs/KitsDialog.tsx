@@ -23,7 +23,7 @@ export default function KitsDialog({ open, onClose, onSelect }: KitsDialogProps)
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 50,
+        zIndex: 200,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
