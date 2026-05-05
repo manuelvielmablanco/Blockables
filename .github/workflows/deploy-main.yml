@@ -1,4 +1,4 @@
-name: Deploy /main → blocks.ingeniables.com/main
+name: Deploy main → blocks.ingeniables.com
 
 # Se dispara con cada push a la rama main
 on:
@@ -23,9 +23,10 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
-      - name: Build para /main/
+      - name: Build para raíz
         env:
-          VITE_BASE_PATH: /main/
+          # main se sirve desde la raíz del dominio: blocks.ingeniables.com/
+          VITE_BASE_PATH: /
         run: npm run build
 
       - name: Subir a SiteGround via FTP
@@ -35,6 +36,20 @@ jobs:
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
           local-dir: ./dist/
-          server-dir: /blocks.ingeniables.com/public_html/main/
-          # Borra en el servidor los archivos que ya no existen en dist/
+          # Despliegue a la raíz del subdominio (no /main/)
+          server-dir: /blocks.ingeniables.com/public_html/
+          # IMPORTANTE: dangerous-clean-slate quedaría tentador para
+          # podar bundles huérfanos, pero borraría también el subfolder
+          # /dev/ que está en la misma raíz. Lo dejamos en false: los
+          # hashes viejos se acumulan pero no rompen nada (index.html es
+          # no-cache y siempre apunta a los hashes actuales). Si hace
+          # falta limpiar, hacerlo manualmente vía FTP/SiteGround.
           dangerous-clean-slate: false
+          # Excluimos dev/ por si en el futuro activamos clean-slate y
+          # como protección contra borrados accidentales por glob.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            dev/**
+            dev
