@@ -2,7 +2,9 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    # Trabajamos exclusivamente en dev: cada push aquí publica también a
+    # GitHub Pages. main se mantiene como rama opcional de release.
+    branches: [dev, main]
   workflow_dispatch:
 
 permissions:

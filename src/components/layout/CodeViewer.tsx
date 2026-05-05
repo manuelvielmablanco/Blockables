@@ -1,35 +1,105 @@
+import { useState } from 'react';
 import { Highlight, themes } from 'prism-react-renderer';
+import { Copy, Check } from 'lucide-react';
 
 interface CodeViewerProps {
   code: string;
 }
 
 export default function CodeViewer({ code }: CodeViewerProps) {
+  const [copied, setCopied] = useState(false);
+
   const handleCopy = () => {
-    navigator.clipboard.writeText(code);
+    navigator.clipboard.writeText(code).then(() => {
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    });
   };
 
   return (
-    <div className="w-[400px] flex flex-col border-l border-gray-200 bg-white shrink-0">
-      <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 bg-gray-50">
-        <span className="text-sm font-semibold text-gray-700">Código Arduino</span>
+    <div
+      className="shrink-0 flex flex-col"
+      style={{
+        width: 380,
+        background: '#fff',
+        borderLeft: '1px solid var(--border)',
+        fontFamily: 'var(--font-ui)',
+      }}
+    >
+      <div
+        style={{
+          padding: '12px 16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: '1px solid var(--border)',
+          background: 'var(--bg-subtle)',
+        }}
+      >
+        <span
+          style={{
+            fontSize: 13,
+            fontWeight: 700,
+            color: 'var(--teal-contrast)',
+            fontFamily: 'var(--font-ui)',
+            textTransform: 'uppercase',
+            letterSpacing: '.06em',
+          }}
+        >
+          Código Arduino
+        </span>
         <button
           onClick={handleCopy}
-          className="text-xs px-2 py-1 rounded bg-brand-teal/10 text-brand-teal hover:bg-brand-teal/20 transition-colors font-medium"
+          style={{
+            background: 'transparent',
+            border: '1px solid var(--teal)',
+            color: 'var(--teal-depth)',
+            padding: '4px 10px',
+            borderRadius: 'var(--radius-sm)',
+            fontSize: 11,
+            cursor: 'pointer',
+            fontFamily: 'var(--font-ui)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            fontWeight: 600,
+            transition: 'background 150ms var(--ease-ui)',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--teal-bg)')}
+          onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
         >
-          Copiar
+          {copied ? <Check className="w-[12px] h-[12px]" /> : <Copy className="w-[12px] h-[12px]" />}
+          {copied ? 'Copiado' : 'Copiar'}
         </button>
       </div>
-      <div className="flex-1 overflow-auto p-0">
+
+      <div style={{ flex: 1, overflow: 'auto' }}>
         <Highlight theme={themes.github} code={code} language="cpp">
           {({ style, tokens, getLineProps, getTokenProps }) => (
             <pre
-              style={{ ...style, margin: 0, padding: '16px', fontSize: '13px', lineHeight: '1.5', background: 'transparent' }}
-              className="font-mono"
+              style={{
+                ...style,
+                margin: 0,
+                padding: '14px 16px',
+                fontSize: 13,
+                lineHeight: 1.6,
+                background: 'transparent',
+                fontFamily: 'var(--font-mono)',
+              }}
             >
               {tokens.map((line, i) => (
                 <div key={i} {...getLineProps({ line })}>
-                  <span className="inline-block w-8 text-right mr-4 text-gray-400 select-none text-xs">
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      width: 24,
+                      textAlign: 'right',
+                      marginRight: 14,
+                      color: 'var(--fg-3)',
+                      userSelect: 'none',
+                      fontSize: 11,
+                    }}
+                  >
                     {i + 1}
                   </span>
                   {line.map((token, key) => (

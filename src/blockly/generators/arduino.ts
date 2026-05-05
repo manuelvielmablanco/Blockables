@@ -554,24 +554,34 @@ gen.forBlock['actuator_relay'] = function (block) {
   return 'digitalWrite(' + pin + ', ' + block.getFieldValue('STATE') + ');\n';
 };
 
-// === Motor ===
+// === Motor DC (estilo Hello Blocks: ID + 2 pines PWM, sin EN) ===
+// motor_dc registra los pines del motor como `motor<ID>_pin1` / `motor<ID>_pin2`
+// en globals + setup. motor_dc_run y motor_dc_stop los reutilizan por nombre,
+// así que basta con poner un único motor_dc en setup() para cada motor.
+
 gen.forBlock['motor_dc'] = function (block) {
-  const in1 = block.getFieldValue('IN1'), in2 = block.getFieldValue('IN2'), en = block.getFieldValue('EN');
+  const id = block.getFieldValue('ID');
+  const pin1 = block.getFieldValue('PIN1'), pin2 = block.getFieldValue('PIN2');
+  addGlobalVar('const int motor' + id + '_pin1 = ' + pin1 + ';');
+  addGlobalVar('const int motor' + id + '_pin2 = ' + pin2 + ';');
+  addSetupCode('  pinMode(motor' + id + '_pin1, OUTPUT);\n');
+  addSetupCode('  pinMode(motor' + id + '_pin2, OUTPUT);\n');
+  return '';
+};
+
+gen.forBlock['motor_dc_run'] = function (block) {
+  const id = block.getFieldValue('ID');
   const dir = block.getFieldValue('DIR');
   const speed = gen.valueToCode(block, 'SPEED', ORDER_NONE) || '255';
-  addSetupCode('  pinMode(' + in1 + ', OUTPUT);\n');
-  addSetupCode('  pinMode(' + in2 + ', OUTPUT);\n');
-  addSetupCode('  pinMode(' + en + ', OUTPUT);\n');
-  let code = dir === 'FORWARD'
-    ? 'digitalWrite(' + in1 + ', HIGH);\ndigitalWrite(' + in2 + ', LOW);\n'
-    : 'digitalWrite(' + in1 + ', LOW);\ndigitalWrite(' + in2 + ', HIGH);\n';
-  code += 'analogWrite(' + en + ', ' + speed + ');\n';
-  return code;
+  if (dir === 'FORWARD') {
+    return 'analogWrite(motor' + id + '_pin1, ' + speed + ');\nanalogWrite(motor' + id + '_pin2, 0);\n';
+  }
+  return 'analogWrite(motor' + id + '_pin1, 0);\nanalogWrite(motor' + id + '_pin2, ' + speed + ');\n';
 };
 
 gen.forBlock['motor_dc_stop'] = function (block) {
-  const in1 = block.getFieldValue('IN1'), in2 = block.getFieldValue('IN2'), en = block.getFieldValue('EN');
-  return 'digitalWrite(' + in1 + ', LOW);\ndigitalWrite(' + in2 + ', LOW);\nanalogWrite(' + en + ', 0);\n';
+  const id = block.getFieldValue('ID');
+  return 'analogWrite(motor' + id + '_pin1, 0);\nanalogWrite(motor' + id + '_pin2, 0);\n';
 };
 
 gen.forBlock['motor_servo'] = function (block) {
@@ -603,29 +613,6 @@ gen.forBlock['motor_stepper_setspeed'] = function (block) {
 gen.forBlock['motor_stepper_step'] = function (block) {
   const steps = gen.valueToCode(block, 'STEPS', ORDER_NONE) || '100';
   return 'stepper.step(' + steps + ');\n';
-};
-
-// === DC Motor (HB-style with ID + PIN_A/PIN_B) ===
-gen.forBlock['motor_dc_init'] = function (block) {
-  const id = block.getFieldValue('ID');
-  const pinA = block.getFieldValue('PIN_A'), pinB = block.getFieldValue('PIN_B');
-  addGlobalVar('const int motorA_' + id + ' = ' + pinA + ';');
-  addGlobalVar('const int motorB_' + id + ' = ' + pinB + ';');
-  addSetupCode('  pinMode(motorA_' + id + ', OUTPUT);\n');
-  addSetupCode('  pinMode(motorB_' + id + ', OUTPUT);\n');
-  return '';
-};
-
-gen.forBlock['motor_dc_direction'] = function (block) {
-  const id = block.getFieldValue('ID');
-  const dir = parseInt(block.getFieldValue('DIRECCION'));
-  const speed = gen.valueToCode(block, 'VELOCIDAD', ORDER_NONE) || '255';
-  if (dir === 1) {
-    return 'analogWrite(motorA_' + id + ', ' + speed + ');\nanalogWrite(motorB_' + id + ', 0);\n';
-  } else if (dir === -1) {
-    return 'analogWrite(motorA_' + id + ', 0);\nanalogWrite(motorB_' + id + ', ' + speed + ');\n';
-  }
-  return 'analogWrite(motorA_' + id + ', 0);\nanalogWrite(motorB_' + id + ', 0);\n';
 };
 
 // === Text Compare ===
@@ -666,6 +653,97 @@ gen.forBlock['lcd_setcursor'] = function (block) {
 
 gen.forBlock['lcd_clear'] = function () {
   return 'lcd.clear();\n';
+};
+
+// === OLED SSD1306 128x64 I2C ===
+gen.forBlock['oled_init'] = function (block) {
+  const addr = block.getFieldValue('ADDR');
+  addInclude('#include <Wire.h>');
+  addInclude('#include <Adafruit_GFX.h>');
+  addInclude('#include <Adafruit_SSD1306.h>');
+  addGlobalVar('Adafruit_SSD1306 display(128, 64, &Wire, -1);');
+  addSetupCode('  display.begin(SSD1306_SWITCHCAPVCC, ' + addr + ');\n');
+  addSetupCode('  display.clearDisplay();\n');
+  addSetupCode('  display.setTextSize(1);\n');
+  addSetupCode('  display.setTextColor(SSD1306_WHITE);\n');
+  addSetupCode('  display.setCursor(0, 0);\n');
+  addSetupCode('  display.display();\n');
+  return '';
+};
+
+gen.forBlock['oled_clear'] = function () {
+  return 'display.clearDisplay();\n';
+};
+
+gen.forBlock['oled_setcursor'] = function (block) {
+  const x = block.getFieldValue('X');
+  const y = block.getFieldValue('Y');
+  return 'display.setCursor(' + x + ', ' + y + ');\n';
+};
+
+gen.forBlock['oled_textsize'] = function (block) {
+  const size = block.getFieldValue('SIZE');
+  return 'display.setTextSize(' + size + ');\n';
+};
+
+gen.forBlock['oled_print'] = function (block) {
+  const text = gen.valueToCode(block, 'TEXT', ORDER_NONE) || '""';
+  return 'display.print(' + text + ');\n';
+};
+
+gen.forBlock['oled_display'] = function () {
+  return 'display.display();\n';
+};
+
+gen.forBlock['oled_drawline'] = function (block) {
+  const x1 = gen.valueToCode(block, 'X1', ORDER_NONE) || '0';
+  const y1 = gen.valueToCode(block, 'Y1', ORDER_NONE) || '0';
+  const x2 = gen.valueToCode(block, 'X2', ORDER_NONE) || '0';
+  const y2 = gen.valueToCode(block, 'Y2', ORDER_NONE) || '0';
+  return 'display.drawLine(' + x1 + ', ' + y1 + ', ' + x2 + ', ' + y2 + ', SSD1306_WHITE);\n';
+};
+
+gen.forBlock['oled_drawrect'] = function (block) {
+  const mode = block.getFieldValue('MODE');
+  const x = gen.valueToCode(block, 'X', ORDER_NONE) || '0';
+  const y = gen.valueToCode(block, 'Y', ORDER_NONE) || '0';
+  const w = gen.valueToCode(block, 'W', ORDER_NONE) || '0';
+  const h = gen.valueToCode(block, 'H', ORDER_NONE) || '0';
+  const fn = mode === 'fill' ? 'fillRect' : 'drawRect';
+  return 'display.' + fn + '(' + x + ', ' + y + ', ' + w + ', ' + h + ', SSD1306_WHITE);\n';
+};
+
+gen.forBlock['oled_drawcircle'] = function (block) {
+  const mode = block.getFieldValue('MODE');
+  const x = gen.valueToCode(block, 'X', ORDER_NONE) || '0';
+  const y = gen.valueToCode(block, 'Y', ORDER_NONE) || '0';
+  const r = gen.valueToCode(block, 'R', ORDER_NONE) || '0';
+  const fn = mode === 'fill' ? 'fillCircle' : 'drawCircle';
+  return 'display.' + fn + '(' + x + ', ' + y + ', ' + r + ', SSD1306_WHITE);\n';
+};
+
+gen.forBlock['oled_drawtriangle'] = function (block) {
+  const mode = block.getFieldValue('MODE');
+  const x1 = gen.valueToCode(block, 'X1', ORDER_NONE) || '0';
+  const y1 = gen.valueToCode(block, 'Y1', ORDER_NONE) || '0';
+  const x2 = gen.valueToCode(block, 'X2', ORDER_NONE) || '0';
+  const y2 = gen.valueToCode(block, 'Y2', ORDER_NONE) || '0';
+  const x3 = gen.valueToCode(block, 'X3', ORDER_NONE) || '0';
+  const y3 = gen.valueToCode(block, 'Y3', ORDER_NONE) || '0';
+  const fn = mode === 'fill' ? 'fillTriangle' : 'drawTriangle';
+  return (
+    'display.' + fn + '(' + x1 + ', ' + y1 + ', ' + x2 + ', ' + y2 + ', ' + x3 + ', ' + y3 + ', SSD1306_WHITE);\n'
+  );
+};
+
+gen.forBlock['oled_scroll'] = function (block) {
+  const dir = block.getFieldValue('DIR');
+  if (dir === 'stop') return 'display.stopscroll();\n';
+  // start=0x00 (página 0), stop=0x07 (página 7) → toda la pantalla 64px
+  if (dir === 'right') return 'display.startscrollright(0x00, 0x07);\n';
+  if (dir === 'left') return 'display.startscrollleft(0x00, 0x07);\n';
+  if (dir === 'diagright') return 'display.startscrolldiagright(0x00, 0x07);\n';
+  return 'display.startscrolldiagleft(0x00, 0x07);\n';
 };
 
 // === NeoPixel ===

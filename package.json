@@ -12,6 +12,7 @@
   "dependencies": {
     "blockly": "^12.4.1",
     "esptool-js": "^0.5.7",
+    "lucide-react": "^1.11.0",
     "prism-react-renderer": "^2.4.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import * as Blockly from 'blockly';
 import { BoardProvider, useBoard } from './context/BoardContext';
 import TopBar from './components/layout/TopBar';
@@ -7,23 +7,64 @@ import type { WorkspaceHandle } from './components/layout/WorkspaceArea';
 import CodeViewer from './components/layout/CodeViewer';
 import UploadDialog from './components/dialogs/UploadDialog';
 import ExamplesDialog from './components/dialogs/ExamplesDialog';
+import KitsDialog from './components/dialogs/KitsDialog';
 import SerialMonitor from './components/serial/SerialMonitor';
 import { useSerial } from './hooks/useSerial';
-import { serializeProject, exportProject, importProject, exportCode, autoSave, loadHelloBlocksXml } from './services/project';
+import {
+  serializeProject,
+  exportProject,
+  importProject,
+  exportCode,
+  autoSave,
+  loadHelloBlocksXml,
+} from './services/project';
+import type { ProjectData } from './services/project';
 import type { ExampleProject } from './data/examples';
+import type { KitProject } from './data/kits';
+import { useToast } from './components/ui/Toast';
 
 function AppContent() {
   const [code, setCode] = useState<string>('// Arrastra bloques para generar código');
   const [showCode, setShowCode] = useState(false);
   const [showMonitor, setShowMonitor] = useState(false);
   const [showExamples, setShowExamples] = useState(false);
+  const [showKits, setShowKits] = useState(false);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [projectName, setProjectName] = useState('Mi proyecto');
   const codeRef = useRef(code);
   const workspaceRef = useRef<WorkspaceHandle>(null);
+  const toast = useToast();
 
   const { board, setBoard } = useBoard();
   const serial = useSerial();
+  const lastSerialStatus = useRef(serial.status);
+
+  // Ctrl+E opens examples dialog
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && (e.key === 'e' || e.key === 'E')) {
+        e.preventDefault();
+        setShowExamples(true);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Toast on serial connect/disconnect/error transitions
+  useEffect(() => {
+    const prev = lastSerialStatus.current;
+    if (prev !== serial.status) {
+      if (serial.status === 'connected') {
+        toast.success('Placa conectada', 'Ya puedes subir tu código.');
+      } else if (serial.status === 'error') {
+        toast.error('Error de conexión', 'No se pudo conectar a la placa.');
+      } else if (prev === 'connected' && serial.status === 'disconnected') {
+        toast.info('Placa desconectada');
+      }
+      lastSerialStatus.current = serial.status;
+    }
+  }, [serial.status, toast]);
 
   const handleCodeChange = useCallback((newCode: string) => {
     setCode(newCode);
@@ -72,15 +113,17 @@ function AppContent() {
       loopBlock.moveBy(30, 200);
 
       setProjectName('Mi proyecto');
+      toast.info('Nuevo proyecto creado');
     }
-  }, []);
+  }, [toast]);
 
   const handleSaveProject = useCallback(() => {
     const ws = workspaceRef.current?.getWorkspace();
     if (!ws) return;
     const project = serializeProject(ws, projectName, board.id);
     exportProject(project);
-  }, [projectName, board.id]);
+    toast.success('Proyecto guardado', `${projectName}.ib`);
+  }, [projectName, board.id, toast]);
 
   const handleOpenProject = useCallback(async () => {
     const project = await importProject();
@@ -94,6 +137,7 @@ function AppContent() {
     if (hbXml) {
       loadHelloBlocksXml(ws, hbXml);
       setProjectName(project.name);
+      toast.success('Proyecto abierto', project.name);
       return;
     }
 
@@ -104,11 +148,13 @@ function AppContent() {
     if (project.boardId) {
       setBoard(project.boardId);
     }
-  }, [setBoard]);
+    toast.success('Proyecto abierto', project.name);
+  }, [setBoard, toast]);
 
   const handleExportCode = useCallback(() => {
     exportCode(codeRef.current, projectName);
-  }, [projectName]);
+    toast.success('Código exportado', `${projectName}.ino`);
+  }, [projectName, toast]);
 
   const handleSelectExample = useCallback((example: ExampleProject) => {
     const ws = workspaceRef.current?.getWorkspace();
@@ -119,10 +165,28 @@ function AppContent() {
     setProjectName(example.name);
     setBoard(example.boardId);
     setShowExamples(false);
-  }, [setBoard]);
+    toast.info('Ejemplo cargado', example.name);
+  }, [setBoard, toast]);
+
+  const handleSelectKit = useCallback((kit: KitProject) => {
+    const ws = workspaceRef.current?.getWorkspace();
+    if (!ws) return;
+
+    ws.clear();
+    try {
+      Blockly.serialization.workspaces.load(kit.workspace as object, ws);
+      setProjectName(kit.name);
+      setBoard(kit.boardId);
+      setShowKits(false);
+      toast.info('Kit cargado', `${kit.name} — programa original`);
+    } catch (err) {
+      console.error('Error cargando kit:', err);
+      toast.error('No se pudo cargar el kit', String(err));
+    }
+  }, [setBoard, toast]);
 
   return (
-    <div className="flex flex-col h-screen" style={{ backgroundColor: '#fafafa' }}>
+    <div className="flex flex-col h-screen" style={{ backgroundColor: 'var(--bg-subtle)' }}>
       <TopBar
         projectName={projectName}
         onProjectNameChange={setProjectName}
@@ -138,10 +202,15 @@ function AppContent() {
         onSave={handleSaveProject}
         onExportCode={handleExportCode}
         onExamples={() => setShowExamples(true)}
+        onKits={() => setShowKits(true)}
       />
       <div className="flex flex-col flex-1 overflow-hidden">
         <div className="flex flex-1 overflow-hidden">
-          <WorkspaceArea ref={workspaceRef} onCodeChange={handleCodeChange} />
+          <WorkspaceArea
+            ref={workspaceRef}
+            onCodeChange={handleCodeChange}
+            onOpenExamples={() => setShowExamples(true)}
+          />
           {showCode && <CodeViewer code={code} />}
         </div>
         {showMonitor && (
@@ -168,6 +237,11 @@ function AppContent() {
         open={showExamples}
         onClose={() => setShowExamples(false)}
         onSelect={handleSelectExample}
+      />
+      <KitsDialog
+        open={showKits}
+        onClose={() => setShowKits(false)}
+        onSelect={handleSelectKit}
       />
     </div>
   );

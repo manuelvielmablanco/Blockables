@@ -5,6 +5,7 @@ export const toolboxConfig = {
       kind: 'category',
       name: 'Lógica',
       categorystyle: 'logic_category',
+      cssConfig: { container: 'blocklyToolboxCategoryContainer cat-logic' },
       contents: [
         { kind: 'block', type: 'controls_if' },
         { kind: 'block', type: 'controls_if', extraState: { hasElse: true } },
@@ -19,6 +20,7 @@ export const toolboxConfig = {
       kind: 'category',
       name: 'Control',
       categorystyle: 'control_category',
+      cssConfig: { container: 'blocklyToolboxCategoryContainer cat-control' },
       contents: [
         { kind: 'block', type: 'controls_repeat_ext', inputs: { TIMES: { shadow: { type: 'math_number', fields: { NUM: 10 } } } } },
         { kind: 'block', type: 'controls_whileUntil' },
@@ -30,6 +32,7 @@ export const toolboxConfig = {
       kind: 'category',
       name: 'Matemáticas',
       categorystyle: 'math_category',
+      cssConfig: { container: 'blocklyToolboxCategoryContainer cat-math' },
       contents: [
         { kind: 'block', type: 'math_number' },
         { kind: 'block', type: 'math_arithmetic' },
@@ -46,6 +49,7 @@ export const toolboxConfig = {
       kind: 'category',
       name: 'Texto',
       categorystyle: 'text_category',
+      cssConfig: { container: 'blocklyToolboxCategoryContainer cat-text' },
       contents: [
         { kind: 'block', type: 'text' },
         { kind: 'block', type: 'text_join' },
@@ -57,6 +61,7 @@ export const toolboxConfig = {
       kind: 'category',
       name: 'Variables',
       categorystyle: 'variable_category',
+      cssConfig: { container: 'blocklyToolboxCategoryContainer cat-variables' },
       contents: [
         {
           kind: 'block',
@@ -72,6 +77,7 @@ export const toolboxConfig = {
       kind: 'category',
       name: 'Listas',
       categorystyle: 'list_category',
+      cssConfig: { container: 'blocklyToolboxCategoryContainer cat-lists' },
       contents: [
         { kind: 'block', type: 'lists_create_empty' },
         { kind: 'block', type: 'lists_create_with' },
@@ -86,13 +92,15 @@ export const toolboxConfig = {
       kind: 'category',
       name: 'Funciones',
       categorystyle: 'procedure_category',
+      cssConfig: { container: 'blocklyToolboxCategoryContainer cat-functions' },
       custom: 'PROCEDURE',
     },
     { kind: 'sep' },
     {
       kind: 'category',
-      name: '⚡ Entrada/Salida',
+      name: 'Entrada/Salida',
       categorystyle: 'io_category',
+      cssConfig: { container: 'blocklyToolboxCategoryContainer cat-io' },
       contents: [
         { kind: 'block', type: 'io_pinmode' },
         { kind: 'block', type: 'io_digitalwrite' },
@@ -103,8 +111,9 @@ export const toolboxConfig = {
     },
     {
       kind: 'category',
-      name: '⏱ Tiempo',
+      name: 'Tiempo',
       categorystyle: 'time_category',
+      cssConfig: { container: 'blocklyToolboxCategoryContainer cat-time' },
       contents: [
         { kind: 'block', type: 'time_delay', inputs: { MS: { shadow: { type: 'math_number', fields: { NUM: 1000 } } } } },
         { kind: 'block', type: 'time_delaymicros', inputs: { US: { shadow: { type: 'math_number', fields: { NUM: 100 } } } } },
@@ -114,8 +123,9 @@ export const toolboxConfig = {
     },
     {
       kind: 'category',
-      name: '📡 Puerto Serie',
+      name: 'Puerto Serie',
       categorystyle: 'serial_category',
+      cssConfig: { container: 'blocklyToolboxCategoryContainer cat-serial' },
       contents: [
         { kind: 'block', type: 'serial_begin' },
         { kind: 'block', type: 'serial_print' },
@@ -128,8 +138,9 @@ export const toolboxConfig = {
     { kind: 'sep' },
     {
       kind: 'category',
-      name: '📏 Sensores',
+      name: 'Sensores',
       categorystyle: 'sensor_category',
+      cssConfig: { container: 'blocklyToolboxCategoryContainer cat-sensors' },
       contents: [
         { kind: 'block', type: 'sensor_button' },
         { kind: 'block', type: 'sensor_potentiometer' },
@@ -146,8 +157,9 @@ export const toolboxConfig = {
     },
     {
       kind: 'category',
-      name: '💡 Actuadores',
+      name: 'Actuadores',
       categorystyle: 'actuator_category',
+      cssConfig: { container: 'blocklyToolboxCategoryContainer cat-actuators' },
       contents: [
         { kind: 'block', type: 'actuator_led' },
         { kind: 'block', type: 'actuator_led_pwm' },
@@ -159,10 +171,16 @@ export const toolboxConfig = {
     },
     {
       kind: 'category',
-      name: '⚙️ Motor',
+      name: 'Motor',
       categorystyle: 'motor_category',
+      cssConfig: { container: 'blocklyToolboxCategoryContainer cat-motor' },
       contents: [
         { kind: 'block', type: 'motor_dc' },
+        {
+          kind: 'block',
+          type: 'motor_dc_run',
+          inputs: { SPEED: { shadow: { type: 'math_number', fields: { NUM: 255 } } } },
+        },
         { kind: 'block', type: 'motor_dc_stop' },
         { kind: 'block', type: 'motor_servo' },
         { kind: 'block', type: 'motor_stepper_init' },
@@ -172,19 +190,71 @@ export const toolboxConfig = {
     },
     {
       kind: 'category',
-      name: '🖥 Pantalla LCD',
+      name: 'Pantallas',
       categorystyle: 'display_category',
+      cssConfig: { container: 'blocklyToolboxCategoryContainer cat-display' },
       contents: [
+        { kind: 'label', text: 'LCD I2C' },
         { kind: 'block', type: 'lcd_init' },
         { kind: 'block', type: 'lcd_print' },
         { kind: 'block', type: 'lcd_setcursor' },
         { kind: 'block', type: 'lcd_clear' },
+        { kind: 'label', text: 'OLED SSD1306 128x64 I2C' },
+        { kind: 'block', type: 'oled_init' },
+        { kind: 'block', type: 'oled_clear' },
+        { kind: 'block', type: 'oled_setcursor' },
+        { kind: 'block', type: 'oled_textsize' },
+        { kind: 'block', type: 'oled_print' },
+        { kind: 'block', type: 'oled_display' },
+        {
+          kind: 'block',
+          type: 'oled_drawline',
+          inputs: {
+            X1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+            Y1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+            X2: { shadow: { type: 'math_number', fields: { NUM: 127 } } },
+            Y2: { shadow: { type: 'math_number', fields: { NUM: 63 } } },
+          },
+        },
+        {
+          kind: 'block',
+          type: 'oled_drawrect',
+          inputs: {
+            X: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+            Y: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+            W: { shadow: { type: 'math_number', fields: { NUM: 20 } } },
+            H: { shadow: { type: 'math_number', fields: { NUM: 20 } } },
+          },
+        },
+        {
+          kind: 'block',
+          type: 'oled_drawcircle',
+          inputs: {
+            X: { shadow: { type: 'math_number', fields: { NUM: 64 } } },
+            Y: { shadow: { type: 'math_number', fields: { NUM: 32 } } },
+            R: { shadow: { type: 'math_number', fields: { NUM: 10 } } },
+          },
+        },
+        {
+          kind: 'block',
+          type: 'oled_drawtriangle',
+          inputs: {
+            X1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+            Y1: { shadow: { type: 'math_number', fields: { NUM: 63 } } },
+            X2: { shadow: { type: 'math_number', fields: { NUM: 64 } } },
+            Y2: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+            X3: { shadow: { type: 'math_number', fields: { NUM: 127 } } },
+            Y3: { shadow: { type: 'math_number', fields: { NUM: 63 } } },
+          },
+        },
+        { kind: 'block', type: 'oled_scroll' },
       ],
     },
     {
       kind: 'category',
-      name: '🌈 NeoPixel',
+      name: 'NeoPixel',
       categorystyle: 'neopixel_category',
+      cssConfig: { container: 'blocklyToolboxCategoryContainer cat-neopixel' },
       contents: [
         { kind: 'block', type: 'neopixel_init' },
         { kind: 'block', type: 'neopixel_setbrightness' },
@@ -198,8 +268,9 @@ export const toolboxConfig = {
     { kind: 'sep' },
     {
       kind: 'category',
-      name: '📶 WiFi',
+      name: 'WiFi',
       categorystyle: 'wifi_category',
+      cssConfig: { container: 'blocklyToolboxCategoryContainer cat-wifi' },
       contents: [
         { kind: 'block', type: 'wifi_connect' },
         { kind: 'block', type: 'wifi_connected' },
@@ -212,8 +283,9 @@ export const toolboxConfig = {
     },
     {
       kind: 'category',
-      name: '🔵 Bluetooth',
+      name: 'Bluetooth',
       categorystyle: 'bluetooth_category',
+      cssConfig: { container: 'blocklyToolboxCategoryContainer cat-bluetooth' },
       contents: [
         { kind: 'block', type: 'bt_begin' },
         { kind: 'block', type: 'bt_rename' },
@@ -234,7 +306,7 @@ import type { BoardProfile } from '../boards/types';
 
 // Category names that require specific features
 const FEATURE_CATEGORIES: Record<string, keyof BoardProfile['features']> = {
-  '📶 WiFi': 'wifi',
+  'WiFi': 'wifi',
 };
 
 export function getToolboxForBoard(board: BoardProfile) {
