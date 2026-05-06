@@ -445,12 +445,16 @@ gen.forBlock['sensor_ultrasonic'] = function (block) {
   const fn = 'readUltrasonic_' + trig + '_' + echo;
   addSetupCode('  pinMode(' + trig + ', OUTPUT);\n');
   addSetupCode('  pinMode(' + echo + ', INPUT);\n');
+  // Timeout = 30 ms → rango máximo ~5 m. Si no se recibe eco, pulseIn
+  // devuelve 0; lo traducimos a 999 cm (≈ infinito) para evitar falsos
+  // positivos en comparaciones como (distancia < 20).
   addGlobalVar(
     'long ' + fn + '() {\n' +
     '  digitalWrite(' + trig + ', LOW);\n  delayMicroseconds(2);\n' +
     '  digitalWrite(' + trig + ', HIGH);\n  delayMicroseconds(10);\n' +
     '  digitalWrite(' + trig + ', LOW);\n' +
-    '  long duration = pulseIn(' + echo + ', HIGH);\n' +
+    '  long duration = pulseIn(' + echo + ', HIGH, 30000UL);\n' +
+    '  if (duration == 0) return 999;\n' +
     '  return duration * 0.034 / 2;\n}'
   );
   if (unit === 'INCH') return [fn + '() / 2.54', ORDER_MULTIPLICATIVE];
