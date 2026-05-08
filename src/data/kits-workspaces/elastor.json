@@ -1,0 +1,963 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "arduino_setup",
+        "id": "i-VLpn8q/RI9Su[$my)b",
+        "x": 50,
+        "y": 30,
+        "deletable": false,
+        "inputs": {
+          "SETUP": {
+            "block": {
+              "type": "bt_begin",
+              "id": "([Xu6oMve%PcQkU1TIkn",
+              "fields": {
+                "RX": "2",
+                "TX": "4",
+                "BAUD": "9600"
+              },
+              "next": {
+                "block": {
+                  "type": "motor_dc",
+                  "id": "{K;d1-).g/rIS5^-![E!",
+                  "fields": {
+                    "ID": "1",
+                    "PIN1": "10",
+                    "PIN2": "11"
+                  },
+                  "next": {
+                    "block": {
+                      "type": "typed_variable_declare",
+                      "id": "z+0m1do{7`#bo#2gDXB^",
+                      "fields": {
+                        "TYPE": "String",
+                        "VAR": "BT"
+                      },
+                      "inputs": {
+                        "VALUE": {
+                          "shadow": {
+                            "type": "text",
+                            "id": "mi`v{oep$m:P1J^U}k5k",
+                            "fields": {
+                              "TEXT": ""
+                            }
+                          }
+                        }
+                      },
+                      "next": {
+                        "block": {
+                          "type": "typed_variable_declare",
+                          "id": "qVJA]:I!?@|c}$CrLN8h",
+                          "fields": {
+                            "TYPE": "int",
+                            "VAR": "angulo"
+                          },
+                          "inputs": {
+                            "VALUE": {
+                              "shadow": {
+                                "type": "math_number",
+                                "id": "ZH,}-Fc8X04te2#`V@uL",
+                                "fields": {
+                                  "NUM": 0
+                                }
+                              }
+                            }
+                          },
+                          "next": {
+                            "block": {
+                              "type": "typed_variable_declare",
+                              "id": "hDc{@kl=wGwSQ=n3=)-z",
+                              "fields": {
+                                "TYPE": "int",
+                                "VAR": "pasoAngulo"
+                              },
+                              "inputs": {
+                                "VALUE": {
+                                  "shadow": {
+                                    "type": "math_number",
+                                    "id": "B|#$P_S+NxArDzQPL^xm",
+                                    "fields": {
+                                      "NUM": 1
+                                    }
+                                  }
+                                }
+                              },
+                              "next": {
+                                "block": {
+                                  "type": "motor_servo",
+                                  "id": "OB4#8}|cd%G{PghO[@_Q",
+                                  "fields": {
+                                    "PIN": "A4"
+                                  },
+                                  "inputs": {
+                                    "ANGLE": {
+                                      "block": {
+                                        "type": "math_number",
+                                        "id": "?GBcGYI=Hu!vz[96/EC!",
+                                        "fields": {
+                                          "NUM": 90
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "next": {
+                                    "block": {
+                                      "type": "motor_servo",
+                                      "id": "jt:eAQMvK)H!Zg/UR`x~",
+                                      "fields": {
+                                        "PIN": "A5"
+                                      },
+                                      "inputs": {
+                                        "ANGLE": {
+                                          "block": {
+                                            "type": "math_number",
+                                            "id": "$}d*rLj1bct#0tUb%uYp",
+                                            "fields": {
+                                              "NUM": 0
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "next": {
+                                        "block": {
+                                          "type": "time_delay",
+                                          "id": "lxxfc.sB4?9_o,/mSys?",
+                                          "inputs": {
+                                            "MS": {
+                                              "shadow": {
+                                                "type": "math_number",
+                                                "id": "(Egq(rFDVO2^jclg=iYN",
+                                                "fields": {
+                                                  "NUM": 1500
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "arduino_loop",
+        "id": "FRQ:s1qs:e0^,MhelXA5",
+        "x": 990,
+        "y": 50,
+        "deletable": false,
+        "inputs": {
+          "LOOP": {
+            "block": {
+              "type": "controls_if",
+              "id": "6Sq,aF^QMGd*I{]?p_28",
+              "inputs": {
+                "IF0": {
+                  "block": {
+                    "type": "bt_available",
+                    "id": "9*yf#-v`,/.)//VPtuP3"
+                  }
+                },
+                "DO0": {
+                  "block": {
+                    "type": "typed_variable_set",
+                    "id": "J=,T]/;1H00SoD#M0)9f",
+                    "fields": {
+                      "VAR": "BT"
+                    },
+                    "inputs": {
+                      "VALUE": {
+                        "block": {
+                          "type": "bt_receive_text",
+                          "id": "-PSxH6lNP4_2%oSDVfif",
+                          "fields": {
+                            "UNTIL_NL": true
+                          }
+                        }
+                      }
+                    },
+                    "next": {
+                      "block": {
+                        "type": "controls_if",
+                        "id": "a,th:q_%x-D=(0kXrH_{",
+                        "inputs": {
+                          "IF0": {
+                            "block": {
+                              "type": "logic_compare",
+                              "id": "vDY)}l)E`,[5#hm}VJxM",
+                              "fields": {
+                                "OP": "EQ"
+                              },
+                              "inputs": {
+                                "A": {
+                                  "block": {
+                                    "type": "typed_variable_get",
+                                    "id": "26EUYaG[Va`Ct,4$-Z(l",
+                                    "fields": {
+                                      "VAR": "BT"
+                                    }
+                                  }
+                                },
+                                "B": {
+                                  "block": {
+                                    "type": "text",
+                                    "id": "L44DO=H2Vjv5b)sO4nRI",
+                                    "fields": {
+                                      "TEXT": "R"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "DO0": {
+                            "block": {
+                              "type": "procedures_callnoreturn",
+                              "id": "_MfFgs*]]7#?3V3q,zZ0",
+                              "extraState": {
+                                "name": "Derecha"
+                              }
+                            }
+                          }
+                        },
+                        "next": {
+                          "block": {
+                            "type": "controls_if",
+                            "id": "$u8g/s^#vJ1~jn2sBo;P",
+                            "inputs": {
+                              "IF0": {
+                                "block": {
+                                  "type": "logic_compare",
+                                  "id": "{|#1At,=~FO}QR@h|kv;",
+                                  "fields": {
+                                    "OP": "EQ"
+                                  },
+                                  "inputs": {
+                                    "A": {
+                                      "block": {
+                                        "type": "typed_variable_get",
+                                        "id": "7jf:X[~2PcB3am,*,w4m",
+                                        "fields": {
+                                          "VAR": "BT"
+                                        }
+                                      }
+                                    },
+                                    "B": {
+                                      "block": {
+                                        "type": "text",
+                                        "id": "3WU;qUt^Yr0(lB24u;3[",
+                                        "fields": {
+                                          "TEXT": "L"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "DO0": {
+                                "block": {
+                                  "type": "procedures_callnoreturn",
+                                  "id": "m#83`Iy5xcO^TCI,DRn%",
+                                  "extraState": {
+                                    "name": "Izquierda"
+                                  }
+                                }
+                              }
+                            },
+                            "next": {
+                              "block": {
+                                "type": "controls_if",
+                                "id": "W|4@;qfd{ous+]G]t(#U",
+                                "inputs": {
+                                  "IF0": {
+                                    "block": {
+                                      "type": "logic_compare",
+                                      "id": "{0l+4X^B;X[3e?l24#ad",
+                                      "fields": {
+                                        "OP": "EQ"
+                                      },
+                                      "inputs": {
+                                        "A": {
+                                          "block": {
+                                            "type": "typed_variable_get",
+                                            "id": "NK}eI3Rr:b9^qBD`r*h,",
+                                            "fields": {
+                                              "VAR": "BT"
+                                            }
+                                          }
+                                        },
+                                        "B": {
+                                          "block": {
+                                            "type": "text",
+                                            "id": "P%Bp%c!:|-Y!a!Um:.St",
+                                            "fields": {
+                                              "TEXT": "S"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "DO0": {
+                                    "block": {
+                                      "type": "procedures_callnoreturn",
+                                      "id": "gZMo-{RSNUaW;jT}IIhv",
+                                      "extraState": {
+                                        "name": "Parar"
+                                      }
+                                    }
+                                  }
+                                },
+                                "next": {
+                                  "block": {
+                                    "type": "controls_if",
+                                    "id": "=K%B!M0GdjP8.XMs!|z)",
+                                    "inputs": {
+                                      "IF0": {
+                                        "block": {
+                                          "type": "logic_compare",
+                                          "id": "uTmSaFEgS!S0d7!s=~;[",
+                                          "fields": {
+                                            "OP": "EQ"
+                                          },
+                                          "inputs": {
+                                            "A": {
+                                              "block": {
+                                                "type": "typed_variable_get",
+                                                "id": "kC[oL,$~VG5!5wbdU$N8",
+                                                "fields": {
+                                                  "VAR": "BT"
+                                                }
+                                              }
+                                            },
+                                            "B": {
+                                              "block": {
+                                                "type": "text",
+                                                "id": "E-MYu?-ml%L2:b[g$?_I",
+                                                "fields": {
+                                                  "TEXT": "B"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "DO0": {
+                                        "block": {
+                                          "type": "procedures_callnoreturn",
+                                          "id": "5`=lfX!YDd%Z3*}SDgMD",
+                                          "extraState": {
+                                            "name": "Rotar"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "next": {
+                                      "block": {
+                                        "type": "controls_if",
+                                        "id": "0NU5=k.l*qRFU_VsCVpE",
+                                        "inputs": {
+                                          "IF0": {
+                                            "block": {
+                                              "type": "logic_compare",
+                                              "id": "X2h14eZW{8fO0Xd^3VR-",
+                                              "fields": {
+                                                "OP": "EQ"
+                                              },
+                                              "inputs": {
+                                                "A": {
+                                                  "block": {
+                                                    "type": "typed_variable_get",
+                                                    "id": ";mo.7kp0spAB[KK~{@W^",
+                                                    "fields": {
+                                                      "VAR": "BT"
+                                                    }
+                                                  }
+                                                },
+                                                "B": {
+                                                  "block": {
+                                                    "type": "text",
+                                                    "id": "IXA(R?}.9NyVW(:VSEXD",
+                                                    "fields": {
+                                                      "TEXT": "F"
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "DO0": {
+                                            "block": {
+                                              "type": "procedures_callnoreturn",
+                                              "id": "?;*w6JuWeb.guH:Pnq@L",
+                                              "extraState": {
+                                                "name": "Subir"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "next": {
+                                          "block": {
+                                            "type": "controls_if",
+                                            "id": "?GR,5EOWxkE~.dm8I!YB",
+                                            "inputs": {
+                                              "IF0": {
+                                                "block": {
+                                                  "type": "logic_compare",
+                                                  "id": "qu|?:n2%}bxkGz6z@K1c",
+                                                  "fields": {
+                                                    "OP": "EQ"
+                                                  },
+                                                  "inputs": {
+                                                    "A": {
+                                                      "block": {
+                                                        "type": "typed_variable_get",
+                                                        "id": "SryD[JLvkoAVCDU0a;q:",
+                                                        "fields": {
+                                                          "VAR": "BT"
+                                                        }
+                                                      }
+                                                    },
+                                                    "B": {
+                                                      "block": {
+                                                        "type": "text",
+                                                        "id": "O?Db(}-ep^jj^kV/#$Xt",
+                                                        "fields": {
+                                                          "TEXT": "G"
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              "DO0": {
+                                                "block": {
+                                                  "type": "procedures_callnoreturn",
+                                                  "id": "]+Rq-kRbH;K.`u;}B.6)",
+                                                  "extraState": {
+                                                    "name": "Bajar"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "next": {
+                                              "block": {
+                                                "type": "controls_if",
+                                                "id": "o*%OyOg6$(ZvcWimY+tX",
+                                                "inputs": {
+                                                  "IF0": {
+                                                    "block": {
+                                                      "type": "logic_compare",
+                                                      "id": "V=mizmk5|PJMb+g!^M}u",
+                                                      "fields": {
+                                                        "OP": "EQ"
+                                                      },
+                                                      "inputs": {
+                                                        "A": {
+                                                          "block": {
+                                                            "type": "typed_variable_get",
+                                                            "id": "hr?$xD2B:9O.D.xS?K49",
+                                                            "fields": {
+                                                              "VAR": "BT"
+                                                            }
+                                                          }
+                                                        },
+                                                        "B": {
+                                                          "block": {
+                                                            "type": "text",
+                                                            "id": "Y_cX~|ugZ#[:2~`zBOTW",
+                                                            "fields": {
+                                                              "TEXT": "C"
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "DO0": {
+                                                    "block": {
+                                                      "type": "procedures_callnoreturn",
+                                                      "id": "}ng97$9Jd72[2d.tX*c0",
+                                                      "extraState": {
+                                                        "name": "Subir"
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "next": {
+                                                  "block": {
+                                                    "type": "controls_if",
+                                                    "id": "*UV1a9ofVn$J|):#OD~G",
+                                                    "inputs": {
+                                                      "IF0": {
+                                                        "block": {
+                                                          "type": "logic_compare",
+                                                          "id": "[dn~n$h1qz!TZ}nw%%en",
+                                                          "fields": {
+                                                            "OP": "EQ"
+                                                          },
+                                                          "inputs": {
+                                                            "A": {
+                                                              "block": {
+                                                                "type": "typed_variable_get",
+                                                                "id": "ab{`|QW,y)n%@6BDQKX;",
+                                                                "fields": {
+                                                                  "VAR": "BT"
+                                                                }
+                                                              }
+                                                            },
+                                                            "B": {
+                                                              "block": {
+                                                                "type": "text",
+                                                                "id": "vmsj33;+`]nbCqCpbdh-",
+                                                                "fields": {
+                                                                  "TEXT": "D"
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      },
+                                                      "DO0": {
+                                                        "block": {
+                                                          "type": "procedures_callnoreturn",
+                                                          "id": "%XYo52t8QKbbm[OW7xRk",
+                                                          "extraState": {
+                                                            "name": "Bajar"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "procedures_defnoreturn",
+        "id": "Nu(VIAyUJh7Es+J,Oc%.",
+        "x": 50,
+        "y": 530,
+        "icons": {
+          "comment": {
+            "text": "Describe esta función...",
+            "pinned": false,
+            "height": 80,
+            "width": 160
+          }
+        },
+        "fields": {
+          "NAME": "Derecha"
+        },
+        "inputs": {
+          "STACK": {
+            "block": {
+              "type": "motor_dc_run",
+              "id": ".?|=]]fy141w`AuGh^yI",
+              "fields": {
+                "ID": "1",
+                "DIR": "FORWARD"
+              },
+              "inputs": {
+                "SPEED": {
+                  "shadow": {
+                    "type": "math_number",
+                    "id": "Ji,Lkt0jbbCLwgM]P$)r",
+                    "fields": {
+                      "NUM": 255
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "procedures_defnoreturn",
+        "id": "P[I+}n|%=v[YL}511UD,",
+        "x": 50,
+        "y": 690,
+        "icons": {
+          "comment": {
+            "text": "Describe esta función...",
+            "pinned": false,
+            "height": 80,
+            "width": 160
+          }
+        },
+        "fields": {
+          "NAME": "Izquierda"
+        },
+        "inputs": {
+          "STACK": {
+            "block": {
+              "type": "motor_dc_run",
+              "id": "!,t1##B/p,EWPU0d#Ct;",
+              "fields": {
+                "ID": "1",
+                "DIR": "BACKWARD"
+              },
+              "inputs": {
+                "SPEED": {
+                  "shadow": {
+                    "type": "math_number",
+                    "id": "uWi:vOkfT+~C9T.tB#([",
+                    "fields": {
+                      "NUM": 255
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "procedures_defnoreturn",
+        "id": ".OA^jB+.;z]N5HB-R``g",
+        "x": 50,
+        "y": 870,
+        "icons": {
+          "comment": {
+            "text": "Describe esta función...",
+            "pinned": false,
+            "height": 80,
+            "width": 160
+          }
+        },
+        "fields": {
+          "NAME": "Parar"
+        },
+        "inputs": {
+          "STACK": {
+            "block": {
+              "type": "motor_dc_stop",
+              "id": "iT|eM{Twf23hPEL2[XMW",
+              "fields": {
+                "ID": "1"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "procedures_defnoreturn",
+        "id": "]Cpn-)$``;Nk/R!OT6;#",
+        "x": 50,
+        "y": 1490,
+        "icons": {
+          "comment": {
+            "text": "Describe esta función...",
+            "pinned": false,
+            "height": 80,
+            "width": 160
+          }
+        },
+        "fields": {
+          "NAME": "Rotar"
+        },
+        "inputs": {
+          "STACK": {
+            "block": {
+              "type": "motor_servo",
+              "id": "L;#i2|h!@5Rs8^`JJ/}+",
+              "fields": {
+                "PIN": "A4"
+              },
+              "inputs": {
+                "ANGLE": {
+                  "block": {
+                    "type": "math_number",
+                    "id": "|Z3Z72;biZ}iHQdDod[q",
+                    "fields": {
+                      "NUM": 130
+                    }
+                  }
+                }
+              },
+              "next": {
+                "block": {
+                  "type": "time_delay",
+                  "id": "k_@}Gpeauz9=4xD?5z{r",
+                  "inputs": {
+                    "MS": {
+                      "shadow": {
+                        "type": "math_number",
+                        "id": "]2{.L0-opC%E],BQzVJ_",
+                        "fields": {
+                          "NUM": 115
+                        }
+                      }
+                    }
+                  },
+                  "next": {
+                    "block": {
+                      "type": "motor_servo",
+                      "id": "Pf:_}v{=eSY=F]@bIC#t",
+                      "fields": {
+                        "PIN": "A4"
+                      },
+                      "inputs": {
+                        "ANGLE": {
+                          "block": {
+                            "type": "math_number",
+                            "id": "8,4_twTmKY;-t?uX1t`V",
+                            "fields": {
+                              "NUM": 90
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "procedures_defnoreturn",
+        "id": "L}..PFvYzOE|3tn():8O",
+        "x": 50,
+        "y": 1030,
+        "icons": {
+          "comment": {
+            "text": "Describe esta función...",
+            "pinned": false,
+            "height": 80,
+            "width": 160
+          }
+        },
+        "fields": {
+          "NAME": "Subir"
+        },
+        "inputs": {
+          "STACK": {
+            "block": {
+              "type": "typed_variable_set",
+              "id": "^36*kKJOgUO$OE:;|iMm",
+              "fields": {
+                "VAR": "angulo"
+              },
+              "inputs": {
+                "VALUE": {
+                  "block": {
+                    "type": "math_constrain",
+                    "id": "OjuF*V:*rG)Egmh#C[)q",
+                    "inputs": {
+                      "VALUE": {
+                        "block": {
+                          "type": "math_arithmetic",
+                          "id": "%J!eG|bez/^NwzXO@:Q@",
+                          "fields": {
+                            "OP": "ADD"
+                          },
+                          "inputs": {
+                            "A": {
+                              "block": {
+                                "type": "typed_variable_get",
+                                "id": "r#HLRvR~S#sO4(BO}IWC",
+                                "fields": {
+                                  "VAR": "angulo"
+                                }
+                              }
+                            },
+                            "B": {
+                              "block": {
+                                "type": "typed_variable_get",
+                                "id": ".a*5SWJ3=X(cfSINpRq/",
+                                "fields": {
+                                  "VAR": "pasoAngulo"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "LOW": {
+                        "shadow": {
+                          "type": "math_number",
+                          "id": "v3:7*6md=)gs||,p}ae`",
+                          "fields": {
+                            "NUM": 0
+                          }
+                        }
+                      },
+                      "HIGH": {
+                        "shadow": {
+                          "type": "math_number",
+                          "id": "o{sq2QeslG{6F3R*wz))",
+                          "fields": {
+                            "NUM": 60
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "next": {
+                "block": {
+                  "type": "motor_servo",
+                  "id": "|]IJIZ|tks^#)4n?2Em?",
+                  "fields": {
+                    "PIN": "A5"
+                  },
+                  "inputs": {
+                    "ANGLE": {
+                      "block": {
+                        "type": "typed_variable_get",
+                        "id": "ZK[tnm,Ae+.j.rN]_+p|",
+                        "fields": {
+                          "VAR": "angulo"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "procedures_defnoreturn",
+        "id": "fv4Lk+rv?f,|`:?O)re)",
+        "x": 50,
+        "y": 1250,
+        "icons": {
+          "comment": {
+            "text": "Describe esta función...",
+            "pinned": false,
+            "height": 80,
+            "width": 160
+          }
+        },
+        "fields": {
+          "NAME": "Bajar"
+        },
+        "inputs": {
+          "STACK": {
+            "block": {
+              "type": "typed_variable_set",
+              "id": "Z)Uap`Y460S9*F$kn(-,",
+              "fields": {
+                "VAR": "angulo"
+              },
+              "inputs": {
+                "VALUE": {
+                  "block": {
+                    "type": "math_constrain",
+                    "id": "q~rHB;t5JzXHd,e4B!B,",
+                    "inputs": {
+                      "VALUE": {
+                        "block": {
+                          "type": "math_arithmetic",
+                          "id": "+j-f.k#R^tiBT:w?ee+~",
+                          "fields": {
+                            "OP": "MINUS"
+                          },
+                          "inputs": {
+                            "A": {
+                              "block": {
+                                "type": "typed_variable_get",
+                                "id": "~;ra1hA?J:Z_HLrT!;c9",
+                                "fields": {
+                                  "VAR": "angulo"
+                                }
+                              }
+                            },
+                            "B": {
+                              "block": {
+                                "type": "typed_variable_get",
+                                "id": "a^+6h6Rn@tHeE|7JnoGS",
+                                "fields": {
+                                  "VAR": "pasoAngulo"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "LOW": {
+                        "shadow": {
+                          "type": "math_number",
+                          "id": "0_nJTE5+o}`l7Il;jPr2",
+                          "fields": {
+                            "NUM": 0
+                          }
+                        }
+                      },
+                      "HIGH": {
+                        "shadow": {
+                          "type": "math_number",
+                          "id": "5}TI|^y;T))=-coLsNrz",
+                          "fields": {
+                            "NUM": 60
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "next": {
+                "block": {
+                  "type": "motor_servo",
+                  "id": "iD(l]+YKQAw9XuU]|dQ;",
+                  "fields": {
+                    "PIN": "A5"
+                  },
+                  "inputs": {
+                    "ANGLE": {
+                      "block": {
+                        "type": "typed_variable_get",
+                        "id": "Vt7-6yMTKSEvaiO3u!qz",
+                        "fields": {
+                          "VAR": "angulo"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}
