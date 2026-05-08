@@ -6,7 +6,12 @@
  * mantiene la arquitectura de pines y la funcionalidad esencial de cada kit
  * para que el alumno pueda recuperar un punto de partida funcional y luego
  * personalizarlo.
+ *
+ * Para kits exportados directamente desde Ingeniables Blocks (.ib) basta con
+ * importar el JSON de su workspace tal cual; ver elastorWorkspace abajo.
  */
+
+import elastorWorkspace from './kits-workspaces/elastor.json';
 
 export interface KitProject {
   id: string;
@@ -440,5 +445,21 @@ export const kits: KitProject[] = [
     ],
     boardId: 'arduino-nano',
     workspace: frankyWorkspace,
+  },
+  {
+    id: 'elastor',
+    name: 'Ingeniables Elastor',
+    description:
+      'Lanzador / brazo articulado controlado por Bluetooth. Dos servos orientan la dirección y altura, y un motor DC dispara el mecanismo elástico.',
+    image: 'kits/elastor.png',
+    emoji: '🎯',
+    features: [
+      '2 servomotores (orientación + altura)',
+      'Motor DC con driver puente H',
+      'Control Bluetooth (HC-05/06)',
+      'Procedimientos: Subir, Bajar, Rotar…',
+    ],
+    boardId: 'arduino-nano',
+    workspace: elastorWorkspace,
   },
 ];

@@ -37,7 +37,7 @@ export default function KitsDialog({ open, onClose, onSelect }: KitsDialogProps)
           background: '#fff',
           borderRadius: 'var(--radius-lg)',
           boxShadow: 'var(--shadow-lg)',
-          width: 760,
+          width: kits.length >= 3 ? 980 : 760,
           maxHeight: '88vh',
           display: 'flex',
           flexDirection: 'column',
@@ -106,7 +106,7 @@ export default function KitsDialog({ open, onClose, onSelect }: KitsDialogProps)
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
+              gridTemplateColumns: `repeat(${kits.length >= 3 ? 3 : 2}, 1fr)`,
               gap: 16,
             }}
           >
