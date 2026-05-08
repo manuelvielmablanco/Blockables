@@ -431,22 +431,6 @@ export const kits: KitProject[] = [
     workspace: tellurionWorkspace,
   },
   {
-    id: 'elastor',
-    name: 'Ingeniables Elastor',
-    description:
-      'Lanzador / brazo articulado controlado por Bluetooth. Dos servos orientan la dirección y altura, y un motor DC dispara el mecanismo elástico.',
-    image: 'kits/elastor.png',
-    emoji: '🎯',
-    features: [
-      '2 servomotores (orientación + altura)',
-      'Motor DC con driver puente H',
-      'Control Bluetooth (HC-05/06)',
-      'Procedimientos: Subir, Bajar, Rotar…',
-    ],
-    boardId: 'arduino-nano',
-    workspace: elastorWorkspace,
-  },
-  {
     id: 'franky',
     name: 'Ingeniables Franky',
     description:
@@ -461,5 +445,21 @@ export const kits: KitProject[] = [
     ],
     boardId: 'arduino-nano',
     workspace: frankyWorkspace,
+  },
+  {
+    id: 'elastor',
+    name: 'Ingeniables Elastor',
+    description:
+      'Lanzador / brazo articulado controlado por Bluetooth. Dos servos orientan la dirección y altura, y un motor DC dispara el mecanismo elástico.',
+    image: 'kits/elastor.png',
+    emoji: '🎯',
+    features: [
+      '2 servomotores (orientación + altura)',
+      'Motor DC con driver puente H',
+      'Control Bluetooth (HC-05/06)',
+      'Procedimientos: Subir, Bajar, Rotar…',
+    ],
+    boardId: 'arduino-nano',
+    workspace: elastorWorkspace,
   },
 ];
