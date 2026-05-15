@@ -135,20 +135,32 @@ function AppContent() {
     // Hello Blocks .hb files use XML format with _hbXml property
     const hbXml = (project as ProjectData & { _hbXml?: string })._hbXml;
     if (hbXml) {
-      loadHelloBlocksXml(ws, hbXml);
-      setProjectName(project.name);
-      toast.success('Proyecto abierto', project.name);
+      try {
+        loadHelloBlocksXml(ws, hbXml);
+        setProjectName(project.name);
+        toast.success('Proyecto abierto', project.name);
+      } catch (err) {
+        console.error('Error cargando .hb:', err);
+        const msg = err instanceof Error ? err.message : String(err);
+        toast.error('No se pudo abrir el .hb', msg);
+      }
       return;
     }
 
-    ws.clear();
-    const state = JSON.parse(project.workspace);
-    Blockly.serialization.workspaces.load(state, ws);
-    setProjectName(project.name);
-    if (project.boardId) {
-      setBoard(project.boardId);
+    try {
+      ws.clear();
+      const state = JSON.parse(project.workspace);
+      Blockly.serialization.workspaces.load(state, ws);
+      setProjectName(project.name);
+      if (project.boardId) {
+        setBoard(project.boardId);
+      }
+      toast.success('Proyecto abierto', project.name);
+    } catch (err) {
+      console.error('Error cargando proyecto:', err);
+      const msg = err instanceof Error ? err.message : String(err);
+      toast.error('No se pudo abrir el proyecto', msg);
     }
-    toast.success('Proyecto abierto', project.name);
   }, [setBoard, toast]);
 
   const handleExportCode = useCallback(() => {
