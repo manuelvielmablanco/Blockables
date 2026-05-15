@@ -155,11 +155,12 @@ function transformHelloBlocksXml(xml: string): string {
     // Motor DC (Hello Blocks → Ingeniables Blocks)
     'motor_dc_init': 'motor_dc',
     'motor_dc_direction': 'motor_dc_run',
-    // Lists (HB typed lists → standard Blockly lists)
-    'lists_create_with_number': 'lists_create_with',
-    'lists_getIndex_number': 'lists_getIndex',
-    'lists_setIndex_number': 'lists_setIndex',
-    'lists_length_number': 'lists_length',
+    // Lists: NO mapping — Ingeniables Blocks already registers native
+    // lists_create_with_number / lists_getIndex_number blocks (see
+    // blocks/lists_hb.ts) that preserve the Hello Blocks statement chain
+    // semantics. Remapping them to standard lists_create_with / lists_getIndex
+    // (which are expression-only) breaks the <next> chain and produces the
+    // "Next block does not have previous statement" error during load.
     // Text comparison block → logic_compare
     'text_compare': 'logic_compare',
   };
