@@ -26,11 +26,11 @@ Blockly.Blocks['io_digitalwrite'] = {
     this.appendValueInput('VALUE')
       .setCheck('Boolean')
       .appendField('escribir digital PIN')
-      .appendField(new Blockly.FieldDropdown(DIGITAL_PINS) as Blockly.Field, 'PIN');
+      .appendField(new Blockly.FieldDropdown(PINMODE_PINS) as Blockly.Field, 'PIN');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setStyle('io_blocks');
-    this.setTooltip('Escribe un valor digital en un pin');
+    this.setTooltip('Escribe un valor digital en un pin (acepta digitales 2-13 y analógicos A0-A5)');
   },
 };
 
@@ -38,10 +38,10 @@ Blockly.Blocks['io_digitalread'] = {
   init: function (this: Blockly.Block) {
     this.appendDummyInput()
       .appendField('leer digital PIN')
-      .appendField(new Blockly.FieldDropdown(DIGITAL_PINS) as Blockly.Field, 'PIN');
+      .appendField(new Blockly.FieldDropdown(PINMODE_PINS) as Blockly.Field, 'PIN');
     this.setOutput(true, 'Boolean');
     this.setStyle('io_blocks');
-    this.setTooltip('Lee el valor digital de un pin');
+    this.setTooltip('Lee el valor digital de un pin (acepta digitales 2-13 y analógicos A0-A5)');
   },
 };
 
