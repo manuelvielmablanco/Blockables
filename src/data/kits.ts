@@ -13,7 +13,7 @@
  */
 
 import elastorWorkspace from './kits-workspaces/elastor.json';
-import frankyHbXml from './kits-workspaces/franky.hb?raw';
+import frankyWorkspace from './kits-workspaces/franky.json';
 import tellurionHbXml from './kits-workspaces/tellurion.hb?raw';
 
 export interface KitProject {
@@ -67,7 +67,7 @@ export const kits: KitProject[] = [
       'Anillo NeoPixel de 3 LEDs',
     ],
     boardId: 'arduino-nano',
-    hbXml: frankyHbXml,
+    workspace: frankyWorkspace,
   },
   {
     id: 'elastor',
