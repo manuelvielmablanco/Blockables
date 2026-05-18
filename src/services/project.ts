@@ -113,7 +113,7 @@ export function importProject(): Promise<ProjectData | null> {
  * Transform Hello Blocks XML to Blockables-compatible XML.
  * Maps block types, field names, and value input names.
  */
-function transformHelloBlocksXml(xml: string): string {
+export function transformHelloBlocksXml(xml: string): string {
   const parser = new DOMParser();
   const doc = parser.parseFromString(xml, 'text/xml');
 

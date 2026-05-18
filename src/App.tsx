@@ -17,6 +17,7 @@ import {
   exportCode,
   autoSave,
   loadHelloBlocksXml,
+  transformHelloBlocksXml,
 } from './services/project';
 import type { ProjectData } from './services/project';
 import type { ExampleProject } from './data/examples';
@@ -184,16 +185,26 @@ function AppContent() {
     const ws = workspaceRef.current?.getWorkspace();
     if (!ws) return;
 
-    ws.clear();
     try {
-      Blockly.serialization.workspaces.load(kit.workspace as object, ws);
+      if (kit.hbXml) {
+        // Kit empaquetado como Hello Blocks XML — usar el importador con
+        // la misma transformación que aplica a los .hb importados a mano.
+        const transformed = transformHelloBlocksXml(kit.hbXml);
+        loadHelloBlocksXml(ws, transformed);
+      } else if (kit.workspace) {
+        ws.clear();
+        Blockly.serialization.workspaces.load(kit.workspace as object, ws);
+      } else {
+        throw new Error('El kit no tiene workspace ni hbXml');
+      }
       setProjectName(kit.name);
       setBoard(kit.boardId);
       setShowKits(false);
       toast.info('Kit cargado', `${kit.name} — programa original`);
     } catch (err) {
       console.error('Error cargando kit:', err);
-      toast.error('No se pudo cargar el kit', String(err));
+      const msg = err instanceof Error ? err.message : String(err);
+      toast.error('No se pudo cargar el kit', msg);
     }
   }, [setBoard, toast]);
 
