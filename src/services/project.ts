@@ -113,7 +113,7 @@ export function importProject(): Promise<ProjectData | null> {
  * Transform Hello Blocks XML to Blockables-compatible XML.
  * Maps block types, field names, and value input names.
  */
-function transformHelloBlocksXml(xml: string): string {
+export function transformHelloBlocksXml(xml: string): string {
   const parser = new DOMParser();
   const doc = parser.parseFromString(xml, 'text/xml');
 
@@ -152,6 +152,17 @@ function transformHelloBlocksXml(xml: string): string {
     'bluetooth_set_timeout': 'bt_set_timeout',
     // Actuator
     'actuator_buzzer': 'actuator_buzzer_tone',
+    // Motor DC (Hello Blocks → Ingeniables Blocks)
+    'motor_dc_init': 'motor_dc',
+    'motor_dc_direction': 'motor_dc_run',
+    // Lists: NO mapping — Ingeniables Blocks already registers native
+    // lists_create_with_number / lists_getIndex_number blocks (see
+    // blocks/lists_hb.ts) that preserve the Hello Blocks statement chain
+    // semantics. Remapping them to standard lists_create_with / lists_getIndex
+    // (which are expression-only) breaks the <next> chain and produces the
+    // "Next block does not have previous statement" error during load.
+    // Text comparison block → logic_compare
+    'text_compare': 'logic_compare',
   };
 
   // Remap block types
@@ -201,6 +212,10 @@ function transformHelloBlocksXml(xml: string): string {
     'neopixel_init': { 'LEDCOUNT': 'NUM' },
     'neopixel_setcolor': { 'LEDNUMBER': 'INDEX' },
     'actuator_buzzer_tone': { 'MS': 'DURATION', 'TONE': 'FREQ' },
+    // Hello Blocks motor_dc_direction → motor_dc_run
+    'motor_dc_run': { 'VELOCIDAD': 'SPEED' },
+    // Hello Blocks text_compare → logic_compare (string comparison)
+    'logic_compare': { 'TEXT1': 'A', 'TEXT2': 'B' },
   };
 
   const values = doc.querySelectorAll('value');
@@ -220,10 +235,25 @@ function transformHelloBlocksXml(xml: string): string {
     'sensor_ultrasonic': { 'TRIGGER_PIN': 'TRIG', 'ECHO_PIN': 'ECHO', 'UNITS': 'UNIT' },
     'bt_receive_text': { 'NEWLINE': 'UNTIL_NL' },
     'math_change': { 'VARNUM': 'VAR' },
+    // Hello Blocks motor_dc_init had PIN_A/PIN_B; Ingeniables motor_dc uses PIN1/PIN2
+    'motor_dc': { 'PIN_A': 'PIN1', 'PIN_B': 'PIN2' },
+    // Hello Blocks motor_dc_direction had DIRECCION; Ingeniables motor_dc_run uses DIR
+    'motor_dc_run': { 'DIRECCION': 'DIR' },
+    // Hello Blocks text_compare had TYPE; Ingeniables logic_compare uses OP
+    'logic_compare': { 'TYPE': 'OP' },
   };
-  const fieldValueMap: Record<string, Record<string, string>> = {
-    'neopixel_effect': { 'Arcoiris': 'RAINBOW', 'ArcoirisCiclico': 'RAINBOW_CYCLE', 'Aleatorio': 'RANDOM' },
-    'sensor_ultrasonic': { 'cm': 'CM', 'inch': 'INCH' },
+  // Value remap, scoped by parentType + (optional) fieldName.
+  // Use the special key '*' to remap regardless of which field carries the value
+  // (legacy behaviour, used by sensor_ultrasonic / neopixel_effect where the
+  // mapped values only appear in one specific field anyway).
+  const fieldValueMap: Record<string, Record<string, Record<string, string>>> = {
+    'neopixel_effect':   { '*':         { 'Arcoiris': 'RAINBOW', 'ArcoirisCiclico': 'RAINBOW_CYCLE', 'Aleatorio': 'RANDOM' } },
+    'sensor_ultrasonic': { '*':         { 'cm': 'CM', 'inch': 'INCH' } },
+    // motor_dc_direction encoded forward as 1 and backward as -1 in the DIR field.
+    // Scoped to DIR only — ID also uses 1/2 and we must NOT touch those.
+    'motor_dc_run':      { 'DIR':       { '1': 'FORWARD', '-1': 'BACKWARD' } },
+    // text_compare TYPE → logic_compare OP (field rename happened above)
+    'logic_compare':     { 'OP':        { 'equals': 'EQ', 'notequals': 'NEQ' } },
   };
 
   // Remove ID fields from stepper blocks (Blockables doesn't use multi-stepper IDs)
@@ -240,10 +270,13 @@ function transformHelloBlocksXml(xml: string): string {
     if (parentType && fieldName && fieldNameMap[parentType]?.[fieldName]) {
       field.setAttribute('name', fieldNameMap[parentType][fieldName]);
     }
-    // Remap field values
+    // Remap field values — scoped by field name (with '*' fallback)
     const val = field.textContent?.trim();
-    if (parentType && val && fieldValueMap[parentType]?.[val]) {
-      field.textContent = fieldValueMap[parentType][val];
+    if (parentType && val) {
+      const currentFieldName = field.getAttribute('name') || '';
+      const scoped = fieldValueMap[parentType]?.[currentFieldName]?.[val]
+                  ?? fieldValueMap[parentType]?.['*']?.[val];
+      if (scoped) field.textContent = scoped;
     }
     // Rename VARLISTNUM → VAR for list blocks and remove variabletype
     if (fieldName === 'VARLISTNUM') {
@@ -303,9 +336,18 @@ export function loadHelloBlocksXml(
   workspace: Blockly.WorkspaceSvg,
   xml: string
 ): void {
-  workspace.clear();
   const dom = Blockly.utils.xml.textToDom(xml);
-  Blockly.Xml.domToWorkspace(dom, workspace);
+  workspace.clear();
+  try {
+    Blockly.Xml.domToWorkspace(dom, workspace);
+  } catch (err) {
+    // domToWorkspace blew up partway through — the workspace is now in a
+    // half-loaded state. Wipe it so the user gets a clean empty workspace
+    // instead of a phantom mix of blocks, then re-throw so the caller can
+    // surface a toast.
+    workspace.clear();
+    throw err;
+  }
 }
 
 /**
