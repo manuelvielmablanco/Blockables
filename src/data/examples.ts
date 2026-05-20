@@ -327,12 +327,12 @@ export const examples: ExampleProject[] = [
     },
   },
   {
-    id: 'wifi-sensor',
-    name: 'Sensor WiFi',
-    description: 'Conecta un ESP32 a WiFi y envía datos de un sensor por HTTP.',
-    boardId: 'esp32-wroom',
-    icon: '📡',
-    difficulty: 'avanzado',
+    id: 'proximity-alarm-neopixel',
+    name: 'Alarma de proximidad con NeoPixel',
+    description: 'Mide la distancia con un sensor ultrasónico y enciende un NeoPixel rojo cuando hay un obstáculo cerca.',
+    boardId: 'arduino-nano',
+    icon: '🚨',
+    difficulty: 'intermedio',
     workspace: {
       blocks: {
         languageVersion: 0,
@@ -345,12 +345,19 @@ export const examples: ExampleProject[] = [
             inputs: {
               SETUP: {
                 block: {
-                  type: 'serial_begin',
-                  fields: { BAUD: '115200' },
+                  type: 'typed_variable_declare',
+                  fields: { TYPE: 'int', VAR: 'Distancia' },
+                  inputs: { VALUE: { shadow: { type: 'math_number', fields: { NUM: 0 } } } },
                   next: {
                     block: {
-                      type: 'wifi_connect',
-                      fields: { SSID: 'Tu_Red_WiFi', PASSWORD: 'tu_contraseña' },
+                      type: 'neopixel_init',
+                      fields: { PIN: 'A4', NUM: 1 },
+                      next: {
+                        block: {
+                          type: 'neopixel_clear',
+                          next: { block: { type: 'neopixel_show' } },
+                        },
+                      },
                     },
                   },
                 },
@@ -360,21 +367,61 @@ export const examples: ExampleProject[] = [
           {
             type: 'arduino_loop',
             x: 30,
-            y: 300,
+            y: 320,
             deletable: false,
             inputs: {
               LOOP: {
                 block: {
-                  type: 'serial_println',
+                  type: 'typed_variable_set',
+                  fields: { VAR: 'Distancia' },
                   inputs: {
                     VALUE: {
-                      block: { type: 'wifi_localip' },
+                      block: {
+                        type: 'sensor_ultrasonic',
+                        fields: { TRIG: '5', ECHO: '3', UNIT: 'CM' },
+                      },
                     },
                   },
                   next: {
                     block: {
-                      type: 'time_delay',
-                      fields: { TIME: 5000 },
+                      type: 'controls_if',
+                      extraState: { hasElse: true },
+                      inputs: {
+                        IF0: {
+                          block: {
+                            type: 'logic_compare',
+                            fields: { OP: 'LT' },
+                            inputs: {
+                              A: { block: { type: 'typed_variable_get', fields: { VAR: 'Distancia' } } },
+                              B: { block: { type: 'math_number', fields: { NUM: 20 } } },
+                            },
+                          },
+                        },
+                        DO0: {
+                          block: {
+                            type: 'neopixel_setcolor',
+                            inputs: {
+                              INDEX: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                              R: { shadow: { type: 'math_number', fields: { NUM: 255 } } },
+                              G: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                              B: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                            },
+                            next: { block: { type: 'neopixel_show' } },
+                          },
+                        },
+                        ELSE: {
+                          block: {
+                            type: 'neopixel_clear',
+                            next: { block: { type: 'neopixel_show' } },
+                          },
+                        },
+                      },
+                      next: {
+                        block: {
+                          type: 'time_delay',
+                          inputs: { MS: { shadow: { type: 'math_number', fields: { NUM: 200 } } } },
+                        },
+                      },
                     },
                   },
                 },
