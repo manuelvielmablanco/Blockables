@@ -166,7 +166,9 @@ gen.forBlock['math_arithmetic'] = function (block) {
 gen.forBlock['math_modulo'] = function (block) {
   const a = gen.valueToCode(block, 'DIVIDEND', ORDER_MULTIPLICATIVE) || '0';
   const b = gen.valueToCode(block, 'DIVISOR', ORDER_MULTIPLICATIVE) || '1';
-  return [a + ' % ' + b, ORDER_MULTIPLICATIVE];
+  // % is invalid for double; numbers are doubles, so cast operands to int
+  // (same as Hello Blocks: ((int)(a)) % ((int)(b))).
+  return ['(int)(' + a + ') % (int)(' + b + ')', ORDER_MULTIPLICATIVE];
 };
 
 gen.forBlock['math_constrain'] = function (block) {
@@ -213,8 +215,8 @@ gen.forBlock['math_round'] = function (block) {
 gen.forBlock['math_number_property'] = function (block) {
   const v = gen.valueToCode(block, 'NUMBER_TO_CHECK', ORDER_NONE) || '0';
   const prop = block.getFieldValue('PROPERTY');
-  if (prop === 'EVEN') return ['(' + v + ' % 2 == 0)', ORDER_EQUALITY];
-  if (prop === 'ODD') return ['(' + v + ' % 2 != 0)', ORDER_EQUALITY];
+  if (prop === 'EVEN') return ['((int)(' + v + ') % 2 == 0)', ORDER_EQUALITY];
+  if (prop === 'ODD') return ['((int)(' + v + ') % 2 != 0)', ORDER_EQUALITY];
   if (prop === 'POSITIVE') return ['(' + v + ' > 0)', ORDER_RELATIONAL];
   if (prop === 'NEGATIVE') return ['(' + v + ' < 0)', ORDER_RELATIONAL];
   return ['true', ORDER_ATOMIC];
@@ -861,7 +863,9 @@ gen.forBlock['lists_create_with_number'] = function (block) {
 gen.forBlock['lists_getIndex_number'] = function (block) {
   const varName = getVarName(block, 'VAR', 'arr');
   const index = gen.valueToCode(block, 'AT', ORDER_NONE) || '0';
-  return [varName + '[' + index + ']', ORDER_ATOMIC];
+  // Array subscript must be integral; numbers are doubles, so cast to int
+  // (same as Hello Blocks: COLORS[(int)(...)]).
+  return [varName + '[(int)(' + index + ')]', ORDER_ATOMIC];
 };
 
 // === Procedures ===
@@ -1065,8 +1069,13 @@ export function generateArduinoCode(workspace: Blockly.Workspace, board?: BoardP
     if (listVarNames.has(name)) continue;
     // Skip variables already declared by typed_variable_declare
     if (typedDeclaredVars.has(name)) continue;
-    // Infer type from all variables_set blocks for this variable
-    let varType = 'int';
+    // Infer type from all variables_set blocks for this variable.
+    // Numbers default to `double` to match Hello Blocks (which declares every
+    // numeric variable as double). This matters for variables that hold
+    // millis()/micros() values: a 16-bit `int` overflows every ~65 ms and
+    // breaks time-based logic (e.g. the Tellurion stepper pacing ran slow and
+    // juddery). double on AVR is 32-bit float — same as Hello Blocks.
+    let varType = 'double';
     for (const b of workspace.getAllBlocks(false)) {
       if (b.type === 'variables_set') {
         const id = b.getFieldValue('VAR');
@@ -1076,7 +1085,7 @@ export function generateArduinoCode(workspace: Blockly.Workspace, board?: BoardP
           if (child) {
             if (child.type === 'logic_boolean' || child.type === 'logic_negate') { varType = 'bool'; break; }
             else if (child.type === 'text') { varType = 'String'; break; }
-            else if (child.type === 'math_number' || child.type === 'math_arithmetic' || child.type === 'math_number_property') { varType = 'int'; break; }
+            else if (child.type === 'math_number' || child.type === 'math_arithmetic' || child.type === 'math_number_property') { varType = 'double'; break; }
             // Check output type for blocks not explicitly listed above
             const outCheck = (child.outputConnection as any)?.getCheck?.();
             if (outCheck) {
