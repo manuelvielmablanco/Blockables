@@ -604,7 +604,11 @@ gen.forBlock['motor_stepper_init'] = function (block) {
   const p3 = block.getFieldValue('PIN3'), p4 = block.getFieldValue('PIN4');
   const speed = gen.valueToCode(block, 'SPEED', ORDER_NONE) || '10';
   addInclude('#include <Stepper.h>');
-  addGlobalVar('Stepper stepper(' + stepsRev + ', ' + p1 + ', ' + p3 + ', ' + p2 + ', ' + p4 + ');');
+  // Los pines se pasan a la librería Stepper en el MISMO orden declarado
+  // (PIN1, PIN2, PIN3, PIN4), igual que Hello Blocks. Los kits (p.ej. Tellurion)
+  // están cableados y validados contra esa secuencia; reordenar los pines
+  // centrales desincroniza la secuencia de bobinas y reduce par y velocidad.
+  addGlobalVar('Stepper stepper(' + stepsRev + ', ' + p1 + ', ' + p2 + ', ' + p3 + ', ' + p4 + ');');
   addSetupCode('  stepper.setSpeed(' + speed + ');\n');
   return '';
 };
