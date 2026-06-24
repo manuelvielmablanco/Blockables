@@ -15,6 +15,24 @@
 import elastorWorkspace from './kits-workspaces/elastor.json';
 import frankyWorkspace from './kits-workspaces/franky.json';
 import tellurionHbXml from './kits-workspaces/tellurion.hb?raw';
+import tellurionV2HbXml from './kits-workspaces/tellurion-v2.hb?raw';
+
+/**
+ * Una variante de un kit: el mismo modelo físico pero con una placa /
+ * módulo distinto, lo que cambia el cableado de pines y por tanto el
+ * programa. Tras elegir el kit se pregunta al alumno cuál tiene.
+ */
+export interface KitVariant {
+  id: string;
+  /** Etiqueta corta, ej. "Módulo Inteligente V2". */
+  label: string;
+  /** Texto de ayuda para distinguir la variante. */
+  description: string;
+  /** Ruta relativa a public/ de la imagen del módulo. */
+  image: string;
+  workspace?: object;
+  hbXml?: string;
+}
 
 export interface KitProject {
   id: string;
@@ -30,6 +48,20 @@ export interface KitProject {
   /** Workspace en formato JSON nativo de Ingeniables Blocks. */
   workspace?: object;
   /** Workspace en formato XML de Hello Blocks. Si está presente, se prefiere. */
+  hbXml?: string;
+  /**
+   * Si el kit tiene varias versiones de hardware, en vez de cargar
+   * directamente se muestra esta pregunta y las variantes para elegir.
+   */
+  variantPrompt?: string;
+  variants?: KitVariant[];
+}
+
+/** Lo que el diálogo entrega para cargar: ya resuelto a un workspace concreto. */
+export interface KitLoadable {
+  name: string;
+  boardId: string;
+  workspace?: object;
   hbXml?: string;
 }
 
@@ -51,7 +83,24 @@ export const kits: KitProject[] = [
       'Ciclo de 4 colores para el Sol',
     ],
     boardId: 'arduino-nano',
-    hbXml: tellurionHbXml,
+    variantPrompt:
+      '¿Cuál de estos módulos inteligentes tienes conectado a tu Tellurion? Si ya lo tienes montado, puedes verificarlo también en el manual.',
+    variants: [
+      {
+        id: 'v1',
+        label: 'Módulo Inteligente V1',
+        description: 'Versión inicial del módulo inteligente (la primera que se distribuyó).',
+        image: 'kits/modulo-v1.png',
+        hbXml: tellurionHbXml,
+      },
+      {
+        id: 'v2',
+        label: 'Módulo Inteligente V2',
+        description: 'Versión más actualizada del módulo inteligente.',
+        image: 'kits/modulo-v2.jpg',
+        hbXml: tellurionV2HbXml,
+      },
+    ],
   },
   {
     id: 'franky',
