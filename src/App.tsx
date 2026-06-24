@@ -21,7 +21,7 @@ import {
 } from './services/project';
 import type { ProjectData } from './services/project';
 import type { ExampleProject } from './data/examples';
-import type { KitProject } from './data/kits';
+import type { KitLoadable } from './data/kits';
 import { useToast } from './components/ui/Toast';
 
 function AppContent() {
@@ -181,26 +181,26 @@ function AppContent() {
     toast.info('Ejemplo cargado', example.name);
   }, [setBoard, toast]);
 
-  const handleSelectKit = useCallback((kit: KitProject) => {
+  const handleSelectKit = useCallback((loadable: KitLoadable) => {
     const ws = workspaceRef.current?.getWorkspace();
     if (!ws) return;
 
     try {
-      if (kit.hbXml) {
+      if (loadable.hbXml) {
         // Kit empaquetado como Hello Blocks XML — usar el importador con
         // la misma transformación que aplica a los .hb importados a mano.
-        const transformed = transformHelloBlocksXml(kit.hbXml);
+        const transformed = transformHelloBlocksXml(loadable.hbXml);
         loadHelloBlocksXml(ws, transformed);
-      } else if (kit.workspace) {
+      } else if (loadable.workspace) {
         ws.clear();
-        Blockly.serialization.workspaces.load(kit.workspace as object, ws);
+        Blockly.serialization.workspaces.load(loadable.workspace as object, ws);
       } else {
         throw new Error('El kit no tiene workspace ni hbXml');
       }
-      setProjectName(kit.name);
-      setBoard(kit.boardId);
+      setProjectName(loadable.name);
+      setBoard(loadable.boardId);
       setShowKits(false);
-      toast.info('Kit cargado', `${kit.name} — programa original`);
+      toast.info('Kit cargado', `${loadable.name} — programa original`);
     } catch (err) {
       console.error('Error cargando kit:', err);
       const msg = err instanceof Error ? err.message : String(err);
