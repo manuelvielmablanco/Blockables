@@ -79,7 +79,7 @@ export const kits: KitProject[] = [
     features: [
       'Motor paso a paso 28BYJ-48',
       '3 sensores táctiles capacitivos',
-      'Anillo NeoPixel de 7 LEDs',
+      'Anillo NeoPixel de 3 LEDs',
       'Ciclo de 4 colores para el Sol',
     ],
     boardId: 'arduino-nano',

@@ -273,11 +273,22 @@
   fill-opacity: 0.98 !important;
 }
 
-.blocklyFlyoutScrollbar,
-.blocklyFlyout .blocklyScrollbarVertical,
+/* Barra de scroll del flyout (selector de bloques): visible e interactiva,
+   para que el usuario vea que la lista se puede desplazar y pueda arrastrarla
+   con precisión en lugar de depender solo de la rueda del ratón. */
+.blocklyFlyout .blocklyScrollbarVertical {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
 .blocklyFlyout .blocklyScrollbarHorizontal {
   opacity: 0 !important;
   pointer-events: none !important;
+}
+.blocklyFlyout .blocklyScrollbarHandle {
+  fill: #b4c2c2 !important;
+}
+.blocklyFlyout .blocklyScrollbarHandle:hover {
+  fill: #8aa0a0 !important;
 }
 
 /* ──────────────────────────────────────────────────────────────

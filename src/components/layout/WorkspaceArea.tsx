@@ -11,6 +11,13 @@ interface WorkspaceAreaProps {
 
 export interface WorkspaceHandle {
   getWorkspace: () => Blockly.WorkspaceSvg | null;
+  /**
+   * Cierra cualquier editor de campo abierto (p.ej. un campo numérico que el
+   * usuario acaba de teclear sin hacer clic fuera) para que su valor quede
+   * confirmado, y regenera el código. Devuelve el código ya actualizado.
+   * Llamar antes de subir/exportar para no perder el último cambio.
+   */
+  commitPendingEdits: () => string | null;
 }
 
 const WorkspaceArea = forwardRef<WorkspaceHandle, WorkspaceAreaProps>(
@@ -21,16 +28,31 @@ const WorkspaceArea = forwardRef<WorkspaceHandle, WorkspaceAreaProps>(
     const { board } = useBoard();
     const [isEmpty, setIsEmpty] = useState(true);
 
-    useImperativeHandle(ref, () => ({
-      getWorkspace: () => workspaceRef.current,
-    }));
-
     const updateCode = useCallback(() => {
       if (workspaceRef.current) {
         const code = generateArduinoCode(workspaceRef.current, board);
         onCodeChange(code);
+        return code;
       }
+      return null;
     }, [onCodeChange, board]);
+
+    useImperativeHandle(ref, () => ({
+      getWorkspace: () => workspaceRef.current,
+      commitPendingEdits: () => {
+        // Cerrar el editor de campo activo (FieldTextInput/FieldNumber):
+        // primero quitar el foco del <input> para disparar su commit, luego
+        // ocultar el WidgetDiv de Blockly por si sigue abierto. Ambos hacen
+        // que el campo guarde su valor antes de regenerar el código.
+        (document.activeElement as HTMLElement | null)?.blur?.();
+        try {
+          (Blockly as unknown as { WidgetDiv?: { hide?: () => void } }).WidgetDiv?.hide?.();
+        } catch {
+          /* noop */
+        }
+        return updateCode();
+      },
+    }), [updateCode]);
 
     const updateEmptyState = useCallback(() => {
       if (workspaceRef.current) {
