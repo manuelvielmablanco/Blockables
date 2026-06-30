@@ -391,6 +391,8 @@ function KitCard({ kit, onSelect }: { kit: KitProject; onSelect: (k: KitProject)
               alignItems: 'center',
               gap: 3,
               marginLeft: 'auto',
+              flexShrink: 0,
+              whiteSpace: 'nowrap',
               background: 'var(--teal-bg)',
               color: 'var(--teal-contrast)',
               padding: '1px 8px',
@@ -399,7 +401,7 @@ function KitCard({ kit, onSelect }: { kit: KitProject; onSelect: (k: KitProject)
               fontWeight: 600,
             }}
           >
-            <Cpu className="w-[10px] h-[10px]" />
+            <Cpu className="w-[10px] h-[10px]" style={{ flexShrink: 0 }} />
             {boardLabels[kit.boardId] ?? kit.boardId}
           </span>
         </div>

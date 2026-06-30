@@ -1,6 +1,12 @@
 import * as Blockly from 'blockly';
 import type { BoardProfile } from '../../boards/types';
 import { defaultBoard } from '../../boards';
+import {
+  thereminIncludes,
+  thereminPreamble,
+  thereminSetupBody,
+  thereminLoopBody,
+} from '../theremin-firmware';
 
 // Current board profile for code generation
 let currentBoard: BoardProfile = defaultBoard;
@@ -828,14 +834,30 @@ gen.forBlock['neopixel_effect'] = function (block) {
   }
 };
 
+// === Theremin (kit) ===
+// Estos dos bloques vuelcan el firmware original del kit Theremin. El preámbulo
+// (struct, globals, ISR del Timer1 y funciones auxiliares) se emite como un
+// bloque de definiciones antes de setup(); el cuerpo de setup() y loop() salen
+// tal cual del .ino de fábrica. Ver src/blockly/theremin-firmware.ts.
+gen.forBlock['theremin_init'] = function () {
+  for (const inc of thereminIncludes) addInclude(inc);
+  addFunctionDef(thereminPreamble);
+  return thereminSetupBody + '\n';
+};
+
+gen.forBlock['theremin_run'] = function () {
+  return thereminLoopBody + '\n';
+};
+
 gen.forBlock['neopixel_setcolor_picker'] = function (block) {
   const idx = gen.valueToCode(block, 'LEDNUMBER', ORDER_NONE) || '0';
-  const colour = gen.valueToCode(block, 'COLOUR', ORDER_NONE) || "'#ff0000'";
-  // Convert hex colour string to RGB at runtime
-  return 'strip.setPixelColor(' + idx + ', strip.Color(\n'
-    + '  (int)strtol(String(' + colour + ').substring(1, 3).c_str(), NULL, 16),\n'
-    + '  (int)strtol(String(' + colour + ').substring(3, 5).c_str(), NULL, 16),\n'
-    + '  (int)strtol(String(' + colour + ').substring(5, 7).c_str(), NULL, 16)));\n';
+  // El color es ahora un campo (FieldColour) con valor hex "#rrggbb".
+  // Lo convertimos a RGB aquí para emitir strip.Color(r, g, b) directo.
+  const hex = block.getFieldValue('COLOUR') || '#ff0000';
+  const r = parseInt(hex.slice(1, 3), 16) || 0;
+  const g = parseInt(hex.slice(3, 5), 16) || 0;
+  const b = parseInt(hex.slice(5, 7), 16) || 0;
+  return 'strip.setPixelColor((int)(' + idx + '), strip.Color(' + r + ', ' + g + ', ' + b + '));\n';
 };
 
 // === Lists ===

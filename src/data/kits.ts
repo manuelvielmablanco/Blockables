@@ -14,6 +14,7 @@
 
 import elastorWorkspace from './kits-workspaces/elastor.json';
 import frankyWorkspace from './kits-workspaces/franky.json';
+import thereminWorkspace from './kits-workspaces/theremin.json';
 import tellurionHbXml from './kits-workspaces/tellurion.hb?raw';
 import tellurionV2HbXml from './kits-workspaces/tellurion-v2.hb?raw';
 
@@ -133,5 +134,21 @@ export const kits: KitProject[] = [
     ],
     boardId: 'arduino-nano',
     workspace: elastorWorkspace,
+  },
+  {
+    id: 'theremin',
+    name: 'Ingeniables Theremin',
+    description:
+      'Instrumento sin contacto: un sensor de distancia controla la luz y el sonido al mover la mano. Incluye escalas musicales, de color y melodías.',
+    image: 'kits/theremin.png',
+    emoji: '🎵',
+    features: [
+      'Sensor de distancia ToF (VL53L0X)',
+      'Tira NeoPixel de 8 LEDs',
+      'Buzzer por Timer1 + 7 escalas musicales',
+      '3 táctiles: luz, sonido y melodías',
+    ],
+    boardId: 'arduino-nano',
+    workspace: thereminWorkspace,
   },
 ];
