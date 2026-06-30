@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Highlight, themes } from 'prism-react-renderer';
 import { Copy, Check } from 'lucide-react';
 
@@ -6,8 +6,16 @@ interface CodeViewerProps {
   code: string;
 }
 
+const MIN_WIDTH = 280;
+const DEFAULT_WIDTH = 380;
+const WIDTH_KEY = 'ingeniables.codeViewerWidth';
+
 export default function CodeViewer({ code }: CodeViewerProps) {
   const [copied, setCopied] = useState(false);
+  const [width, setWidth] = useState<number>(() => {
+    const saved = Number(localStorage.getItem(WIDTH_KEY));
+    return saved >= MIN_WIDTH ? saved : DEFAULT_WIDTH;
+  });
 
   const handleCopy = () => {
     navigator.clipboard.writeText(code).then(() => {
@@ -16,16 +24,74 @@ export default function CodeViewer({ code }: CodeViewerProps) {
     });
   };
 
+  // Arrastrar el borde izquierdo para ensanchar/estrechar el panel.
+  // Mover hacia la izquierda = más ancho (el panel está pegado a la derecha).
+  const startResize = useCallback(
+    (e: React.PointerEvent) => {
+      e.preventDefault();
+      const startX = e.clientX;
+      const startW = width;
+      const maxW = () => Math.max(MIN_WIDTH, window.innerWidth - 360);
+      const onMove = (ev: PointerEvent) => {
+        const next = Math.min(Math.max(MIN_WIDTH, startW + (startX - ev.clientX)), maxW());
+        setWidth(next);
+      };
+      const onUp = () => {
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+        setWidth((w) => {
+          localStorage.setItem(WIDTH_KEY, String(w));
+          return w;
+        });
+      };
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    },
+    [width],
+  );
+
   return (
     <div
-      className="shrink-0 flex flex-col"
+      className="shrink-0 flex flex-col relative"
       style={{
-        width: 380,
+        width,
         background: '#fff',
         borderLeft: '1px solid var(--border)',
         fontFamily: 'var(--font-ui)',
       }}
     >
+      {/* Tirador de redimensionado (borde izquierdo) */}
+      <div
+        onPointerDown={startResize}
+        title="Arrastra para ampliar el panel de código"
+        className="code-resize-handle"
+        style={{
+          position: 'absolute',
+          left: -4,
+          top: 0,
+          bottom: 0,
+          width: 8,
+          cursor: 'col-resize',
+          zIndex: 5,
+        }}
+      />
+      <style>{`
+        .code-resize-handle::after {
+          content: '';
+          position: absolute;
+          left: 3px;
+          top: 0;
+          bottom: 0;
+          width: 2px;
+          background: transparent;
+          transition: background 140ms var(--ease-ui);
+        }
+        .code-resize-handle:hover::after { background: var(--teal); }
+      `}</style>
       <div
         style={{
           padding: '12px 16px',
