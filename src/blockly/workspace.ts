@@ -8,6 +8,22 @@ import './blocks';
 
 Blockly.setLocale(Es);
 
+// Mantener los bloques del flyout (selector lateral) a tamaño fijo,
+// independientes del zoom del lienzo. Por defecto Blockly escala el flyout con
+// el workspace (getFlyoutScale devuelve this.targetWorkspace.scale), así que al
+// hacer zoom los bloques del selector también crecían/encogían. Lo fijamos a 1.
+{
+  const fixedFlyoutScale = function (): number {
+    return 1;
+  };
+  const flyoutClasses = [Blockly.Flyout, Blockly.VerticalFlyout, Blockly.HorizontalFlyout];
+  for (const FlyoutClass of flyoutClasses) {
+    const proto = (FlyoutClass as unknown as { prototype?: Record<string, unknown> } | undefined)
+      ?.prototype;
+    if (proto) proto.getFlyoutScale = fixedFlyoutScale;
+  }
+}
+
 export function createWorkspace(container: HTMLDivElement, board?: BoardProfile): Blockly.WorkspaceSvg {
   const currentBoard = board || defaultBoard;
   const toolbox = getToolboxForBoard(currentBoard);
