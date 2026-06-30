@@ -1,6 +1,12 @@
 import * as Blockly from 'blockly';
 import type { BoardProfile } from '../../boards/types';
 import { defaultBoard } from '../../boards';
+import {
+  thereminIncludes,
+  thereminPreamble,
+  thereminSetupBody,
+  thereminLoopBody,
+} from '../theremin-firmware';
 
 // Current board profile for code generation
 let currentBoard: BoardProfile = defaultBoard;
@@ -826,6 +832,21 @@ gen.forBlock['neopixel_effect'] = function (block) {
       + '  strip.setPixelColor(i, strip.Color(random(256), random(256), random(256)));\n'
       + '}\nstrip.show();\n';
   }
+};
+
+// === Theremin (kit) ===
+// Estos dos bloques vuelcan el firmware original del kit Theremin. El preámbulo
+// (struct, globals, ISR del Timer1 y funciones auxiliares) se emite como un
+// bloque de definiciones antes de setup(); el cuerpo de setup() y loop() salen
+// tal cual del .ino de fábrica. Ver src/blockly/theremin-firmware.ts.
+gen.forBlock['theremin_init'] = function () {
+  for (const inc of thereminIncludes) addInclude(inc);
+  addFunctionDef(thereminPreamble);
+  return thereminSetupBody + '\n';
+};
+
+gen.forBlock['theremin_run'] = function () {
+  return thereminLoopBody + '\n';
 };
 
 gen.forBlock['neopixel_setcolor_picker'] = function (block) {
