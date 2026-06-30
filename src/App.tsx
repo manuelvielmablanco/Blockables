@@ -80,6 +80,9 @@ function AppContent() {
 
   // "Subir" button now opens upload dialog directly
   const handleUpload = useCallback(() => {
+    // Confirmar el último campo editado (p.ej. un número recién tecleado sin
+    // hacer clic fuera) para que el código que se sube lo incluya.
+    workspaceRef.current?.commitPendingEdits?.();
     setShowUploadDialog(true);
   }, []);
 
@@ -165,7 +168,9 @@ function AppContent() {
   }, [setBoard, toast]);
 
   const handleExportCode = useCallback(() => {
-    exportCode(codeRef.current, projectName);
+    // Confirmar el último campo editado antes de exportar.
+    const fresh = workspaceRef.current?.commitPendingEdits?.();
+    exportCode(fresh ?? codeRef.current, projectName);
     toast.success('Código exportado', `${projectName}.ino`);
   }, [projectName, toast]);
 

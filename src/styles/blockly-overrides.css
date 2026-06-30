@@ -273,11 +273,19 @@
   fill-opacity: 0.98 !important;
 }
 
-.blocklyFlyoutScrollbar,
-.blocklyFlyout .blocklyScrollbarVertical,
-.blocklyFlyout .blocklyScrollbarHorizontal {
-  opacity: 0 !important;
-  pointer-events: none !important;
+/* Barra de scroll del flyout (selector de bloques).
+   Blockly deja esta barra visible aunque el flyout se colapse, así que un
+   observador (workspace.ts) le añade .is-flyout-collapsed cuando el menú está
+   cerrado para ocultarla. Con el flyout abierto, Blockly gestiona su
+   visibilidad (aparece si la lista desborda). Solo personalizamos su aspecto. */
+.blocklyFlyoutScrollbar.is-flyout-collapsed {
+  display: none !important;
+}
+.blocklyFlyoutScrollbar .blocklyScrollbarHandle {
+  fill: #b4c2c2 !important;
+}
+.blocklyFlyoutScrollbar .blocklyScrollbarHandle:hover {
+  fill: #8aa0a0 !important;
 }
 
 /* ──────────────────────────────────────────────────────────────

@@ -105,7 +105,7 @@ export const toolboxConfig = {
         { kind: 'block', type: 'io_pinmode' },
         { kind: 'block', type: 'io_digitalwrite' },
         { kind: 'block', type: 'io_digitalread' },
-        { kind: 'block', type: 'io_analogwrite' },
+        { kind: 'block', type: 'io_analogwrite', inputs: { VALUE: { shadow: { type: 'math_number', fields: { NUM: 128 } } } } },
         { kind: 'block', type: 'io_analogread' },
       ],
     },
@@ -162,9 +162,24 @@ export const toolboxConfig = {
       cssConfig: { container: 'blocklyToolboxCategoryContainer cat-actuators' },
       contents: [
         { kind: 'block', type: 'actuator_led' },
-        { kind: 'block', type: 'actuator_led_pwm' },
-        { kind: 'block', type: 'actuator_led_rgb' },
-        { kind: 'block', type: 'actuator_buzzer_tone' },
+        { kind: 'block', type: 'actuator_led_pwm', inputs: { VALUE: { shadow: { type: 'math_number', fields: { NUM: 128 } } } } },
+        {
+          kind: 'block',
+          type: 'actuator_led_rgb',
+          inputs: {
+            R: { shadow: { type: 'math_number', fields: { NUM: 255 } } },
+            G: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+            B: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+          },
+        },
+        {
+          kind: 'block',
+          type: 'actuator_buzzer_tone',
+          inputs: {
+            FREQ: { shadow: { type: 'math_number', fields: { NUM: 1000 } } },
+            DURATION: { shadow: { type: 'math_number', fields: { NUM: 500 } } },
+          },
+        },
         { kind: 'block', type: 'actuator_buzzer_melody' },
         { kind: 'block', type: 'actuator_relay' },
       ],
@@ -182,10 +197,17 @@ export const toolboxConfig = {
           inputs: { SPEED: { shadow: { type: 'math_number', fields: { NUM: 255 } } } },
         },
         { kind: 'block', type: 'motor_dc_stop' },
-        { kind: 'block', type: 'motor_servo' },
-        { kind: 'block', type: 'motor_stepper_init' },
-        { kind: 'block', type: 'motor_stepper_setspeed' },
-        { kind: 'block', type: 'motor_stepper_step' },
+        { kind: 'block', type: 'motor_servo', inputs: { ANGLE: { shadow: { type: 'math_number', fields: { NUM: 90 } } } } },
+        {
+          kind: 'block',
+          type: 'motor_stepper_init',
+          inputs: {
+            STEPS_REV: { shadow: { type: 'math_number', fields: { NUM: 2048 } } },
+            SPEED: { shadow: { type: 'math_number', fields: { NUM: 10 } } },
+          },
+        },
+        { kind: 'block', type: 'motor_stepper_setspeed', inputs: { RPM: { shadow: { type: 'math_number', fields: { NUM: 10 } } } } },
+        { kind: 'block', type: 'motor_stepper_step', inputs: { STEPS: { shadow: { type: 'math_number', fields: { NUM: 100 } } } } },
       ],
     },
     {
@@ -257,8 +279,17 @@ export const toolboxConfig = {
       cssConfig: { container: 'blocklyToolboxCategoryContainer cat-neopixel' },
       contents: [
         { kind: 'block', type: 'neopixel_init' },
-        { kind: 'block', type: 'neopixel_setbrightness' },
-        { kind: 'block', type: 'neopixel_setcolor' },
+        { kind: 'block', type: 'neopixel_setbrightness', inputs: { BRIGHTNESS: { shadow: { type: 'math_number', fields: { NUM: 100 } } } } },
+        {
+          kind: 'block',
+          type: 'neopixel_setcolor',
+          inputs: {
+            INDEX: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+            R: { shadow: { type: 'math_number', fields: { NUM: 255 } } },
+            G: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+            B: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+          },
+        },
         { kind: 'block', type: 'neopixel_setcolor_picker' },
         { kind: 'block', type: 'neopixel_show' },
         { kind: 'block', type: 'neopixel_clear' },
