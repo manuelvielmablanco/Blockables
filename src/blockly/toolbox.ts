@@ -290,7 +290,7 @@ export const toolboxConfig = {
             B: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
           },
         },
-        { kind: 'block', type: 'neopixel_setcolor_picker' },
+        { kind: 'block', type: 'neopixel_setcolor_picker', inputs: { LEDNUMBER: { shadow: { type: 'math_number', fields: { NUM: 0 } } } } },
         { kind: 'block', type: 'neopixel_show' },
         { kind: 'block', type: 'neopixel_clear' },
         { kind: 'block', type: 'neopixel_effect' },

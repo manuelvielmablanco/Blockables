@@ -1,4 +1,9 @@
 import * as Blockly from 'blockly';
+import { FieldColour, registerFieldColour } from '@blockly/field-colour';
+
+// Registra el campo de color de Blockly (paleta de colores tipo Hello Blocks).
+// Necesario para que se serialice/deserialice correctamente al guardar/abrir.
+registerFieldColour();
 
 const DIGITAL_PINS: [string, string][] = [['2','2'],['3','3'],['4','4'],['5','5'],['6','6'],['7','7'],['8','8'],['9','9'],['10','10'],['11','11'],['12','12'],['13','13'],['A0','A0'],['A1','A1'],['A2','A2'],['A3','A3'],['A4','A4'],['A5','A5']];
 
@@ -47,9 +52,9 @@ Blockly.Blocks['neopixel_setcolor_picker'] = {
     this.appendValueInput('LEDNUMBER')
       .setCheck('Number')
       .appendField('NeoPixel LED nº');
-    this.appendValueInput('COLOUR')
-      .setCheck('Colour')
-      .appendField('color');
+    this.appendDummyInput()
+      .appendField('color')
+      .appendField(new FieldColour('#ff0000') as Blockly.Field, 'COLOUR');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
