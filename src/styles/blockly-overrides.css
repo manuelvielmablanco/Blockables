@@ -40,6 +40,18 @@
   z-index: 60 !important;
 }
 
+/* Menú desplegable de campo (p.ej. selector de PIN).
+   Blockly limita el contenido a 300px, así que con listas largas (pines
+   2-13 + A0-A5 = 18 opciones) el menú se vuelve scrollable. Con el menú
+   desplazado hay un bug por el que el resaltado al pasar el ratón queda
+   desfasado respecto al cursor (se resalta un número distinto del que
+   apuntas). Ampliando la altura, la lista de pines cabe entera sin scroll en
+   pantallas normales y el desfase desaparece. Blockly reposiciona el
+   desplegable para mantenerlo dentro de la ventana. */
+.blocklyDropDownContent {
+  max-height: 80vh !important;
+}
+
 .blocklyMainWorkspaceScrollbar {
   z-index: 1;
 }
