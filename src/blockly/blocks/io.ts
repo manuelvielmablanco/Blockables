@@ -1,11 +1,14 @@
 import * as Blockly from 'blockly';
 
 const DIGITAL_PINS: [string, string][] = [['2','2'],['3','3'],['4','4'],['5','5'],['6','6'],['7','7'],['8','8'],['9','9'],['10','10'],['11','11'],['12','12'],['13','13']];
-const ANALOG_PINS: [string, string][] = [['A0','A0'],['A1','A1'],['A2','A2'],['A3','A3'],['A4','A4'],['A5','A5']];
+// Lectura analógica (analogRead): en el Arduino Nano llegan hasta A7.
+const ANALOG_PINS: [string, string][] = [['A0','A0'],['A1','A1'],['A2','A2'],['A3','A3'],['A4','A4'],['A5','A5'],['A6','A6'],['A7','A7']];
+// Subconjunto de analógicos que TAMBIÉN sirven como digital (mapean a D14-D19).
+// A6/A7 en el Nano son solo analógicos, así que no van en contextos digitales.
+const ANALOG_DIGITAL_PINS: [string, string][] = [['A0','A0'],['A1','A1'],['A2','A2'],['A3','A3'],['A4','A4'],['A5','A5']];
 const PWM_PINS: [string, string][] = [['3','3'],['5','5'],['6','6'],['9','9'],['10','10'],['11','11']];
-// pinMode acepta cualquier pin GPIO: en Uno/Nano los A0-A5 también se pueden
-// usar como digitales (mapean a D14-D19).
-const PINMODE_PINS: [string, string][] = [...DIGITAL_PINS, ...ANALOG_PINS];
+// pinMode / digital: pines digitales 2-13 + los analógicos usables como digital.
+const PINMODE_PINS: [string, string][] = [...DIGITAL_PINS, ...ANALOG_DIGITAL_PINS];
 
 Blockly.Blocks['io_pinmode'] = {
   init: function (this: Blockly.Block) {
