@@ -692,7 +692,7 @@
           "STACK": {
             "block": {
               "type": "motor_servo",
-              "id": "L;#i2|h!@5Rs8^`JJ/}+",
+              "id": "rot_srv1",
               "fields": {
                 "PIN": "A4"
               },
@@ -700,7 +700,7 @@
                 "ANGLE": {
                   "block": {
                     "type": "math_number",
-                    "id": "|Z3Z72;biZ}iHQdDod[q",
+                    "id": "rot_sn2",
                     "fields": {
                       "NUM": 130
                     }
@@ -710,14 +710,14 @@
               "next": {
                 "block": {
                   "type": "time_delay",
-                  "id": "k_@}Gpeauz9=4xD?5z{r",
+                  "id": "rot_del3",
                   "inputs": {
                     "MS": {
                       "shadow": {
                         "type": "math_number",
-                        "id": "]2{.L0-opC%E],BQzVJ_",
+                        "id": "rot_dn4",
                         "fields": {
-                          "NUM": 115
+                          "NUM": 230
                         }
                       }
                     }
@@ -725,7 +725,7 @@
                   "next": {
                     "block": {
                       "type": "motor_servo",
-                      "id": "Pf:_}v{=eSY=F]@bIC#t",
+                      "id": "rot_srv5",
                       "fields": {
                         "PIN": "A4"
                       },
@@ -733,9 +733,83 @@
                         "ANGLE": {
                           "block": {
                             "type": "math_number",
-                            "id": "8,4_twTmKY;-t?uX1t`V",
+                            "id": "rot_sn6",
                             "fields": {
                               "NUM": 90
+                            }
+                          }
+                        }
+                      },
+                      "next": {
+                        "block": {
+                          "type": "time_delay",
+                          "id": "rot_del7",
+                          "inputs": {
+                            "MS": {
+                              "shadow": {
+                                "type": "math_number",
+                                "id": "rot_dn8",
+                                "fields": {
+                                  "NUM": 10
+                                }
+                              }
+                            }
+                          },
+                          "next": {
+                            "block": {
+                              "type": "motor_servo",
+                              "id": "rot_srv9",
+                              "fields": {
+                                "PIN": "A4"
+                              },
+                              "inputs": {
+                                "ANGLE": {
+                                  "block": {
+                                    "type": "math_number",
+                                    "id": "rot_sn10",
+                                    "fields": {
+                                      "NUM": 50
+                                    }
+                                  }
+                                }
+                              },
+                              "next": {
+                                "block": {
+                                  "type": "time_delay",
+                                  "id": "rot_del11",
+                                  "inputs": {
+                                    "MS": {
+                                      "shadow": {
+                                        "type": "math_number",
+                                        "id": "rot_dn12",
+                                        "fields": {
+                                          "NUM": 115
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "next": {
+                                    "block": {
+                                      "type": "motor_servo",
+                                      "id": "rot_srv13",
+                                      "fields": {
+                                        "PIN": "A4"
+                                      },
+                                      "inputs": {
+                                        "ANGLE": {
+                                          "block": {
+                                            "type": "math_number",
+                                            "id": "rot_sn14",
+                                            "fields": {
+                                              "NUM": 90
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
                             }
                           }
                         }
