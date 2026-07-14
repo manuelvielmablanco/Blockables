@@ -84,6 +84,28 @@ Blockly.Blocks['actuator_buzzer_melody'] = {
   },
 };
 
+// Notas musicales (octava 4) → frecuencia en Hz. Igual que el bloque de notas
+// predefinidas de Hello Blocks: eliges la nota por su nombre y suena su tono.
+const NOTES: [string, string][] = [
+  ['DO', '262'], ['DO#', '277'], ['RE', '294'], ['RE#', '311'],
+  ['MI', '330'], ['FA', '349'], ['FA#', '370'], ['SOL', '392'],
+  ['SOL#', '415'], ['LA', '440'], ['LA#', '466'], ['SI', '494'],
+];
+
+Blockly.Blocks['actuator_buzzer_note'] = {
+  init: function (this: Blockly.Block) {
+    this.appendDummyInput()
+      .appendField('zumbador PIN')
+      .appendField(new Blockly.FieldDropdown(DIGITAL_PINS) as Blockly.Field, 'PIN')
+      .appendField('nota ♪')
+      .appendField(new Blockly.FieldDropdown(NOTES) as Blockly.Field, 'NOTE');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setStyle('actuator_blocks');
+    this.setTooltip('Hace sonar el zumbador con la nota musical seleccionada (octava 4)');
+  },
+};
+
 // actuator_servo moved to motor.ts as motor_servo
 // Generator kept in arduino.ts for backwards compatibility
 

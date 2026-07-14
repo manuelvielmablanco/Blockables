@@ -180,6 +180,7 @@ export const toolboxConfig = {
             DURATION: { shadow: { type: 'math_number', fields: { NUM: 500 } } },
           },
         },
+        { kind: 'block', type: 'actuator_buzzer_note' },
         { kind: 'block', type: 'actuator_buzzer_melody' },
         { kind: 'block', type: 'actuator_relay' },
       ],
