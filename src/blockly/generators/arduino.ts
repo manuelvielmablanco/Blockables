@@ -555,6 +555,31 @@ gen.forBlock['actuator_buzzer_note'] = function (block) {
   return 'tone(' + block.getFieldValue('PIN') + ', ' + block.getFieldValue('NOTE') + ');\n';
 };
 
+// === Balanza (HX711) ===
+gen.forBlock['scale_begin'] = function (block) {
+  addInclude('#include <HX711.h>');
+  addGlobalVar('HX711 balanza;');
+  return 'balanza.begin(' + block.getFieldValue('DT') + ', ' + block.getFieldValue('SCK') + ');\n';
+};
+
+gen.forBlock['scale_set_scale'] = function (block) {
+  const factor = gen.valueToCode(block, 'FACTOR', ORDER_NONE) || '1';
+  return 'balanza.set_scale(' + factor + ');\n';
+};
+
+gen.forBlock['scale_tare'] = function () {
+  return 'balanza.tare();\n';
+};
+
+gen.forBlock['scale_get_units'] = function (block) {
+  const count = gen.valueToCode(block, 'COUNT', ORDER_NONE) || '10';
+  return ['balanza.get_units(' + count + ')', ORDER_UNARY_POSTFIX];
+};
+
+gen.forBlock['scale_power'] = function (block) {
+  return 'balanza.power_' + block.getFieldValue('MODE') + '();\n';
+};
+
 gen.forBlock['actuator_servo'] = function (block) {
   const pin = block.getFieldValue('PIN');
   const angle = gen.valueToCode(block, 'ANGLE', ORDER_NONE) || '90';

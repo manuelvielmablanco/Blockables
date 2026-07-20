@@ -157,6 +157,27 @@ export const toolboxConfig = {
     },
     {
       kind: 'category',
+      name: 'Balanza',
+      categorystyle: 'scale_category',
+      cssConfig: { container: 'blocklyToolboxCategoryContainer cat-scale' },
+      contents: [
+        { kind: 'block', type: 'scale_begin' },
+        { kind: 'block', type: 'scale_tare' },
+        {
+          kind: 'block',
+          type: 'scale_set_scale',
+          inputs: { FACTOR: { shadow: { type: 'math_number', fields: { NUM: 1 } } } },
+        },
+        {
+          kind: 'block',
+          type: 'scale_get_units',
+          inputs: { COUNT: { shadow: { type: 'math_number', fields: { NUM: 10 } } } },
+        },
+        { kind: 'block', type: 'scale_power' },
+      ],
+    },
+    {
+      kind: 'category',
       name: 'Actuadores',
       categorystyle: 'actuator_category',
       cssConfig: { container: 'blocklyToolboxCategoryContainer cat-actuators' },
