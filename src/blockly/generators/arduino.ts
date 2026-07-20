@@ -550,6 +550,11 @@ gen.forBlock['actuator_buzzer_melody'] = function (block) {
   return 'playMelody(' + block.getFieldValue('PIN') + ', "' + block.getFieldValue('MELODY') + '");\n';
 };
 
+gen.forBlock['actuator_buzzer_note'] = function (block) {
+  // El valor de la nota ya es su frecuencia en Hz.
+  return 'tone(' + block.getFieldValue('PIN') + ', ' + block.getFieldValue('NOTE') + ');\n';
+};
+
 gen.forBlock['actuator_servo'] = function (block) {
   const pin = block.getFieldValue('PIN');
   const angle = gen.valueToCode(block, 'ANGLE', ORDER_NONE) || '90';
