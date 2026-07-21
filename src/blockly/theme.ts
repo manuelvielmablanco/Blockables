@@ -21,6 +21,7 @@ export const IngeniablesTheme = Blockly.Theme.defineTheme('ingeniables', {
     motor_blocks: { colourPrimary: '#D35400', colourSecondary: '#bb4a00', colourTertiary: '#a34100' },
     wifi_blocks: { colourPrimary: '#1ABC9C', colourSecondary: '#17a88c', colourTertiary: '#14947c' },
     bluetooth_blocks: { colourPrimary: '#2C82C9', colourSecondary: '#2774b4', colourTertiary: '#22669f' },
+    scale_blocks: { colourPrimary: '#795548', colourSecondary: '#6d4c41', colourTertiary: '#5d4037' },
     setup_blocks: { colourPrimary: '#4E9995', colourSecondary: '#458a86', colourTertiary: '#3c7b77' },
   },
   categoryStyles: {
@@ -41,6 +42,7 @@ export const IngeniablesTheme = Blockly.Theme.defineTheme('ingeniables', {
     motor_category: { colour: '#D35400' },
     wifi_category: { colour: '#1ABC9C' },
     bluetooth_category: { colour: '#2C82C9' },
+    scale_category: { colour: '#795548' },
   },
   componentStyles: {
     workspaceBackgroundColour: '#fafafa',

@@ -88,6 +88,7 @@
 .cat-neopixel  { --cat-color: #E74C3C; --cat-bg: color-mix(in srgb, #E74C3C 10%, #ffffff); --cat-soft: color-mix(in srgb, #E74C3C 22%, #ffffff); --cat-depth: color-mix(in srgb, #E74C3C 78%, #000000); }
 .cat-wifi      { --cat-color: #1ABC9C; --cat-bg: color-mix(in srgb, #1ABC9C 10%, #ffffff); --cat-soft: color-mix(in srgb, #1ABC9C 22%, #ffffff); --cat-depth: color-mix(in srgb, #1ABC9C 78%, #000000); }
 .cat-bluetooth { --cat-color: #2C82C9; --cat-bg: color-mix(in srgb, #2C82C9 10%, #ffffff); --cat-soft: color-mix(in srgb, #2C82C9 22%, #ffffff); --cat-depth: color-mix(in srgb, #2C82C9 78%, #000000); }
+.cat-scale     { --cat-color: #795548; --cat-bg: color-mix(in srgb, #795548 10%, #ffffff); --cat-soft: color-mix(in srgb, #795548 22%, #ffffff); --cat-depth: color-mix(in srgb, #795548 82%, #000000); }
 
 .blocklyToolboxDiv {
   background-color: #ffffff !important;

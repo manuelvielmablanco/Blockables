@@ -15,3 +15,4 @@ import './wifi';
 import './bluetooth';
 import './lists_hb';
 import './theremin';
+import './scale';
