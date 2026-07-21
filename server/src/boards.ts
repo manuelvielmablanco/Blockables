@@ -41,6 +41,10 @@ export const requiredLibraries = [
   'Servo',
   'IRremote',
   'LiquidCrystal I2C',
+  'Stepper',
+  'NeoSWSerial',
+  'VL53L0X',
+  'HX711 Arduino Library',
   'SD',
 ];
 
