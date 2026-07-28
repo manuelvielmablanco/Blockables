@@ -555,6 +555,10 @@ gen.forBlock['actuator_buzzer_note'] = function (block) {
   return 'tone(' + block.getFieldValue('PIN') + ', ' + block.getFieldValue('NOTE') + ');\n';
 };
 
+gen.forBlock['actuator_buzzer_off'] = function (block) {
+  return 'noTone(' + block.getFieldValue('PIN') + ');\n';
+};
+
 // === Balanza (HX711) ===
 gen.forBlock['scale_begin'] = function (block) {
   addInclude('#include <HX711.h>');
