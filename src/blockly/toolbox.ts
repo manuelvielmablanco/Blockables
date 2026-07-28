@@ -202,6 +202,7 @@ export const toolboxConfig = {
           },
         },
         { kind: 'block', type: 'actuator_buzzer_note' },
+        { kind: 'block', type: 'actuator_buzzer_off' },
         { kind: 'block', type: 'actuator_buzzer_melody' },
         { kind: 'block', type: 'actuator_relay' },
       ],

@@ -106,6 +106,19 @@ Blockly.Blocks['actuator_buzzer_note'] = {
   },
 };
 
+Blockly.Blocks['actuator_buzzer_off'] = {
+  init: function (this: Blockly.Block) {
+    this.appendDummyInput()
+      .appendField('zumbador PIN')
+      .appendField(new Blockly.FieldDropdown(DIGITAL_PINS) as Blockly.Field, 'PIN')
+      .appendField('silencio (parar)');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setStyle('actuator_blocks');
+    this.setTooltip('Deja de sonar el zumbador (noTone)');
+  },
+};
+
 // actuator_servo moved to motor.ts as motor_servo
 // Generator kept in arduino.ts for backwards compatibility
 
