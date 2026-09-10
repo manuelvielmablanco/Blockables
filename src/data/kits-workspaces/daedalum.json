@@ -1,0 +1,1478 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "arduino_setup",
+        "id": "s145",
+        "x": 40,
+        "y": 40,
+        "deletable": false,
+        "inputs": {
+          "SETUP": {
+            "block": {
+              "type": "bt_begin",
+              "id": "b19",
+              "fields": {
+                "RX": "2",
+                "TX": "4",
+                "BAUD": "9600"
+              },
+              "next": {
+                "block": {
+                  "type": "motor_dc",
+                  "id": "b20",
+                  "fields": {
+                    "ID": "1",
+                    "PIN1": "10",
+                    "PIN2": "11"
+                  },
+                  "next": {
+                    "block": {
+                      "type": "neopixel_init",
+                      "id": "b21",
+                      "fields": {
+                        "PIN": "A4",
+                        "NUM": 1
+                      },
+                      "next": {
+                        "block": {
+                          "type": "neopixel_clear",
+                          "id": "b22",
+                          "next": {
+                            "block": {
+                              "type": "neopixel_show",
+                              "id": "b23",
+                              "next": {
+                                "block": {
+                                  "type": "variables_set",
+                                  "id": "b25",
+                                  "fields": {
+                                    "VAR": {
+                                      "id": "var_velocidad"
+                                    }
+                                  },
+                                  "inputs": {
+                                    "VALUE": {
+                                      "block": {
+                                        "type": "math_number",
+                                        "id": "b24",
+                                        "fields": {
+                                          "NUM": 150
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "next": {
+                                    "block": {
+                                      "type": "variables_set",
+                                      "id": "b27",
+                                      "fields": {
+                                        "VAR": {
+                                          "id": "var_motorON"
+                                        }
+                                      },
+                                      "inputs": {
+                                        "VALUE": {
+                                          "block": {
+                                            "type": "logic_boolean",
+                                            "id": "b26",
+                                            "fields": {
+                                              "BOOL": "FALSE"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "next": {
+                                        "block": {
+                                          "type": "variables_set",
+                                          "id": "b29",
+                                          "fields": {
+                                            "VAR": {
+                                              "id": "var_dirFwd"
+                                            }
+                                          },
+                                          "inputs": {
+                                            "VALUE": {
+                                              "block": {
+                                                "type": "logic_boolean",
+                                                "id": "b28",
+                                                "fields": {
+                                                  "BOOL": "TRUE"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "next": {
+                                            "block": {
+                                              "type": "variables_set",
+                                              "id": "b31",
+                                              "fields": {
+                                                "VAR": {
+                                                  "id": "var_colorIndex"
+                                                }
+                                              },
+                                              "inputs": {
+                                                "VALUE": {
+                                                  "block": {
+                                                    "type": "math_number",
+                                                    "id": "b30",
+                                                    "fields": {
+                                                      "NUM": -1
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              "next": {
+                                                "block": {
+                                                  "type": "variables_set",
+                                                  "id": "b33",
+                                                  "fields": {
+                                                    "VAR": {
+                                                      "id": "var_BT"
+                                                    }
+                                                  },
+                                                  "inputs": {
+                                                    "VALUE": {
+                                                      "block": {
+                                                        "type": "text",
+                                                        "id": "b32",
+                                                        "fields": {
+                                                          "TEXT": ""
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "arduino_loop",
+        "id": "l146",
+        "x": 600,
+        "y": 40,
+        "deletable": false,
+        "inputs": {
+          "LOOP": {
+            "block": {
+              "type": "controls_if",
+              "id": "b144",
+              "inputs": {
+                "IF0": {
+                  "block": {
+                    "type": "bt_available",
+                    "id": "b34"
+                  }
+                },
+                "DO0": {
+                  "block": {
+                    "type": "variables_set",
+                    "id": "b36",
+                    "fields": {
+                      "VAR": {
+                        "id": "var_BT"
+                      }
+                    },
+                    "inputs": {
+                      "VALUE": {
+                        "block": {
+                          "type": "bt_receive_text",
+                          "id": "b35",
+                          "fields": {
+                            "UNTIL_NL": "TRUE"
+                          }
+                        }
+                      }
+                    },
+                    "next": {
+                      "block": {
+                        "type": "controls_if",
+                        "id": "b46",
+                        "inputs": {
+                          "IF0": {
+                            "block": {
+                              "type": "logic_compare",
+                              "id": "b39",
+                              "fields": {
+                                "OP": "EQ"
+                              },
+                              "inputs": {
+                                "A": {
+                                  "block": {
+                                    "type": "variables_get",
+                                    "id": "b37",
+                                    "fields": {
+                                      "VAR": {
+                                        "id": "var_BT"
+                                      }
+                                    }
+                                  }
+                                },
+                                "B": {
+                                  "block": {
+                                    "type": "text",
+                                    "id": "b38",
+                                    "fields": {
+                                      "TEXT": "F"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "DO0": {
+                            "block": {
+                              "type": "variables_set",
+                              "id": "b41",
+                              "fields": {
+                                "VAR": {
+                                  "id": "var_dirFwd"
+                                }
+                              },
+                              "inputs": {
+                                "VALUE": {
+                                  "block": {
+                                    "type": "logic_boolean",
+                                    "id": "b40",
+                                    "fields": {
+                                      "BOOL": "TRUE"
+                                    }
+                                  }
+                                }
+                              },
+                              "next": {
+                                "block": {
+                                  "type": "variables_set",
+                                  "id": "b43",
+                                  "fields": {
+                                    "VAR": {
+                                      "id": "var_motorON"
+                                    }
+                                  },
+                                  "inputs": {
+                                    "VALUE": {
+                                      "block": {
+                                        "type": "logic_boolean",
+                                        "id": "b42",
+                                        "fields": {
+                                          "BOOL": "TRUE"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "next": {
+                                    "block": {
+                                      "type": "motor_dc_run",
+                                      "id": "b45",
+                                      "fields": {
+                                        "ID": "1",
+                                        "DIR": "FORWARD"
+                                      },
+                                      "inputs": {
+                                        "SPEED": {
+                                          "block": {
+                                            "type": "variables_get",
+                                            "id": "b44",
+                                            "fields": {
+                                              "VAR": {
+                                                "id": "var_velocidad"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "next": {
+                          "block": {
+                            "type": "controls_if",
+                            "id": "b56",
+                            "inputs": {
+                              "IF0": {
+                                "block": {
+                                  "type": "logic_compare",
+                                  "id": "b49",
+                                  "fields": {
+                                    "OP": "EQ"
+                                  },
+                                  "inputs": {
+                                    "A": {
+                                      "block": {
+                                        "type": "variables_get",
+                                        "id": "b47",
+                                        "fields": {
+                                          "VAR": {
+                                            "id": "var_BT"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "B": {
+                                      "block": {
+                                        "type": "text",
+                                        "id": "b48",
+                                        "fields": {
+                                          "TEXT": "G"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "DO0": {
+                                "block": {
+                                  "type": "variables_set",
+                                  "id": "b51",
+                                  "fields": {
+                                    "VAR": {
+                                      "id": "var_dirFwd"
+                                    }
+                                  },
+                                  "inputs": {
+                                    "VALUE": {
+                                      "block": {
+                                        "type": "logic_boolean",
+                                        "id": "b50",
+                                        "fields": {
+                                          "BOOL": "FALSE"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "next": {
+                                    "block": {
+                                      "type": "variables_set",
+                                      "id": "b53",
+                                      "fields": {
+                                        "VAR": {
+                                          "id": "var_motorON"
+                                        }
+                                      },
+                                      "inputs": {
+                                        "VALUE": {
+                                          "block": {
+                                            "type": "logic_boolean",
+                                            "id": "b52",
+                                            "fields": {
+                                              "BOOL": "TRUE"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "next": {
+                                        "block": {
+                                          "type": "motor_dc_run",
+                                          "id": "b55",
+                                          "fields": {
+                                            "ID": "1",
+                                            "DIR": "BACKWARD"
+                                          },
+                                          "inputs": {
+                                            "SPEED": {
+                                              "block": {
+                                                "type": "variables_get",
+                                                "id": "b54",
+                                                "fields": {
+                                                  "VAR": {
+                                                    "id": "var_velocidad"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "next": {
+                              "block": {
+                                "type": "controls_if",
+                                "id": "b63",
+                                "inputs": {
+                                  "IF0": {
+                                    "block": {
+                                      "type": "logic_compare",
+                                      "id": "b59",
+                                      "fields": {
+                                        "OP": "EQ"
+                                      },
+                                      "inputs": {
+                                        "A": {
+                                          "block": {
+                                            "type": "variables_get",
+                                            "id": "b57",
+                                            "fields": {
+                                              "VAR": {
+                                                "id": "var_BT"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "B": {
+                                          "block": {
+                                            "type": "text",
+                                            "id": "b58",
+                                            "fields": {
+                                              "TEXT": "S"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "DO0": {
+                                    "block": {
+                                      "type": "variables_set",
+                                      "id": "b61",
+                                      "fields": {
+                                        "VAR": {
+                                          "id": "var_motorON"
+                                        }
+                                      },
+                                      "inputs": {
+                                        "VALUE": {
+                                          "block": {
+                                            "type": "logic_boolean",
+                                            "id": "b60",
+                                            "fields": {
+                                              "BOOL": "FALSE"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "next": {
+                                        "block": {
+                                          "type": "motor_dc_stop",
+                                          "id": "b62",
+                                          "fields": {
+                                            "ID": "1"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "next": {
+                                  "block": {
+                                    "type": "controls_if",
+                                    "id": "b123",
+                                    "inputs": {
+                                      "IF0": {
+                                        "block": {
+                                          "type": "logic_compare",
+                                          "id": "b66",
+                                          "fields": {
+                                            "OP": "EQ"
+                                          },
+                                          "inputs": {
+                                            "A": {
+                                              "block": {
+                                                "type": "variables_get",
+                                                "id": "b64",
+                                                "fields": {
+                                                  "VAR": {
+                                                    "id": "var_BT"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "B": {
+                                              "block": {
+                                                "type": "text",
+                                                "id": "b65",
+                                                "fields": {
+                                                  "TEXT": "A"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "DO0": {
+                                        "block": {
+                                          "type": "variables_set",
+                                          "id": "b72",
+                                          "fields": {
+                                            "VAR": {
+                                              "id": "var_colorIndex"
+                                            }
+                                          },
+                                          "inputs": {
+                                            "VALUE": {
+                                              "block": {
+                                                "type": "math_modulo",
+                                                "id": "b71",
+                                                "inputs": {
+                                                  "DIVIDEND": {
+                                                    "block": {
+                                                      "type": "math_arithmetic",
+                                                      "id": "b69",
+                                                      "fields": {
+                                                        "OP": "ADD"
+                                                      },
+                                                      "inputs": {
+                                                        "A": {
+                                                          "block": {
+                                                            "type": "variables_get",
+                                                            "id": "b67",
+                                                            "fields": {
+                                                              "VAR": {
+                                                                "id": "var_colorIndex"
+                                                              }
+                                                            }
+                                                          }
+                                                        },
+                                                        "B": {
+                                                          "block": {
+                                                            "type": "math_number",
+                                                            "id": "b68",
+                                                            "fields": {
+                                                              "NUM": 1
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "DIVISOR": {
+                                                    "block": {
+                                                      "type": "math_number",
+                                                      "id": "b70",
+                                                      "fields": {
+                                                        "NUM": 6
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "next": {
+                                            "block": {
+                                              "type": "controls_if",
+                                              "id": "b121",
+                                              "inputs": {
+                                                "IF0": {
+                                                  "block": {
+                                                    "type": "logic_compare",
+                                                    "id": "b75",
+                                                    "fields": {
+                                                      "OP": "EQ"
+                                                    },
+                                                    "inputs": {
+                                                      "A": {
+                                                        "block": {
+                                                          "type": "variables_get",
+                                                          "id": "b73",
+                                                          "fields": {
+                                                            "VAR": {
+                                                              "id": "var_colorIndex"
+                                                            }
+                                                          }
+                                                        }
+                                                      },
+                                                      "B": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b74",
+                                                          "fields": {
+                                                            "NUM": 0
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "DO0": {
+                                                  "block": {
+                                                    "type": "neopixel_setcolor",
+                                                    "id": "b80",
+                                                    "inputs": {
+                                                      "INDEX": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b76",
+                                                          "fields": {
+                                                            "NUM": 0
+                                                          }
+                                                        }
+                                                      },
+                                                      "R": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b77",
+                                                          "fields": {
+                                                            "NUM": 255
+                                                          }
+                                                        }
+                                                      },
+                                                      "G": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b78",
+                                                          "fields": {
+                                                            "NUM": 0
+                                                          }
+                                                        }
+                                                      },
+                                                      "B": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b79",
+                                                          "fields": {
+                                                            "NUM": 0
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "IF1": {
+                                                  "block": {
+                                                    "type": "logic_compare",
+                                                    "id": "b83",
+                                                    "fields": {
+                                                      "OP": "EQ"
+                                                    },
+                                                    "inputs": {
+                                                      "A": {
+                                                        "block": {
+                                                          "type": "variables_get",
+                                                          "id": "b81",
+                                                          "fields": {
+                                                            "VAR": {
+                                                              "id": "var_colorIndex"
+                                                            }
+                                                          }
+                                                        }
+                                                      },
+                                                      "B": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b82",
+                                                          "fields": {
+                                                            "NUM": 1
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "DO1": {
+                                                  "block": {
+                                                    "type": "neopixel_setcolor",
+                                                    "id": "b88",
+                                                    "inputs": {
+                                                      "INDEX": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b84",
+                                                          "fields": {
+                                                            "NUM": 0
+                                                          }
+                                                        }
+                                                      },
+                                                      "R": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b85",
+                                                          "fields": {
+                                                            "NUM": 0
+                                                          }
+                                                        }
+                                                      },
+                                                      "G": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b86",
+                                                          "fields": {
+                                                            "NUM": 255
+                                                          }
+                                                        }
+                                                      },
+                                                      "B": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b87",
+                                                          "fields": {
+                                                            "NUM": 0
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "IF2": {
+                                                  "block": {
+                                                    "type": "logic_compare",
+                                                    "id": "b91",
+                                                    "fields": {
+                                                      "OP": "EQ"
+                                                    },
+                                                    "inputs": {
+                                                      "A": {
+                                                        "block": {
+                                                          "type": "variables_get",
+                                                          "id": "b89",
+                                                          "fields": {
+                                                            "VAR": {
+                                                              "id": "var_colorIndex"
+                                                            }
+                                                          }
+                                                        }
+                                                      },
+                                                      "B": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b90",
+                                                          "fields": {
+                                                            "NUM": 2
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "DO2": {
+                                                  "block": {
+                                                    "type": "neopixel_setcolor",
+                                                    "id": "b96",
+                                                    "inputs": {
+                                                      "INDEX": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b92",
+                                                          "fields": {
+                                                            "NUM": 0
+                                                          }
+                                                        }
+                                                      },
+                                                      "R": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b93",
+                                                          "fields": {
+                                                            "NUM": 0
+                                                          }
+                                                        }
+                                                      },
+                                                      "G": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b94",
+                                                          "fields": {
+                                                            "NUM": 0
+                                                          }
+                                                        }
+                                                      },
+                                                      "B": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b95",
+                                                          "fields": {
+                                                            "NUM": 255
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "IF3": {
+                                                  "block": {
+                                                    "type": "logic_compare",
+                                                    "id": "b99",
+                                                    "fields": {
+                                                      "OP": "EQ"
+                                                    },
+                                                    "inputs": {
+                                                      "A": {
+                                                        "block": {
+                                                          "type": "variables_get",
+                                                          "id": "b97",
+                                                          "fields": {
+                                                            "VAR": {
+                                                              "id": "var_colorIndex"
+                                                            }
+                                                          }
+                                                        }
+                                                      },
+                                                      "B": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b98",
+                                                          "fields": {
+                                                            "NUM": 3
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "DO3": {
+                                                  "block": {
+                                                    "type": "neopixel_setcolor",
+                                                    "id": "b104",
+                                                    "inputs": {
+                                                      "INDEX": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b100",
+                                                          "fields": {
+                                                            "NUM": 0
+                                                          }
+                                                        }
+                                                      },
+                                                      "R": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b101",
+                                                          "fields": {
+                                                            "NUM": 255
+                                                          }
+                                                        }
+                                                      },
+                                                      "G": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b102",
+                                                          "fields": {
+                                                            "NUM": 255
+                                                          }
+                                                        }
+                                                      },
+                                                      "B": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b103",
+                                                          "fields": {
+                                                            "NUM": 0
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "IF4": {
+                                                  "block": {
+                                                    "type": "logic_compare",
+                                                    "id": "b107",
+                                                    "fields": {
+                                                      "OP": "EQ"
+                                                    },
+                                                    "inputs": {
+                                                      "A": {
+                                                        "block": {
+                                                          "type": "variables_get",
+                                                          "id": "b105",
+                                                          "fields": {
+                                                            "VAR": {
+                                                              "id": "var_colorIndex"
+                                                            }
+                                                          }
+                                                        }
+                                                      },
+                                                      "B": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b106",
+                                                          "fields": {
+                                                            "NUM": 4
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "DO4": {
+                                                  "block": {
+                                                    "type": "neopixel_setcolor",
+                                                    "id": "b112",
+                                                    "inputs": {
+                                                      "INDEX": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b108",
+                                                          "fields": {
+                                                            "NUM": 0
+                                                          }
+                                                        }
+                                                      },
+                                                      "R": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b109",
+                                                          "fields": {
+                                                            "NUM": 0
+                                                          }
+                                                        }
+                                                      },
+                                                      "G": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b110",
+                                                          "fields": {
+                                                            "NUM": 255
+                                                          }
+                                                        }
+                                                      },
+                                                      "B": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b111",
+                                                          "fields": {
+                                                            "NUM": 255
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "IF5": {
+                                                  "block": {
+                                                    "type": "logic_compare",
+                                                    "id": "b115",
+                                                    "fields": {
+                                                      "OP": "EQ"
+                                                    },
+                                                    "inputs": {
+                                                      "A": {
+                                                        "block": {
+                                                          "type": "variables_get",
+                                                          "id": "b113",
+                                                          "fields": {
+                                                            "VAR": {
+                                                              "id": "var_colorIndex"
+                                                            }
+                                                          }
+                                                        }
+                                                      },
+                                                      "B": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b114",
+                                                          "fields": {
+                                                            "NUM": 5
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "DO5": {
+                                                  "block": {
+                                                    "type": "neopixel_setcolor",
+                                                    "id": "b120",
+                                                    "inputs": {
+                                                      "INDEX": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b116",
+                                                          "fields": {
+                                                            "NUM": 0
+                                                          }
+                                                        }
+                                                      },
+                                                      "R": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b117",
+                                                          "fields": {
+                                                            "NUM": 255
+                                                          }
+                                                        }
+                                                      },
+                                                      "G": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b118",
+                                                          "fields": {
+                                                            "NUM": 255
+                                                          }
+                                                        }
+                                                      },
+                                                      "B": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "b119",
+                                                          "fields": {
+                                                            "NUM": 255
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              "extraState": {
+                                                "elseIfCount": 5
+                                              },
+                                              "next": {
+                                                "block": {
+                                                  "type": "neopixel_show",
+                                                  "id": "b122"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "next": {
+                                      "block": {
+                                        "type": "controls_if",
+                                        "id": "b131",
+                                        "inputs": {
+                                          "IF0": {
+                                            "block": {
+                                              "type": "logic_compare",
+                                              "id": "b126",
+                                              "fields": {
+                                                "OP": "EQ"
+                                              },
+                                              "inputs": {
+                                                "A": {
+                                                  "block": {
+                                                    "type": "variables_get",
+                                                    "id": "b124",
+                                                    "fields": {
+                                                      "VAR": {
+                                                        "id": "var_BT"
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "B": {
+                                                  "block": {
+                                                    "type": "text",
+                                                    "id": "b125",
+                                                    "fields": {
+                                                      "TEXT": "B"
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "DO0": {
+                                            "block": {
+                                              "type": "variables_set",
+                                              "id": "b128",
+                                              "fields": {
+                                                "VAR": {
+                                                  "id": "var_colorIndex"
+                                                }
+                                              },
+                                              "inputs": {
+                                                "VALUE": {
+                                                  "block": {
+                                                    "type": "math_number",
+                                                    "id": "b127",
+                                                    "fields": {
+                                                      "NUM": -1
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              "next": {
+                                                "block": {
+                                                  "type": "neopixel_clear",
+                                                  "id": "b129",
+                                                  "next": {
+                                                    "block": {
+                                                      "type": "neopixel_show",
+                                                      "id": "b130"
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "next": {
+                                          "block": {
+                                            "type": "controls_if",
+                                            "id": "b143",
+                                            "inputs": {
+                                              "IF0": {
+                                                "block": {
+                                                  "type": "logic_compare",
+                                                  "id": "b134",
+                                                  "fields": {
+                                                    "OP": "EQ"
+                                                  },
+                                                  "inputs": {
+                                                    "A": {
+                                                      "block": {
+                                                        "type": "variables_get",
+                                                        "id": "b132",
+                                                        "fields": {
+                                                          "VAR": {
+                                                            "id": "var_BT"
+                                                          }
+                                                        }
+                                                      }
+                                                    },
+                                                    "B": {
+                                                      "block": {
+                                                        "type": "text",
+                                                        "id": "b133",
+                                                        "fields": {
+                                                          "TEXT": "C"
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              "DO0": {
+                                                "block": {
+                                                  "type": "controls_if",
+                                                  "id": "b18",
+                                                  "inputs": {
+                                                    "IF0": {
+                                                      "block": {
+                                                        "type": "logic_compare",
+                                                        "id": "b3",
+                                                        "fields": {
+                                                          "OP": "EQ"
+                                                        },
+                                                        "inputs": {
+                                                          "A": {
+                                                            "block": {
+                                                              "type": "variables_get",
+                                                              "id": "b1",
+                                                              "fields": {
+                                                                "VAR": {
+                                                                  "id": "var_velocidad"
+                                                                }
+                                                              }
+                                                            }
+                                                          },
+                                                          "B": {
+                                                            "block": {
+                                                              "type": "math_number",
+                                                              "id": "b2",
+                                                              "fields": {
+                                                                "NUM": 100
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    },
+                                                    "DO0": {
+                                                      "block": {
+                                                        "type": "variables_set",
+                                                        "id": "b5",
+                                                        "fields": {
+                                                          "VAR": {
+                                                            "id": "var_velocidad"
+                                                          }
+                                                        },
+                                                        "inputs": {
+                                                          "VALUE": {
+                                                            "block": {
+                                                              "type": "math_number",
+                                                              "id": "b4",
+                                                              "fields": {
+                                                                "NUM": 150
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    },
+                                                    "IF1": {
+                                                      "block": {
+                                                        "type": "logic_compare",
+                                                        "id": "b8",
+                                                        "fields": {
+                                                          "OP": "EQ"
+                                                        },
+                                                        "inputs": {
+                                                          "A": {
+                                                            "block": {
+                                                              "type": "variables_get",
+                                                              "id": "b6",
+                                                              "fields": {
+                                                                "VAR": {
+                                                                  "id": "var_velocidad"
+                                                                }
+                                                              }
+                                                            }
+                                                          },
+                                                          "B": {
+                                                            "block": {
+                                                              "type": "math_number",
+                                                              "id": "b7",
+                                                              "fields": {
+                                                                "NUM": 150
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    },
+                                                    "DO1": {
+                                                      "block": {
+                                                        "type": "variables_set",
+                                                        "id": "b10",
+                                                        "fields": {
+                                                          "VAR": {
+                                                            "id": "var_velocidad"
+                                                          }
+                                                        },
+                                                        "inputs": {
+                                                          "VALUE": {
+                                                            "block": {
+                                                              "type": "math_number",
+                                                              "id": "b9",
+                                                              "fields": {
+                                                                "NUM": 200
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    },
+                                                    "IF2": {
+                                                      "block": {
+                                                        "type": "logic_compare",
+                                                        "id": "b13",
+                                                        "fields": {
+                                                          "OP": "EQ"
+                                                        },
+                                                        "inputs": {
+                                                          "A": {
+                                                            "block": {
+                                                              "type": "variables_get",
+                                                              "id": "b11",
+                                                              "fields": {
+                                                                "VAR": {
+                                                                  "id": "var_velocidad"
+                                                                }
+                                                              }
+                                                            }
+                                                          },
+                                                          "B": {
+                                                            "block": {
+                                                              "type": "math_number",
+                                                              "id": "b12",
+                                                              "fields": {
+                                                                "NUM": 200
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    },
+                                                    "DO2": {
+                                                      "block": {
+                                                        "type": "variables_set",
+                                                        "id": "b15",
+                                                        "fields": {
+                                                          "VAR": {
+                                                            "id": "var_velocidad"
+                                                          }
+                                                        },
+                                                        "inputs": {
+                                                          "VALUE": {
+                                                            "block": {
+                                                              "type": "math_number",
+                                                              "id": "b14",
+                                                              "fields": {
+                                                                "NUM": 255
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    },
+                                                    "ELSE": {
+                                                      "block": {
+                                                        "type": "variables_set",
+                                                        "id": "b17",
+                                                        "fields": {
+                                                          "VAR": {
+                                                            "id": "var_velocidad"
+                                                          }
+                                                        },
+                                                        "inputs": {
+                                                          "VALUE": {
+                                                            "block": {
+                                                              "type": "math_number",
+                                                              "id": "b16",
+                                                              "fields": {
+                                                                "NUM": 100
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "extraState": {
+                                                    "elseIfCount": 2,
+                                                    "hasElse": true
+                                                  },
+                                                  "next": {
+                                                    "block": {
+                                                      "type": "controls_if",
+                                                      "id": "b142",
+                                                      "inputs": {
+                                                        "IF0": {
+                                                          "block": {
+                                                            "type": "variables_get",
+                                                            "id": "b135",
+                                                            "fields": {
+                                                              "VAR": {
+                                                                "id": "var_motorON"
+                                                              }
+                                                            }
+                                                          }
+                                                        },
+                                                        "DO0": {
+                                                          "block": {
+                                                            "type": "controls_if",
+                                                            "id": "b141",
+                                                            "inputs": {
+                                                              "IF0": {
+                                                                "block": {
+                                                                  "type": "variables_get",
+                                                                  "id": "b136",
+                                                                  "fields": {
+                                                                    "VAR": {
+                                                                      "id": "var_dirFwd"
+                                                                    }
+                                                                  }
+                                                                }
+                                                              },
+                                                              "DO0": {
+                                                                "block": {
+                                                                  "type": "motor_dc_run",
+                                                                  "id": "b138",
+                                                                  "fields": {
+                                                                    "ID": "1",
+                                                                    "DIR": "FORWARD"
+                                                                  },
+                                                                  "inputs": {
+                                                                    "SPEED": {
+                                                                      "block": {
+                                                                        "type": "variables_get",
+                                                                        "id": "b137",
+                                                                        "fields": {
+                                                                          "VAR": {
+                                                                            "id": "var_velocidad"
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              },
+                                                              "ELSE": {
+                                                                "block": {
+                                                                  "type": "motor_dc_run",
+                                                                  "id": "b140",
+                                                                  "fields": {
+                                                                    "ID": "1",
+                                                                    "DIR": "BACKWARD"
+                                                                  },
+                                                                  "inputs": {
+                                                                    "SPEED": {
+                                                                      "block": {
+                                                                        "type": "variables_get",
+                                                                        "id": "b139",
+                                                                        "fields": {
+                                                                          "VAR": {
+                                                                            "id": "var_velocidad"
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            },
+                                                            "extraState": {
+                                                              "hasElse": true
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "variables": [
+    {
+      "name": "velocidad",
+      "id": "var_velocidad"
+    },
+    {
+      "name": "motorON",
+      "id": "var_motorON"
+    },
+    {
+      "name": "dirFwd",
+      "id": "var_dirFwd"
+    },
+    {
+      "name": "colorIndex",
+      "id": "var_colorIndex"
+    },
+    {
+      "name": "BT",
+      "id": "var_BT"
+    }
+  ]
+}

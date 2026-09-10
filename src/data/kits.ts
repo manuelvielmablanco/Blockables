@@ -15,6 +15,7 @@
 import elastorWorkspace from './kits-workspaces/elastor.json';
 import frankyWorkspace from './kits-workspaces/franky.json';
 import thereminWorkspace from './kits-workspaces/theremin.json';
+import daedalumWorkspace from './kits-workspaces/daedalum.json';
 import tellurionHbXml from './kits-workspaces/tellurion.hb?raw';
 import tellurionV2HbXml from './kits-workspaces/tellurion-v2.hb?raw';
 
@@ -150,5 +151,21 @@ export const kits: KitProject[] = [
     ],
     boardId: 'arduino-nano',
     workspace: thereminWorkspace,
+  },
+  {
+    id: 'daedalum',
+    name: 'Ingeniables Daedalum',
+    description:
+      'Zoótropo motorizado con control Bluetooth. Un motor DC hace girar la animación en ambos sentidos y a distintas velocidades, mientras una luz multicolor ilumina la escena.',
+    image: 'kits/daedalum.png',
+    emoji: '🎡',
+    features: [
+      'Motor DC con driver puente H (2 sentidos)',
+      '4 velocidades para ver el efecto estroboscópico',
+      'Luz NeoPixel multicolor (ciclo de 6 colores)',
+      'Control Bluetooth (HC-05/06)',
+    ],
+    boardId: 'arduino-nano',
+    workspace: daedalumWorkspace,
   },
 ];
