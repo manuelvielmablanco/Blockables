@@ -16,6 +16,7 @@ import elastorWorkspace from './kits-workspaces/elastor.json';
 import frankyWorkspace from './kits-workspaces/franky.json';
 import thereminWorkspace from './kits-workspaces/theremin.json';
 import daedalumWorkspace from './kits-workspaces/daedalum.json';
+import labyrionWorkspace from './kits-workspaces/labyrion.json';
 import tellurionHbXml from './kits-workspaces/tellurion.hb?raw';
 import tellurionV2HbXml from './kits-workspaces/tellurion-v2.hb?raw';
 
@@ -167,5 +168,21 @@ export const kits: KitProject[] = [
     ],
     boardId: 'arduino-nano',
     workspace: daedalumWorkspace,
+  },
+  {
+    id: 'labyrion',
+    name: 'Ingeniables Labyrion',
+    description:
+      'Laberinto de equilibrio controlado por Bluetooth. Dos servomotores inclinan la plataforma en dos ejes para guiar la bola por el laberinto, con un botón para nivelar la mesa.',
+    image: 'kits/labyrion.png',
+    emoji: '🎲',
+    features: [
+      '2 servomotores (inclinación en 2 ejes)',
+      'Control Bluetooth (HC-05/06)',
+      'Procedimientos: Derecha, Izquierda, Subir, Bajar, Nivelar',
+      'Ángulos configurables (mínimo, máximo y reposo)',
+    ],
+    boardId: 'arduino-nano',
+    workspace: labyrionWorkspace,
   },
 ];
