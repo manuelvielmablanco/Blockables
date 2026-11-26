@@ -31,6 +31,9 @@ export function createWorkspace(container: HTMLDivElement, board?: BoardProfile)
   const workspace = Blockly.inject(container, {
     toolbox,
     theme: IngeniablesTheme,
+    // Sprites (zoom, papelera, cursores) servidos desde nuestro propio sitio en
+    // lugar del CDN externo por defecto de Blockly, que dejó de responder.
+    media: `${import.meta.env.BASE_URL}blockly-media/`,
     grid: {
       spacing: 20,
       length: 3,
